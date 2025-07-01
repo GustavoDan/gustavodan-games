@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Orbitron, Audiowide } from "next/font/google";
+import { cn } from "@/utils/cn";
 import "./globals.css";
 
 export const title_font = Orbitron({
@@ -27,16 +28,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html
-            lang="en"
-            className={[main_font.variable, title_font.variable].join(" ")}
-        >
+        <html lang="en" className={cn(main_font.variable, title_font.variable)}>
             <body
-                className={[
+                className={cn(
                     "font-main antialiased text-[#e3e3ff] bg-[#121212] bg-gradient bg-blend-lighten",
                     "w-screen h-screen overflow-hidden flex items-center justify-center",
-                    "before:absolute before:inset-0 before:size-full before:pointer-events-none before:bg-stripe",
-                ].join(" ")}
+                    "before:absolute before:inset-0 before:size-full before:pointer-events-none before:bg-stripe"
+                )}
             >
                 {children}
             </body>
