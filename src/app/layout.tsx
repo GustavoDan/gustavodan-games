@@ -3,14 +3,14 @@ import { Orbitron, Audiowide } from "next/font/google";
 import { cn } from "@/utils/cn";
 import "./globals.css";
 
-export const title_font = Orbitron({
+const title_font = Orbitron({
     weight: ["400", "700"],
     subsets: ["latin"],
     display: "swap",
     variable: "--font-title",
 });
 
-export const main_font = Audiowide({
+const main_font = Audiowide({
     weight: ["400"],
     subsets: ["latin"],
     display: "swap",
