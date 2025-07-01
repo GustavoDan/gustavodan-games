@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+    --font-main: var(--font-main);
+    --font-title: var(--font-title);
+
+    --text-title: clamp(2rem, 5vw, 2.5rem);
+    --text-button: clamp(1.1rem, 4vw, 1.3rem);
+
+    --color-transparent-dark-blue: rgba(22, 33, 62, 0.25);
+    --color-transparent-grey: rgba(227, 227, 255, 0.2);
+
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.37);
+    --shadow-button: 0 4px 15px rgba(0, 0, 0, 0.2);
+    --shadow-focused-button: 0 8px 30px rgba(197, 108, 247, 0.5);
+    --text-shadow-title: 0 0 15px rgba(255, 108, 247, 0.7), 3px 3px 0px #a040a0;
+    --text-shadow-focused-button: 0 0 8px rgba(227, 227, 255, 1);
+
+    --background-image-gradient: radial-gradient(
+            circle at 25% 25%,
+            #16213e 0%,
+            #121212 40%
+        ),
+        radial-gradient(circle at 75% 75%, #1a1a2e 0%, #121212 40%);
+    --background-image-button: linear-gradient(90deg, #0f3460, #53346d);
+    --background-image-focused-button: linear-gradient(90deg, #1c5a9c, #8c5fb2);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility bg-stripe {
+    background-image: linear-gradient(
+        rgba(18, 18, 18, 0.4) 50%,
+        transparent 50%
+    );
+    background-size: 100% 4px;
 }
