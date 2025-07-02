@@ -1,3 +1,4 @@
+import { cn } from "@/utils/cn";
 import { HTMLAttributes } from "react";
 
 interface TitleProps extends HTMLAttributes<HTMLHeadingElement> {
@@ -7,7 +8,10 @@ interface TitleProps extends HTMLAttributes<HTMLHeadingElement> {
 const Title = ({ children, className, ...props }: TitleProps) => {
     return (
         <h1
-            className={`font-title mb-1.5 text-center text-white text-title font-bold text-shadow-title leading-[1.4] ${className}`}
+            className={cn(
+                "font-title mb-1.5 text-center text-white text-title font-bold text-shadow-title leading-[1.4]",
+                className
+            )}
             {...props}
         >
             {children}
