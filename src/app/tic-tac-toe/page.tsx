@@ -9,7 +9,7 @@ export const metadata = {
 export default function TicTacToe() {
     return (
         <GameContainer gameName={metadata.title} className="">
-            <span className="text-2xl text-shadow-soft">X's Turn</span>
+            <span className="text-2xl text-shadow-soft">X&apos;s Turn</span>
             <Board />
             <RestartButton />
         </GameContainer>
