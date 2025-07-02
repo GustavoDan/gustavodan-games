@@ -27,10 +27,10 @@ const BaseButton = forwardRef(
             <button
                 ref={ref}
                 className={cn(
-                    "w-full py-3.5 px-5 bg-button rounded-xl text-button cursor-pointer shadow-button transition-all duration-300 ease-in-out",
+                    "relative bg-button rounded-xl text-button cursor-pointer shadow-button transition-all duration-300 ease-in-out",
                     "before:absolute before:inset-0 before:z-[-1] before:size-full before:bg-focused-button before:rounded-xl",
                     "before:opacity-0 before:transition-opacity before:duration-300 before:ease-in-out",
-                    "focus:outline-none active:transform-[translateY(-2px)_scale(1.01)]",
+                    "focus:outline-none active:transform-[translateY(-2px)_scale(1.01)] disabled:cursor-not-allowed disabled:opacity-50",
                     isFocused
                         ? "transform-[translateY(-5px)_scale(1.02)] shadow-focused-button text-shadow-focused-button before:opacity-100"
                         : "",
