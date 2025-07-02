@@ -1,7 +1,7 @@
 import { cn } from "@/utils/cn";
 import { forwardRef, HTMLAttributes, Ref } from "react";
 
-export interface BaseProps extends HTMLAttributes<HTMLDivElement> {}
+export type BaseProps = HTMLAttributes<HTMLDivElement>;
 
 const Base = forwardRef(
     (

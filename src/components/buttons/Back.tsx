@@ -4,7 +4,7 @@ import { cn } from "@/utils/cn";
 import { BaseButton, BaseButtonProps } from "./";
 import { useRouter } from "next/navigation";
 
-interface BackProps extends Omit<BaseButtonProps, "children"> {}
+type BackProps = Omit<BaseButtonProps, "children">;
 
 const Back = ({ className, ...props }: BackProps) => {
     const router = useRouter();

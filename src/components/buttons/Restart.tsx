@@ -3,7 +3,7 @@
 import { cn } from "@/utils/cn";
 import { BaseButton, BaseButtonProps } from "./";
 
-interface RestartProps extends Omit<BaseButtonProps, "children"> {}
+type RestartProps = Omit<BaseButtonProps, "children">;
 
 const Restart = ({ className, ...props }: RestartProps) => {
     return (
