@@ -6,6 +6,7 @@
 
     --text-title: clamp(2rem, 5vw, 2.5rem);
     --text-button: clamp(1.1rem, 4vw, 1.3rem);
+    --text-tictactoe: clamp(2rem, 10vw, 4rem);
 
     --color-transparent-dark-blue: rgba(22, 33, 62, 0.25);
     --color-transparent-grey: rgba(227, 227, 255, 0.2);
@@ -15,6 +16,8 @@
     --shadow-focused-button: 0 8px 30px rgba(197, 108, 247, 0.5);
     --text-shadow-title: 0 0 15px rgba(255, 108, 247, 0.7), 3px 3px 0px #a040a0;
     --text-shadow-focused-button: 0 0 8px rgba(227, 227, 255, 1);
+    --text-shadow-soft: 0 0 5px rgba(227, 227, 255, 0.5);
+    --text-shadow-tictactoe: 0 0 8px currentColor;
 
     --background-image-gradient: radial-gradient(
             circle at 25% 25%,
@@ -24,6 +27,13 @@
         radial-gradient(circle at 75% 75%, #1a1a2e 0%, #121212 40%);
     --background-image-button: linear-gradient(90deg, #0f3460, #53346d);
     --background-image-focused-button: linear-gradient(90deg, #1c5a9c, #8c5fb2);
+    --background-image-tictactoe-cell: radial-gradient(
+        circle,
+        rgba(227, 227, 255, 0.15) 0%,
+        transparent 70%
+    );
+
+    --animate-neon-line-pulse: neon-line-pulse 4s ease-in-out infinite;
 }
 
 @utility bg-stripe {
@@ -32,4 +42,33 @@
         transparent 50%
     );
     background-size: 100% 4px;
+}
+
+@utility tictactoe-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background-image: linear-gradient(to bottom, #7df9ff, #ff4500, #7df9ff),
+        linear-gradient(to bottom, #7df9ff, #ff4500, #7df9ff),
+        linear-gradient(to right, #7df9ff, #ff4500, #7df9ff),
+        linear-gradient(to right, #7df9ff, #ff4500, #7df9ff);
+    background-size: 4px 100%, 4px 100%, 100% 4px, 100% 4px;
+    background-position: calc(33.333% - 2px) 0, calc(66.667% - 2px) 0,
+        0 calc(33.333% - 2px), 0 calc(66.667% - 2px);
+    background-repeat: no-repeat;
+
+    animation: neon-line-pulse 4s ease-in-out infinite;
+}
+
+@keyframes neon-line-pulse {
+    0% {
+        filter: drop-shadow(0 0 3px #ff4500) drop-shadow(0 0 5px #7df9ff);
+    }
+    50% {
+        filter: drop-shadow(0 0 5px #7df9ff) drop-shadow(0 0 10px #ff4500);
+    }
+    100% {
+        filter: drop-shadow(0 0 3px #ff4500) drop-shadow(0 0 5px #7df9ff);
+    }
 }
