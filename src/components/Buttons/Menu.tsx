@@ -1,15 +1,15 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import BaseButton, { BaseButtonProps } from "./BaseButton";
+import { BaseButton, BaseButtonProps } from "./";
 import { useRouter } from "next/navigation";
 
-interface MenuButtonProps extends BaseButtonProps {
+interface MenuProps extends BaseButtonProps {
     id: string;
     children: React.ReactNode;
 }
 
-const MenuButton = ({ children, id, className, ...props }: MenuButtonProps) => {
+const Menu = ({ children, id, className, ...props }: MenuProps) => {
     const router = useRouter();
 
     return (
@@ -23,4 +23,5 @@ const MenuButton = ({ children, id, className, ...props }: MenuButtonProps) => {
         </BaseButton>
     );
 };
-export default MenuButton;
+
+export default Menu;

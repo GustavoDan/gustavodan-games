@@ -1,4 +1,4 @@
-import MenuButton from "@/components/Buttons/MenuButton";
+import { MenuButton } from "@/components/buttons";
 import MainContainer from "@/components/MainContainer";
 import Title from "@/components/Title";
 

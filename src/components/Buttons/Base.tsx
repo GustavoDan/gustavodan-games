@@ -3,12 +3,11 @@ import type { ButtonHTMLAttributes, Ref } from "react";
 import { cn } from "@/utils/cn";
 import useFocusHandler from "@/hooks/useFocusHandler";
 
-export interface BaseButtonProps
-    extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
 }
 
-const BaseButton = forwardRef(
+const Base = forwardRef(
     (
         {
             children,
@@ -18,7 +17,7 @@ const BaseButton = forwardRef(
             onMouseLeave,
             onBlur,
             ...props
-        }: BaseButtonProps,
+        }: BaseProps,
         ref: Ref<HTMLButtonElement>
     ) => {
         const { isFocused, setFocus, removeFocus } = useFocusHandler();
@@ -60,6 +59,6 @@ const BaseButton = forwardRef(
     }
 );
 
-BaseButton.displayName = "BaseButton";
+Base.displayName = "BaseButton";
 
-export default BaseButton;
+export default Base;
