@@ -2,9 +2,9 @@
 
 import { RestartButton } from "@/components/buttons";
 import { GameContainer } from "@/components/containers";
-import Board from "@/components/ticTacToe/Board";
-import { TicTacToeMarker } from "@/components/ticTacToe/types";
-import { checkDraw, checkWinner } from "@/components/ticTacToe/utils";
+import Board from "@/app/tic-tac-toe/Board";
+import { TicTacToeMarker } from "@/app/tic-tac-toe/types";
+import { checkDraw, checkWinner } from "@/app/tic-tac-toe/utils";
 import { useState } from "react";
 
 interface TicTacToeProps {
