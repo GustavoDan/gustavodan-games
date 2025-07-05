@@ -4,13 +4,13 @@ import Title from "../Title";
 import { BackButton } from "../buttons";
 
 interface GameContainerProps extends BaseContainerProps {
-    gameName: string;
+    gameTitle: string;
 }
 
 const GameContainer = ({
     children,
     className,
-    gameName,
+    gameTitle,
     ...props
 }: GameContainerProps) => {
     return (
@@ -20,7 +20,7 @@ const GameContainer = ({
         >
             <div className="flex items-center justify-between">
                 <BackButton />
-                <Title>{gameName}</Title>
+                <Title>{gameTitle}</Title>
                 <div className="spacer size-10.5"></div>
             </div>
 

@@ -33,7 +33,9 @@
         transparent 70%
     );
 
-    --animate-neon-line-pulse: neon-line-pulse 4s ease-in-out infinite;
+    --animate-neon-line-pulse: neon-line-pulse 2.5s linear infinite;
+    --animate-winning-pulse: winning-pulse 1s ease-in-out infinite;
+    --animate-draw-pulse: draw-pulse 1.5s ease-in-out infinite;
 }
 
 @utility bg-stripe {
@@ -44,31 +46,97 @@
     background-size: 100% 4px;
 }
 
+@property --flow-position {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+}
+
 @utility tictactoe-grid {
     position: absolute;
     inset: 0;
     pointer-events: none;
 
-    background-image: linear-gradient(to bottom, #7df9ff, #ff4500, #7df9ff),
-        linear-gradient(to bottom, #7df9ff, #ff4500, #7df9ff),
-        linear-gradient(to right, #7df9ff, #ff4500, #7df9ff),
-        linear-gradient(to right, #7df9ff, #ff4500, #7df9ff);
-    background-size: 4px 100%, 4px 100%, 100% 4px, 100% 4px;
-    background-position: calc(33.333% - 2px) 0, calc(66.667% - 2px) 0,
-        0 calc(33.333% - 2px), 0 calc(66.667% - 2px);
-    background-repeat: no-repeat;
+    --line-width: 3px;
+    --primary-color: #ff4500;
+    --secundary-color: #7df9ff;
 
-    animation: neon-line-pulse 4s ease-in-out infinite;
+    background: repeating-radial-gradient(
+        circle at center,
+        var(--primary-color) var(--flow-position),
+        var(--secundary-color) calc(var(--flow-position) + 50%),
+        var(--primary-color) calc(var(--flow-position) + 100%)
+    );
+
+    mask-image: linear-gradient(
+            to right,
+            transparent calc(33.333% - var(--line-width)),
+            black calc(33.333% - var(--line-width)),
+            black calc(33.333% + var(--line-width)),
+            transparent calc(33.333% + var(--line-width))
+        ),
+        linear-gradient(
+            to right,
+            transparent calc(66.666% - var(--line-width)),
+            black calc(66.666% - var(--line-width)),
+            black calc(66.666% + var(--line-width)),
+            transparent calc(66.666% + var(--line-width))
+        ),
+        linear-gradient(
+            to bottom,
+            transparent calc(33.333% - var(--line-width)),
+            black calc(33.333% - var(--line-width)),
+            black calc(33.333% + var(--line-width)),
+            transparent calc(33.333% + var(--line-width))
+        ),
+        linear-gradient(
+            to bottom,
+            transparent calc(66.666% - var(--line-width)),
+            black calc(66.666% - var(--line-width)),
+            black calc(66.666% + var(--line-width)),
+            transparent calc(66.666% + var(--line-width))
+        );
+
+    animation: circle-wave 2.5s linear infinite;
+}
+
+@keyframes circle-wave {
+    from {
+        --flow-position: 0%;
+    }
+    to {
+        --flow-position: 100%;
+    }
 }
 
 @keyframes neon-line-pulse {
-    0% {
-        filter: drop-shadow(0 0 3px #ff4500) drop-shadow(0 0 5px #7df9ff);
+    0%,
+    100% {
+        filter: blur(3px);
     }
     50% {
-        filter: drop-shadow(0 0 5px #7df9ff) drop-shadow(0 0 10px #ff4500);
+        filter: blur(6px);
     }
+}
+
+@keyframes winning-pulse {
+    0%,
     100% {
-        filter: drop-shadow(0 0 3px #ff4500) drop-shadow(0 0 5px #7df9ff);
+        text-shadow: 0 0 8px currentColor;
+    }
+    50% {
+        text-shadow: 0 0 40px currentColor;
+    }
+}
+
+@keyframes draw-pulse {
+    0%,
+    100% {
+        color: #999;
+        text-shadow: 0 0 8px #999;
+    }
+    50% {
+        color: #ccc;
+        text-shadow: 0 0 45px #ccc;
     }
 }
