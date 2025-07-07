@@ -26,7 +26,7 @@ const Base = forwardRef(
             <button
                 ref={ref}
                 className={cn(
-                    "relative bg-button rounded-xl text-button cursor-pointer shadow-button transition-all duration-300 ease-in-out",
+                    "relative bg-button rounded-xl text-2xl cursor-pointer shadow-button transition-all duration-300 ease-in-out",
                     "before:absolute before:inset-0 before:z-[-1] before:size-full before:bg-focused-button before:rounded-xl",
                     "before:opacity-0 before:transition-opacity before:duration-300 before:ease-in-out",
                     "focus:outline-none active:transform-[translateY(-2px)_scale(1.01)] disabled:cursor-not-allowed disabled:opacity-50",

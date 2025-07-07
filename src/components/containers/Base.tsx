@@ -12,7 +12,7 @@ const Base = forwardRef(
             <div
                 ref={ref}
                 className={cn(
-                    "flex flex-col bg-transparent-dark-blue border border-transparent-grey rounded-[1.25rem] before:rounded-b-full backdrop-blur-[10px] shadow-soft select-none",
+                    "flex flex-col bg-transparent-dark-blue border border-transparent-grey rounded-3xl backdrop-blur-[10px] shadow-soft select-none",
                     className
                 )}
                 {...props}

@@ -12,7 +12,7 @@ const Back = ({ className, ...props }: BackProps) => {
     return (
         <BaseButton
             onClick={router.back}
-            className={cn("size-10.5", className)}
+            className={cn("text-xl size-10.5 indent-0.5", className)}
             {...props}
         >
             ←

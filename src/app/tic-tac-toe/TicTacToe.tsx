@@ -45,11 +45,19 @@ export default function TicTacToe({ gameTitle }: TicTacToeProps) {
 
     return (
         <GameContainer gameTitle={gameTitle}>
-            <span className="text-2xl text-shadow-soft">
+            <span
+                className={`text-[2.5rem] transition duration-300 ease-in-out ${
+                    winnerCells?.length === 1
+                        ? "text-neon-tictactoe-draw"
+                        : currentPlayer === "X"
+                        ? "text-neon-tictactoe-primary"
+                        : "text-neon-tictactoe-secundary"
+                }`}
+            >
                 {winnerCells
                     ? winnerCells.length === 1
-                        ? "Game ended in a draw!"
-                        : `${currentPlayer} has won!`
+                        ? "It's a tie!"
+                        : `${currentPlayer} is the winner!`
                     : `${currentPlayer}'s Turn`}
             </span>
 

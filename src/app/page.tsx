@@ -4,8 +4,8 @@ import Title from "@/components/Title";
 
 export default function Home() {
     return (
-        <BaseContainer className="w-11/12 max-w-xl py-9.5 px-7.5 gap-5 justify-center items-center">
-            <Title className="mb-1.5">Select a game</Title>
+        <BaseContainer className="w-11/12 max-w-xl py-9 px-7 gap-5 justify-center items-center">
+            <Title className="mb-2.5">Select a game</Title>
             <MenuButton disabled id="space-shooter">
                 🚀 Space Shooter
             </MenuButton>

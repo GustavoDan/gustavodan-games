@@ -26,13 +26,14 @@ const Board = ({
             className={cn(
                 "grid grid-cols-3 grid-rows-3 size-full before:tictactoe-grid",
                 isNeonEffect
-                    ? "absolute inset-0 z-[-1] animate-neon-line-pulse"
+                    ? "absolute inset-0 z-[-1] animate-neon-grid-pulse"
                     : "relative"
             )}
         >
             {board.map((row, rowIndex) => {
                 return row.map((col, colIndex) => {
                     const cellPosition = `${rowIndex},${colIndex}`;
+                    const isDraw = winnerCells?.length === 1;
                     const winnerPositions = winnerCells?.map(
                         ([row, col]) => `${row},${col}`
                     );
@@ -40,13 +41,12 @@ const Board = ({
                     return (
                         <Cell
                             key={cellPosition}
-                            className={
-                                winnerPositions?.includes(cellPosition)
-                                    ? "animate-winning-pulse"
-                                    : winnerPositions?.length === 1
-                                    ? "animate-draw-pulse"
-                                    : ""
-                            }
+                            className={cn(
+                                (isDraw ||
+                                    winnerPositions?.includes(cellPosition)) &&
+                                    "animate-tictactoe-gameover-pulse"
+                            )}
+                            isDraw={isDraw}
                             text={col}
                             onClick={() => onCellClick?.(rowIndex, colIndex)}
                             isNeonEffect={isNeonEffect}

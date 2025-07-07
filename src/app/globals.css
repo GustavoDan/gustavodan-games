@@ -4,19 +4,17 @@
     --font-main: var(--font-main);
     --font-title: var(--font-title);
 
-    --text-title: clamp(2rem, 5vw, 2.5rem);
-    --text-button: clamp(1.1rem, 4vw, 1.3rem);
-    --text-tictactoe: clamp(2rem, 10vw, 4rem);
-
     --color-transparent-dark-blue: rgba(22, 33, 62, 0.25);
     --color-transparent-grey: rgba(227, 227, 255, 0.2);
+    --color-tictactoe-primary: #ff6cf7;
+    --color-tictactoe-secundary: #00f6ff;
+    --color-tictactoe-draw: #999999;
 
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.37);
     --shadow-button: 0 4px 15px rgba(0, 0, 0, 0.2);
     --shadow-focused-button: 0 8px 30px rgba(197, 108, 247, 0.5);
     --text-shadow-title: 0 0 15px rgba(255, 108, 247, 0.7), 3px 3px 0px #a040a0;
     --text-shadow-focused-button: 0 0 8px rgba(227, 227, 255, 1);
-    --text-shadow-soft: 0 0 5px rgba(227, 227, 255, 0.5);
     --text-shadow-tictactoe: 0 0 8px currentColor;
 
     --background-image-gradient: radial-gradient(
@@ -33,9 +31,9 @@
         transparent 70%
     );
 
-    --animate-neon-line-pulse: neon-line-pulse 2.5s linear infinite;
-    --animate-winning-pulse: winning-pulse 1s ease-in-out infinite;
-    --animate-draw-pulse: draw-pulse 1.5s ease-in-out infinite;
+    --animate-neon-grid-pulse: neon-grid-pulse 2.5s linear infinite;
+    --animate-tictactoe-gameover-pulse: tictactoe-gameover-pulse 1s linear
+        infinite;
 }
 
 @utility bg-stripe {
@@ -44,6 +42,16 @@
         transparent 50%
     );
     background-size: 100% 4px;
+}
+
+@utility text-neon-* {
+    color: --value(--color);
+    color: --value([color]);
+
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px currentColor;
+
+    animation: neon-text-pulse 1s linear infinite;
 }
 
 @property --flow-position {
@@ -57,17 +65,14 @@
     inset: 0;
     pointer-events: none;
 
-    --line-width: 3px;
-    --primary-color: #ff4500;
-    --secundary-color: #7df9ff;
-
     background: repeating-radial-gradient(
         circle at center,
-        var(--primary-color) var(--flow-position),
-        var(--secundary-color) calc(var(--flow-position) + 50%),
-        var(--primary-color) calc(var(--flow-position) + 100%)
+        var(--color-tictactoe-primary) var(--flow-position),
+        var(--color-tictactoe-secundary) calc(var(--flow-position) + 50%),
+        var(--color-tictactoe-primary) calc(var(--flow-position) + 100%)
     );
 
+    --line-width: 3px;
     mask-image: linear-gradient(
             to right,
             transparent calc(33.333% - var(--line-width)),
@@ -109,7 +114,7 @@
     }
 }
 
-@keyframes neon-line-pulse {
+@keyframes neon-grid-pulse {
     0%,
     100% {
         filter: blur(3px);
@@ -119,7 +124,7 @@
     }
 }
 
-@keyframes winning-pulse {
+@keyframes tictactoe-gameover-pulse {
     0%,
     100% {
         text-shadow: 0 0 8px currentColor;
@@ -129,14 +134,14 @@
     }
 }
 
-@keyframes draw-pulse {
+@keyframes neon-text-pulse {
     0%,
     100% {
-        color: #999;
-        text-shadow: 0 0 8px #999;
+        filter: drop-shadow(0 0 1px currentColor)
+            drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);
     }
     50% {
-        color: #ccc;
-        text-shadow: 0 0 45px #ccc;
+        filter: drop-shadow(0 0 1px currentColor)
+            drop-shadow(0 0 4px currentColor) drop-shadow(0 0 14px currentColor);
     }
 }

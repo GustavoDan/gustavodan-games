@@ -9,7 +9,7 @@ const Title = ({ children, className, ...props }: TitleProps) => {
     return (
         <h1
             className={cn(
-                "font-title text-center text-white text-title font-bold text-shadow-title leading-[1.4]",
+                "font-title text-center text-white text-5xl font-bold text-shadow-title leading-[1.4]",
                 className
             )}
             {...props}
