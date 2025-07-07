@@ -3,10 +3,11 @@
 import { cn } from "@/utils/cn";
 import { BaseButton, BaseButtonProps } from "./";
 import { useRouter } from "next/navigation";
+import { ReactNode } from "react";
 
 interface MenuProps extends BaseButtonProps {
     id: string;
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 const Menu = ({ children, id, className, ...props }: MenuProps) => {

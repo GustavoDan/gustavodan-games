@@ -16,13 +16,13 @@ const useFocusHandler = <
     const [isFocused, setIsFocused] = useState(false);
 
     const setFocus = (target: HTMLButtonElement, ...args: FocusArgs) => {
-        if (onFocusOverride) onFocusOverride(...args);
+        onFocusOverride?.(...args);
         target.focus();
         setIsFocused(true);
     };
 
     const removeFocus = (target: HTMLButtonElement, ...args: BlurArgs) => {
-        if (onBlurOverride) onBlurOverride(...args);
+        onBlurOverride?.(...args);
         target.blur();
         setIsFocused(false);
     };

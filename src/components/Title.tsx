@@ -1,8 +1,8 @@
 import { cn } from "@/utils/cn";
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 interface TitleProps extends HTMLAttributes<HTMLHeadingElement> {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 const Title = ({ children, className, ...props }: TitleProps) => {
