@@ -1,5 +1,6 @@
 import { cn } from "@/utils/cn";
 import { TicTacToeMarker } from "./types";
+import { isTouchInside } from "@/utils/isTouchInside";
 
 interface CellProps {
     text?: TicTacToeMarker;
@@ -19,11 +20,12 @@ const Cell = ({
     return (
         <div
             className={cn(
-                "relative flex justify-center items-center font-title text-7xl cursor-pointer text-shadow-tictactoe",
+                "relative flex justify-center items-center font-title text-[3.5rem] cursor-pointer text-shadow-tictactoe md:text-7xl",
                 !isNeonEffect &&
-                    "before:absolute before:inset-0 before:bg-tictactoe-cell",
+                    "before:absolute before:inset-0 before:bg-tictactoe-cell md:before:transition-opacity md:before:duration-300 md:before:ease-in",
                 !isNeonEffect &&
-                    "before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:ease-in",
+                    "before:opacity-0 hover:before:opacity-100 active:before:opacity-100 md:active:before:opacity-0 md:hover:active:before:opacity-100",
+                !isNeonEffect && "",
                 isDraw
                     ? "text-tictactoe-draw"
                     : text === "X"
@@ -31,6 +33,12 @@ const Cell = ({
                     : "text-tictactoe-secundary",
                 className
             )}
+            onTouchEnd={(event) => {
+                const target = event.currentTarget;
+                if (isTouchInside(target, event.changedTouches[0])) {
+                    target.click();
+                }
+            }}
             {...props}
         >
             {text}

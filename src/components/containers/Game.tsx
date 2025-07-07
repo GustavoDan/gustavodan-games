@@ -21,10 +21,10 @@ const GameContainer = ({
             <div className="flex items-center justify-between">
                 <BackButton />
                 <Title>{gameTitle}</Title>
-                <div className="spacer size-10.5"></div>
+                <div className="spacer md:size-10.5"></div>
             </div>
 
-            <div className="flex flex-col flex-1 items-center justify-around">
+            <div className="flex flex-col flex-1 items-center justify-evenly">
                 {children}
             </div>
         </BaseContainer>

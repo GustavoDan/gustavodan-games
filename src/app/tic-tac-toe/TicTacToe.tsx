@@ -46,7 +46,7 @@ export default function TicTacToe({ gameTitle }: TicTacToeProps) {
     return (
         <GameContainer gameTitle={gameTitle}>
             <span
-                className={`text-[2.5rem] transition duration-300 ease-in-out ${
+                className={`text-3xl md:text-[2.5rem] text-center transition duration-300 ease-in-out ${
                     winnerCells?.length === 1
                         ? "text-neon-tictactoe-draw"
                         : currentPlayer === "X"
