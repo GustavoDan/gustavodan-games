@@ -54,12 +54,6 @@
     animation: neon-text-pulse 1s linear infinite;
 }
 
-@property --flow-position {
-    syntax: "<percentage>";
-    inherits: false;
-    initial-value: 0%;
-}
-
 @utility tictactoe-grid {
     position: absolute;
     inset: 0;

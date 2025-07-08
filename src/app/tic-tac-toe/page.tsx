@@ -5,5 +5,16 @@ export const metadata = {
 };
 
 export default function TicTacToeServer() {
-    return <TicTacToe gameTitle={metadata.title} />;
+    return (
+        <>
+            <style>
+                {`@property --flow-position {
+                    syntax: '<percentage>';
+                    inherits: false;
+                    initial-value: 0%;
+                }`}
+            </style>
+            <TicTacToe gameTitle={metadata.title} />
+        </>
+    );
 }
