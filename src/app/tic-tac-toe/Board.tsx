@@ -24,7 +24,9 @@ const Board = ({
     return (
         <div
             className={cn(
-                "grid grid-cols-3 grid-rows-3 size-full before:tictactoe-grid",
+                "grid grid-cols-3 grid-rows-3 size-full",
+                "before:absolute before:inset-0 before:pointer-events-none",
+                "before:bg-circle-gradient before:animate-circle-gradient before:tictactoe-grid",
                 isNeonEffect
                     ? "absolute inset-0 z-[-1] animate-neon-grid-pulse"
                     : "relative"

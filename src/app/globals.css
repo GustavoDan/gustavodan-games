@@ -69,17 +69,6 @@
 }
 
 @utility tictactoe-grid {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background: repeating-radial-gradient(
-        circle at center,
-        var(--color-tictactoe-primary) var(--flow-position),
-        var(--color-tictactoe-secundary) calc(var(--flow-position) + 50%),
-        var(--color-tictactoe-primary) calc(var(--flow-position) + 100%)
-    );
-
     --line-width: 3px;
     mask-image: linear-gradient(
             to right,
@@ -109,8 +98,6 @@
             black calc(66.666% + var(--line-width)),
             transparent calc(66.666% + var(--line-width))
         );
-
-    animation: circle-wave 2.5s linear infinite;
 }
 
 @utility bg-circle-gradient {
