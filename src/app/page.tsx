@@ -16,9 +16,7 @@ export default function Home() {
             <MenuButton disabled id="rescue">
                 🚁 Rescue
             </MenuButton>
-            <MenuButton disabled id="dinosaur">
-                🦖 Dinosaur
-            </MenuButton>
+            <MenuButton id="dinosaur">🦖 Dinosaur</MenuButton>
         </BaseContainer>
     );
 }
