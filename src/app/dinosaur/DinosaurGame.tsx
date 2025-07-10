@@ -35,7 +35,7 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
         [gameState]
     );
 
-    const { start, stop, togglePause, status } = useGameLoop(gameTick);
+    const { start, togglePause, status } = useGameLoop(gameTick);
 
     const jump = useCallback(() => {
         setGameState((currentGameState) => {
