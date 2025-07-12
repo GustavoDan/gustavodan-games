@@ -1,19 +1,20 @@
-import { GameState } from "../types";
+import { GameState, Vector2D } from "../types";
 import { updateDinosaurState } from "./dinosaur";
 
-export function updateGame(
+export const updateGame = (
     currentState: GameState,
-    deltaTime: number
-): { newState: GameState } {
+    deltaTime: number,
+    screenSize: Vector2D
+): { newState: GameState } => {
     const newDinosaurState = updateDinosaurState(
         currentState.dinosaur,
-        deltaTime
+        deltaTime,
+        screenSize
     );
-
     return {
         newState: {
             ...currentState,
             dinosaur: newDinosaurState,
         },
     };
-}
+};
