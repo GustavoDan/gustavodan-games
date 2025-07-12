@@ -1,21 +1,16 @@
 "use client";
 
 import { RestartButton } from "@/components/buttons";
-import { GameContainer } from "@/components/containers";
 import Board from "@/app/tic-tac-toe/Board";
 import { TicTacToeMarker } from "@/app/tic-tac-toe/types";
 import { checkDraw, checkWinner } from "@/app/tic-tac-toe/utils";
 import { useState } from "react";
 
-interface TicTacToeProps {
-    gameTitle: string;
-}
-
 const InitialBoard = Array.from({ length: 3 }, () =>
     Array<TicTacToeMarker>(3).fill(null)
 );
 
-export default function TicTacToe({ gameTitle }: TicTacToeProps) {
+const TicTacToe = () => {
     const [board, setBoard] = useState(InitialBoard);
     const [currentPlayer, setCurrentPlayer] =
         useState<Exclude<TicTacToeMarker, null>>("X");
@@ -44,11 +39,7 @@ export default function TicTacToe({ gameTitle }: TicTacToeProps) {
     };
 
     return (
-        <GameContainer
-            gameTitle={gameTitle}
-            className="max-w-3xl"
-            childrenClassName="items-center justify-evenly"
-        >
+        <>
             <span
                 className={`text-3xl md:text-[2.5rem] text-center transition duration-300 ease-in-out ${
                     winnerCells?.length === 1
@@ -75,6 +66,8 @@ export default function TicTacToe({ gameTitle }: TicTacToeProps) {
             </div>
 
             <RestartButton onClick={handleRestart} />
-        </GameContainer>
+        </>
     );
-}
+};
+
+export default TicTacToe;

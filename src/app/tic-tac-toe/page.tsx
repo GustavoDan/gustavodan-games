@@ -1,3 +1,4 @@
+import { GameContainer } from "@/components/containers";
 import TicTacToe from "./TicTacToe";
 
 export const metadata = {
@@ -6,7 +7,11 @@ export const metadata = {
 
 export default function TicTacToeServer() {
     return (
-        <>
+        <GameContainer
+            gameTitle={metadata.title}
+            className="max-w-3xl"
+            childrenClassName="items-center justify-evenly"
+        >
             <style>
                 {`@property --flow-position {
                     syntax: '<percentage>';
@@ -14,7 +19,7 @@ export default function TicTacToeServer() {
                     initial-value: 0%;
                 }`}
             </style>
-            <TicTacToe gameTitle={metadata.title} />
-        </>
+            <TicTacToe />
+        </GameContainer>
     );
 }

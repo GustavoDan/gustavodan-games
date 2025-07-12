@@ -1,6 +1,5 @@
 "use client";
 
-import { GameContainer } from "@/components/containers";
 import { useCallback, useMemo, useState } from "react";
 import { INITIAL_GAME_STATE } from "./constants";
 import Dinosaur from "./Dinosaur";
@@ -10,10 +9,7 @@ import useEventListener from "@/hooks/useEventListener";
 import { GameState, MovementDirection } from "./types";
 import { updateGame } from "./game/main";
 import { initiateJump } from "./game/dinosaur";
-
-interface DinosaurGameProps {
-    gameTitle: string;
-}
+import { useGameContext } from "@/contexts/GameContext";
 
 type KeyActionMap = {
     [key: string]: () => void;
@@ -23,8 +19,9 @@ type StateDrivenKeyMap = {
     [key in MachineState]: KeyActionMap;
 };
 
-export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
+const DinosaurGame = () => {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+    const { worldWidth, worldHeight } = useGameContext();
 
     const parallaxMultiplier = useMemo(() => {
         const multipliers: Partial<Record<MovementDirection, number>> = {
@@ -83,11 +80,7 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
     useEventListener("keydown", handleKeyDown);
 
     return (
-        <GameContainer
-            gameTitle={gameTitle}
-            className="max-w-7xl"
-            childrenClassName="justify-end"
-        >
+        <>
             <style>
                 {`@property --flow-position {
                     syntax: '<percentage>';
@@ -105,6 +98,8 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
                 engineState={engineState}
                 speedMultiplier={parallaxMultiplier}
             />
-        </GameContainer>
+        </>
     );
-}
+};
+
+export default DinosaurGame;

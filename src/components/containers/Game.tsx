@@ -1,7 +1,12 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import { BaseContainer, BaseContainerProps } from "./";
 import Title from "../Title";
 import { BackButton } from "../buttons";
+import GameContext from "@/contexts/GameContext";
+import { useRef } from "react";
+import useElementSize from "@/hooks/useElementSize";
 
 interface GameContainerProps extends BaseContainerProps {
     gameTitle: string;
@@ -15,6 +20,9 @@ const GameContainer = ({
     gameTitle,
     ...props
 }: GameContainerProps) => {
+    const gameAreaRef = useRef<HTMLDivElement>(null);
+    const { width, height } = useElementSize(gameAreaRef);
+
     return (
         <BaseContainer
             className={cn(
@@ -28,8 +36,15 @@ const GameContainer = ({
                 <Title>{gameTitle}</Title>
                 <div className="spacer md:size-10.5"></div>
             </div>
-            <div className={cn("flex flex-col flex-1", childrenClassName)}>
-                {children}
+            <div
+                ref={gameAreaRef}
+                className={cn("flex flex-col flex-1", childrenClassName)}
+            >
+                <GameContext.Provider
+                    value={{ worldWidth: width, worldHeight: height }}
+                >
+                    {children}
+                </GameContext.Provider>
             </div>
         </BaseContainer>
     );
