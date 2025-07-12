@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { INITIAL_GAME_STATE } from "./constants";
 import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
-import useGameLoop, { MachineStatus } from "@/hooks/useStateMachine";
+import useGameLoop, { MachineState } from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
 import { GameState } from "./types";
 import { updateGame } from "./game/main";
@@ -20,7 +20,7 @@ type KeyActionMap = {
 };
 
 type StateDrivenKeyMap = {
-    [key in MachineStatus]: KeyActionMap;
+    [key in MachineState]: KeyActionMap;
 };
 
 export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
@@ -35,7 +35,7 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
         [gameState]
     );
 
-    const { start, togglePause, status } = useGameLoop(gameTick);
+    const { start, togglePause, engineState } = useGameLoop(gameTick);
 
     const jump = useCallback(() => {
         setGameState((currentGameState) => {
@@ -66,9 +66,9 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
 
     const handleKeyDown = useCallback(
         (event: KeyboardEvent) => {
-            keyMap[status][event.code]?.();
+            keyMap[engineState][event.code]?.();
         },
-        [status, keyMap]
+        [engineState, keyMap]
     );
 
     useEventListener("keydown", handleKeyDown);
@@ -86,9 +86,12 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
                     initial-value: 0%;
                 }`}
             </style>
-            {status}
-            <Dinosaur status={status} position={gameState.dinosaur.pos} />
-            <Floor status={status} />
+            {engineState}
+            <Dinosaur
+                engineState={engineState}
+                position={gameState.dinosaur.pos}
+            />
+            <Floor engineState={engineState} />
         </GameContainer>
     );
 }

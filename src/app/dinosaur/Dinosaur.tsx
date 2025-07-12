@@ -1,14 +1,14 @@
 import { cn } from "@/utils/cn";
 import { DINOSAUR } from "./constants";
 import { Vector2D } from "./types";
-import { MachineStatus } from "@/hooks/useStateMachine";
+import { MachineState } from "@/hooks/useStateMachine";
 
 interface DinosaurProps {
     position: Vector2D;
-    status: MachineStatus;
+    engineState: MachineState;
 }
 
-const Dinosaur = ({ position, status }: DinosaurProps) => {
+const Dinosaur = ({ position, engineState }: DinosaurProps) => {
     return (
         <div
             style={{
@@ -24,7 +24,9 @@ const Dinosaur = ({ position, status }: DinosaurProps) => {
                     "size-full mask-[url(/dinosaur/run.png)] animate-dinosaur",
                     "before:absolute before:inset-0 before:pointer-events-none",
                     "before:bg-circle-gradient before:animate-circle-gradient",
-                    status === "RUNNING" ? "animation-run" : " animation-pause"
+                    engineState === "RUNNING"
+                        ? "animation-run"
+                        : " animation-pause"
                 )}
             />
         </div>

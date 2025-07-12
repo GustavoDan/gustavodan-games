@@ -1,24 +1,24 @@
 import { useRef, useCallback, useEffect, useState } from "react";
 
-export type MachineStatus = "IDLE" | "RUNNING" | "PAUSED";
+export type MachineState = "IDLE" | "RUNNING" | "PAUSED";
 type TickFunction = (deltaTime: number) => void;
 
 interface StateMachineControls {
     start: () => void;
     stop: () => void;
     togglePause: () => void;
-    status: MachineStatus;
+    engineState: MachineState;
 }
 
 const useStateMachine = (onTick: TickFunction): StateMachineControls => {
-    const [status, setStatus] = useState<MachineStatus>("IDLE");
+    const [engineState, setEngineState] = useState<MachineState>("IDLE");
     const animationIdRef = useRef<number>(null);
     const lastTimeRef = useRef(performance.now());
     const onTickRef = useRef(onTick);
     onTickRef.current = onTick;
 
     useEffect(() => {
-        if (status === "RUNNING") {
+        if (engineState === "RUNNING") {
             lastTimeRef.current = performance.now();
 
             const loop = (currentTime: number) => {
@@ -38,15 +38,14 @@ const useStateMachine = (onTick: TickFunction): StateMachineControls => {
                 animationIdRef.current = null;
             }
         };
-    }, [status]);
+    }, [engineState]);
 
-    const start = useCallback(() => setStatus("RUNNING"), []);
+    const start = useCallback(() => setEngineState("RUNNING"), []);
 
-    const stop = useCallback(() => setStatus("IDLE"), []);
+    const stop = useCallback(() => setEngineState("IDLE"), []);
 
     const togglePause = useCallback(() => {
-        console.log("pause");
-        setStatus((current) => {
+        setEngineState((current) => {
             switch (current) {
                 case "RUNNING":
                     return "PAUSED";
@@ -58,7 +57,7 @@ const useStateMachine = (onTick: TickFunction): StateMachineControls => {
         });
     }, []);
 
-    return { start, stop, togglePause, status };
+    return { start, stop, togglePause, engineState };
 };
 
 export default useStateMachine;
