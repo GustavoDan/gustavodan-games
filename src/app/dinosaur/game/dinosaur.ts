@@ -58,7 +58,7 @@ export const updateDinosaurState = (
     deltaTime: number,
     screenSize: Vector2D
 ): DinosaurState => {
-    let newState = structuredClone(currentState);
+    const newState = structuredClone(currentState);
 
     if (newState.moveDirection === "LEFT") {
         newState.pos.x -= newState.moveSpeed * deltaTime;

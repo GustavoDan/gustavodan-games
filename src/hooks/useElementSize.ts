@@ -27,7 +27,7 @@ const useElementSize = <T extends HTMLElement>(
         return () => {
             observer.disconnect();
         };
-    }, []);
+    }, [elementRef]);
 
     return size;
 };

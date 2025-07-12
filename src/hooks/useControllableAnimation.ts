@@ -25,7 +25,7 @@ const useControllableAnimation = (
         return () => {
             animation.cancel();
         };
-    }, []);
+    }, [keyframes, options]);
 
     useEffect(() => {
         const animation = animationRef.current;

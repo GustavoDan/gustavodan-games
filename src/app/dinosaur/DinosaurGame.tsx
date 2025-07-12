@@ -55,41 +55,13 @@ const DinosaurGame = () => {
 
     const { start, togglePause, engineState } = useGameLoop(gameTick);
 
-    const jump = useCallback(() => {
-        handleDinosaurMovement("JUMP");
-    }, []);
-
-    const startDuck = useCallback(() => {
-        handleDinosaurMovement("DUCK", "START");
-    }, []);
-
-    const moveLeft = useCallback(() => {
-        handleDinosaurMovement("MOVE", "START", "LEFT");
-    }, []);
-
-    const moveRight = useCallback(() => {
-        handleDinosaurMovement("MOVE", "START", "RIGHT");
-    }, []);
-
-    const stopDuck = useCallback(() => {
-        handleDinosaurMovement("DUCK", "STOP");
-    }, []);
-
-    const stopLeft = useCallback(() => {
-        handleDinosaurMovement("MOVE", "STOP", "LEFT");
-    }, []);
-
-    const stopRight = useCallback(() => {
-        handleDinosaurMovement("MOVE", "STOP", "RIGHT");
-    }, []);
-
     const movementFunctions = useMemo(
         (): TypeDrivenKeyMap<MovementAction, MovementFunction> => ({
             MOVE: handleMove,
             JUMP: initiateJump,
             DUCK: handleDucking,
         }),
-        [handleMove, initiateJump]
+        []
     );
 
     const handleDinosaurMovement = useCallback(
@@ -109,8 +81,36 @@ const DinosaurGame = () => {
                 ),
             }));
         },
-        []
+        [movementFunctions]
     );
+
+    const jump = useCallback(() => {
+        handleDinosaurMovement("JUMP");
+    }, [handleDinosaurMovement]);
+
+    const startDuck = useCallback(() => {
+        handleDinosaurMovement("DUCK", "START");
+    }, [handleDinosaurMovement]);
+
+    const moveLeft = useCallback(() => {
+        handleDinosaurMovement("MOVE", "START", "LEFT");
+    }, [handleDinosaurMovement]);
+
+    const moveRight = useCallback(() => {
+        handleDinosaurMovement("MOVE", "START", "RIGHT");
+    }, [handleDinosaurMovement]);
+
+    const stopDuck = useCallback(() => {
+        handleDinosaurMovement("DUCK", "STOP");
+    }, [handleDinosaurMovement]);
+
+    const stopLeft = useCallback(() => {
+        handleDinosaurMovement("MOVE", "STOP", "LEFT");
+    }, [handleDinosaurMovement]);
+
+    const stopRight = useCallback(() => {
+        handleDinosaurMovement("MOVE", "STOP", "RIGHT");
+    }, [handleDinosaurMovement]);
 
     const keyDownMap = useMemo(
         (): StateDrivenKeyMap => ({
@@ -161,7 +161,7 @@ const DinosaurGame = () => {
         (event: KeyboardEvent) => {
             keyUpMap[engineState]?.[event.code]?.();
         },
-        [gameState, keyUpMap]
+        [engineState, keyUpMap]
     );
 
     useEventListener("keydown", handleKeyDown);
