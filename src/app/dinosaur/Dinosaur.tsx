@@ -1,14 +1,48 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import { DINOSAUR } from "./constants";
 import { Vector2D } from "./types";
 import { MachineState } from "@/hooks/useStateMachine";
+import { useMemo } from "react";
+import useControllableAnimation from "@/hooks/useControllableAnimation";
 
 interface DinosaurProps {
     position: Vector2D;
     engineState: MachineState;
+    speedMultiplier: number;
 }
 
-const Dinosaur = ({ position, engineState }: DinosaurProps) => {
+const Dinosaur = ({
+    position,
+    engineState,
+    speedMultiplier,
+}: DinosaurProps) => {
+    const keyframes = useMemo(
+        () => [{ maskPosition: "0 0" }, { maskPosition: "200% 0%" }],
+        []
+    );
+
+    const options = useMemo(
+        () => ({
+            duration: 300,
+            easing: "steps(2, end)",
+            iterations: Infinity,
+        }),
+        []
+    );
+
+    const animationControls = {
+        isPlaying: engineState === "RUNNING",
+        playbackRate: speedMultiplier,
+    };
+
+    const dinosaurRef = useControllableAnimation(
+        keyframes,
+        options,
+        animationControls
+    );
+
     return (
         <div
             style={{
@@ -17,16 +51,12 @@ const Dinosaur = ({ position, engineState }: DinosaurProps) => {
                 bottom: position.y,
                 left: position.x,
             }}
-            className={cn("relative animate-neon-text-pulse")}
+            className="relative animate-neon-text-pulse"
         >
             <div
+                ref={dinosaurRef}
                 className={cn(
-                    "size-full mask-[url(/dinosaur/run.png)] animate-dinosaur",
-                    "before:absolute before:inset-0 before:pointer-events-none",
-                    "before:bg-circle-gradient before:animate-circle-gradient",
-                    engineState === "RUNNING"
-                        ? "animation-run"
-                        : " animation-pause"
+                    "size-full pointer-events-none bg-circle-gradient animate-circle-gradient"
                 )}
             />
         </div>

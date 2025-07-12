@@ -4,8 +4,6 @@
     --font-main: var(--font-main);
     --font-title: var(--font-title);
 
-    --spacing-dinosaur-floor-width: 2400px;
-
     --color-transparent-dark-blue: rgba(22, 33, 62, 0.25);
     --color-transparent-grey: rgba(227, 227, 255, 0.2);
     --color-tictactoe-primary: #ff6cf7;
@@ -38,8 +36,6 @@
     --animate-tictactoe-gameover-pulse: tictactoe-gameover-pulse 1s linear
         infinite;
     --animate-circle-gradient: circle-wave 2.5s linear infinite;
-    --animate-dinosaur-floor: slide-floor 4s linear infinite;
-    --animate-dinosaur: dinosaur-run 300ms steps(2) infinite;
 }
 
 @utility animation-pause {
@@ -147,20 +143,5 @@
     50% {
         filter: drop-shadow(0 0 1px currentColor)
             drop-shadow(0 0 4px currentColor) drop-shadow(0 0 14px currentColor);
-    }
-}
-
-@keyframes dinosaur-run {
-    to {
-        mask-position: 200% 0%;
-    }
-}
-
-@keyframes slide-floor {
-    0% {
-        mask-position: 0% 0%;
-    }
-    100% {
-        mask-position: calc(var(--spacing-dinosaur-floor-width) * -1) 0%;
     }
 }

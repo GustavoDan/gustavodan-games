@@ -15,6 +15,7 @@ export const INITIAL_GAME_STATE: GameState = {
         vel: DINOSAUR.initialVel,
         isJumping: false,
         jumpStrength: 1200,
+        moveDirection: "IDLE",
     },
 };
 

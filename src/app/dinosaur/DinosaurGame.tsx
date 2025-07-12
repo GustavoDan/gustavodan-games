@@ -7,7 +7,7 @@ import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
 import useGameLoop, { MachineState } from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
-import { GameState } from "./types";
+import { GameState, MovementDirection } from "./types";
 import { updateGame } from "./game/main";
 import { initiateJump } from "./game/dinosaur";
 
@@ -25,6 +25,15 @@ type StateDrivenKeyMap = {
 
 export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
     const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+
+    const parallaxMultiplier = useMemo(() => {
+        const multipliers: Partial<Record<MovementDirection, number>> = {
+            RIGHT: 2.0,
+            LEFT: 0.5,
+        };
+
+        return multipliers[gameState.dinosaur.moveDirection] ?? 1.0;
+    }, [gameState.dinosaur.moveDirection]);
 
     const gameTick = useCallback(
         (deltaTime: number) => {
@@ -89,9 +98,13 @@ export default function DinosaurGame({ gameTitle }: DinosaurGameProps) {
             {engineState}
             <Dinosaur
                 engineState={engineState}
+                speedMultiplier={parallaxMultiplier}
                 position={gameState.dinosaur.pos}
             />
-            <Floor engineState={engineState} />
+            <Floor
+                engineState={engineState}
+                speedMultiplier={parallaxMultiplier}
+            />
         </GameContainer>
     );
 }
