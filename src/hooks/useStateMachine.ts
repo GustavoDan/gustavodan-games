@@ -10,7 +10,17 @@ interface StateMachineControls {
     engineState: MachineState;
 }
 
-const useStateMachine = (onTick: TickFunction): StateMachineControls => {
+type GameLoopOptions = {
+    onPause?: () => void;
+    onResume?: () => void;
+    onStart?: () => void;
+    onStop?: () => void;
+};
+
+const useStateMachine = (
+    onTick: TickFunction,
+    { onPause, onResume, onStart, onStop }: GameLoopOptions = {}
+): StateMachineControls => {
     const [engineState, setEngineState] = useState<MachineState>("IDLE");
     const animationIdRef = useRef<number>(null);
     const lastTimeRef = useRef(performance.now());
@@ -19,9 +29,11 @@ const useStateMachine = (onTick: TickFunction): StateMachineControls => {
 
     useEffect(() => {
         if (engineState === "RUNNING") {
-            lastTimeRef.current = performance.now();
-
             const loop = (currentTime: number) => {
+                if (lastTimeRef.current === 0) {
+                    lastTimeRef.current = currentTime;
+                }
+
                 const deltaTime = (currentTime - lastTimeRef.current) / 1000;
                 onTickRef.current(deltaTime);
                 lastTimeRef.current = currentTime;
@@ -40,22 +52,32 @@ const useStateMachine = (onTick: TickFunction): StateMachineControls => {
         };
     }, [engineState]);
 
-    const start = useCallback(() => setEngineState("RUNNING"), []);
+    const start = useCallback(() => {
+        lastTimeRef.current = 0;
+        setEngineState("RUNNING");
+        onStart?.();
+    }, [onStart]);
 
-    const stop = useCallback(() => setEngineState("IDLE"), []);
+    const stop = useCallback(() => {
+        setEngineState("IDLE");
+        onStop?.();
+    }, [onStop]);
 
     const togglePause = useCallback(() => {
         setEngineState((current) => {
             switch (current) {
                 case "RUNNING":
+                    onPause?.();
                     return "PAUSED";
                 case "PAUSED":
+                    lastTimeRef.current = 0;
+                    onResume?.();
                     return "RUNNING";
                 default:
                     return current;
             }
         });
-    }, []);
+    }, [onPause, onResume]);
 
     return { start, stop, togglePause, engineState };
 };

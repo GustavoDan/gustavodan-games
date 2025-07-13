@@ -1,4 +1,4 @@
-import { GameState } from "./types";
+import { GameState, InputAction } from "./types";
 
 export const FLOOR = { heigth: 24 };
 
@@ -62,7 +62,14 @@ export const INITIAL_GAME_STATE: GameState = {
         moveDirection: "IDLE",
     },
     worldSpeed: 50,
-};
+} as const;
+
+export const INITIAL_INPUT_ACTIONS: InputAction = {
+    down: false,
+    up: false,
+    left: false,
+    right: false,
+} as const;
 
 export const GRAVITY = 3000;
 export const FAST_FALL_MULTIPLIER = 5;

@@ -1,34 +1,48 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { INITIAL_GAME_STATE } from "./constants";
+import { useCallback, useMemo, useReducer, useRef } from "react";
+import { INITIAL_GAME_STATE, INITIAL_INPUT_ACTIONS } from "./constants";
 import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
-import useGameLoop, { MachineState } from "@/hooks/useStateMachine";
+import useStateMachine, { MachineState } from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
-import {
-    GameState,
-    MovementDirection,
-    MovementDirectionNoIdle,
-    MovementFunction,
-    MovementType,
-} from "./types";
-import { updateGame } from "./game/main";
-import { initiateJump, handleMove, handleDucking } from "./game/dinosaur";
+import { MovementDirection } from "./types";
 import { useGameContext } from "@/contexts/GameContext";
+import { gameReducer } from "./game/reducer";
 
-type MovementAction = "MOVE" | "JUMP" | "DUCK";
-type KeyActionMap = {
-    [key: string]: () => void;
+type Binding = {
+    keys: string[];
+    states: MachineState[];
+    action: (eventType: KeyboardEvent["type"]) => void;
 };
-type TypeDrivenKeyMap<T extends string, V> = {
-    [key in T]: V;
-};
-type StateDrivenKeyMap = TypeDrivenKeyMap<MachineState, KeyActionMap>;
 
 const DinosaurGame = () => {
-    const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
+    const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const { worldWidth, worldHeight } = useGameContext();
+    const inputActionsStateRef = useRef({ ...INITIAL_INPUT_ACTIONS });
+
+    const gameTick = useCallback(
+        (deltaTime: number) => {
+            dispatch({
+                type: "TICK",
+                payload: {
+                    deltaTime,
+                    screenSize: { x: worldWidth, y: worldHeight },
+                    inputActions: inputActionsStateRef.current,
+                },
+            });
+        },
+        [worldWidth, worldHeight]
+    );
+
+    const resetInputs = useCallback(() => {
+        inputActionsStateRef.current = { ...INITIAL_INPUT_ACTIONS };
+    }, []);
+
+    const { start, togglePause, engineState } = useStateMachine(gameTick, {
+        onPause: resetInputs,
+        onResume: resetInputs,
+    });
 
     const parallaxMultiplier = useMemo(() => {
         const multipliers: Partial<Record<MovementDirection, number>> = {
@@ -39,133 +53,69 @@ const DinosaurGame = () => {
         return multipliers[gameState.dinosaur.moveDirection] ?? 1.0;
     }, [gameState.dinosaur.moveDirection]);
 
-    const gameTick = useCallback(
-        (deltaTime: number) => {
-            setGameState((currentGameState) => {
-                const { newState } = updateGame(currentGameState, deltaTime, {
-                    x: worldWidth,
-                    y: worldHeight,
-                });
-
-                return newState;
-            });
-        },
-        [worldWidth, worldHeight]
-    );
-
-    const { start, togglePause, engineState } = useGameLoop(gameTick);
-
-    const movementFunctions = useMemo(
-        (): TypeDrivenKeyMap<MovementAction, MovementFunction> => ({
-            MOVE: handleMove,
-            JUMP: initiateJump,
-            DUCK: handleDucking,
-        }),
-        []
-    );
-
-    const handleDinosaurMovement = useCallback(
-        (
-            movementAction: MovementAction,
-            movementType?: MovementType,
-            direction?: MovementDirectionNoIdle
-        ) => {
-            const movementFunction = movementFunctions[movementAction];
-
-            setGameState((currentGameState) => ({
-                ...currentGameState,
-                dinosaur: movementFunction(
-                    currentGameState.dinosaur,
-                    movementType,
-                    direction
-                ),
-            }));
-        },
-        [movementFunctions]
-    );
-
-    const jump = useCallback(() => {
-        handleDinosaurMovement("JUMP");
-    }, [handleDinosaurMovement]);
-
-    const startDuck = useCallback(() => {
-        handleDinosaurMovement("DUCK", "START");
-    }, [handleDinosaurMovement]);
-
-    const moveLeft = useCallback(() => {
-        handleDinosaurMovement("MOVE", "START", "LEFT");
-    }, [handleDinosaurMovement]);
-
-    const moveRight = useCallback(() => {
-        handleDinosaurMovement("MOVE", "START", "RIGHT");
-    }, [handleDinosaurMovement]);
-
-    const stopDuck = useCallback(() => {
-        handleDinosaurMovement("DUCK", "STOP");
-    }, [handleDinosaurMovement]);
-
-    const stopLeft = useCallback(() => {
-        handleDinosaurMovement("MOVE", "STOP", "LEFT");
-    }, [handleDinosaurMovement]);
-
-    const stopRight = useCallback(() => {
-        handleDinosaurMovement("MOVE", "STOP", "RIGHT");
-    }, [handleDinosaurMovement]);
-
-    const keyDownMap = useMemo(
-        (): StateDrivenKeyMap => ({
-            IDLE: {
-                Space: start,
+    const bindings = useMemo(
+        (): Binding[] => [
+            {
+                keys: ["Space"],
+                states: ["IDLE"],
+                action: (type) => {
+                    if (type === "keydown") start();
+                },
             },
-            RUNNING: {
-                Space: jump,
-                ArrowUp: jump,
-                KeyW: jump,
-                ArrowLeft: moveLeft,
-                KeyA: moveLeft,
-                ArrowRight: moveRight,
-                KeyD: moveRight,
-                ArrowDown: startDuck,
-                KeyS: startDuck,
-                KeyQ: togglePause,
+            {
+                keys: ["Space", "ArrowUp", "KeyW"],
+                states: ["RUNNING"],
+                action: (type) => {
+                    inputActionsStateRef.current.up = type === "keydown";
+                },
             },
-            PAUSED: {
-                KeyQ: togglePause,
+            {
+                keys: ["ArrowLeft", "KeyA"],
+                states: ["RUNNING"],
+                action: (type) => {
+                    inputActionsStateRef.current.left = type === "keydown";
+                },
             },
-        }),
-        [jump, moveLeft, moveRight, startDuck, start, togglePause]
+            {
+                keys: ["ArrowRight", "KeyD"],
+                states: ["RUNNING"],
+                action: (type) => {
+                    inputActionsStateRef.current.right = type === "keydown";
+                },
+            },
+            {
+                keys: ["ArrowDown", "KeyS"],
+                states: ["RUNNING"],
+                action: (type) => {
+                    inputActionsStateRef.current.down = type === "keydown";
+                },
+            },
+            {
+                keys: ["KeyQ"],
+                states: ["RUNNING", "PAUSED"],
+                action: (type) => {
+                    if (type === "keydown") togglePause();
+                },
+            },
+        ],
+        [start, togglePause]
     );
 
-    const keyUpMap = useMemo(
-        (): Partial<StateDrivenKeyMap> => ({
-            RUNNING: {
-                ArrowLeft: stopLeft,
-                KeyA: stopLeft,
-                ArrowRight: stopRight,
-                KeyD: stopRight,
-                ArrowDown: stopDuck,
-                KeyS: stopDuck,
-            },
-        }),
-        [stopLeft, stopRight, stopDuck]
-    );
-
-    const handleKeyDown = useCallback(
+    const handleInput = useCallback(
         (event: KeyboardEvent) => {
-            keyDownMap[engineState][event.code]?.();
+            bindings
+                .find(
+                    ({ keys, states }) =>
+                        keys.includes(event.code) &&
+                        states.includes(engineState)
+                )
+                ?.action(event.type);
         },
-        [engineState, keyDownMap]
+        [bindings, engineState]
     );
 
-    const handleKeyUp = useCallback(
-        (event: KeyboardEvent) => {
-            keyUpMap[engineState]?.[event.code]?.();
-        },
-        [engineState, keyUpMap]
-    );
-
-    useEventListener("keydown", handleKeyDown);
-    useEventListener("keyup", handleKeyUp);
+    useEventListener("keydown", handleInput);
+    useEventListener("keyup", handleInput);
 
     return (
         <>

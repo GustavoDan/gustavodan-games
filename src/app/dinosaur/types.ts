@@ -1,11 +1,4 @@
 export type MovementDirection = "IDLE" | "LEFT" | "RIGHT";
-export type MovementDirectionNoIdle = Exclude<MovementDirection, "IDLE">;
-export type MovementType = "START" | "STOP";
-export type MovementFunction = (
-    currentState: DinosaurState,
-    type?: MovementType,
-    direction?: MovementDirectionNoIdle
-) => DinosaurState;
 
 export interface Vector2D {
     x: number;
@@ -26,4 +19,11 @@ export interface DinosaurState {
 export interface GameState {
     dinosaur: DinosaurState;
     worldSpeed: number;
+}
+
+export interface InputAction {
+    down: boolean;
+    up: boolean;
+    left: boolean;
+    right: boolean;
 }
