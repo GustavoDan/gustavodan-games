@@ -1,6 +1,5 @@
 import { GameContainer } from "@/components/containers";
 import DinosaurGame from "./DinosaurGame";
-import { preload } from "react-dom";
 
 export const metadata = {
     title: "DINOSAUR GAME",
