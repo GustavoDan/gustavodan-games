@@ -52,7 +52,7 @@ const Dinosaur = ({
                 bottom: dinosaurState.pos.y,
                 left: dinosaurState.pos.x,
             }}
-            className="relative animate-neon-text-pulse"
+            className="relative animate-neon-text-pulse contain-strict will-change-[mask-image,_transform]"
         >
             <div
                 ref={dinosaurRef}
