@@ -6,10 +6,6 @@ export const metadata = {
     title: "DINOSAUR GAME",
 };
 
-preload("/dinosaur/run.png", { as: "image" });
-preload("/dinosaur/duck.png", { as: "image" });
-preload("/dinosaur/background.png", { as: "image" });
-
 export default function DinosaurGameServer() {
     return (
         <GameContainer

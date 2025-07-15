@@ -9,6 +9,13 @@ import useEventListener from "@/hooks/useEventListener";
 import { MovementDirection } from "./types";
 import { useGameContext } from "@/contexts/GameContext";
 import { gameReducer } from "./game/reducer";
+import { ImagePreloader } from "@/components/ImagePreloader";
+
+const ALL_SPRITES = [
+    "/dinosaur/duck.png",
+    "/dinosaur/run.png",
+    "/dinosaur/background.png",
+];
 
 type Binding = {
     keys: string[];
@@ -119,6 +126,7 @@ const DinosaurGame = () => {
 
     return (
         <>
+            <ImagePreloader imageUrls={ALL_SPRITES} />
             {engineState}
             <Dinosaur
                 engineState={engineState}
