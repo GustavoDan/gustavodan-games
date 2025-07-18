@@ -225,13 +225,16 @@ export const gameReducer = (
             const dinosaurState = newState.dinosaur;
 
             handleDinosaurInput(dinosaurState, inputActions);
-            handleDinosaurPhysics(dinosaurState, deltaTime, screenSize);
+
+            const subSteps = 4;
+            const stepTime = deltaTime / subSteps;
+            Array.from({ length: subSteps }).forEach(() => {
+                handleDinosaurPhysics(dinosaurState, stepTime, screenSize);
+                handleObstacles(newState, stepTime, screenSize);
+                handleCollisions(newState, assets, volatileData);
+            });
 
             handleGameSpeedMultiplier(newState, dinosaurState.moveDirection);
-
-            handleCollisions(newState, assets, volatileData);
-
-            handleObstacles(newState, deltaTime, screenSize);
 
             return newState;
         }
