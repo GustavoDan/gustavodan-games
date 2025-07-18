@@ -1,6 +1,6 @@
-import { GameState, InputAction } from "./types";
+import { GameState, InputAction, ObstacleType } from "./types";
 
-export const FLOOR = { heigth: 24 };
+export const FLOOR = { heigth: 24, width: 2400 };
 
 export const DINOSAUR_SIZE = {
     run: {
@@ -13,55 +13,80 @@ export const DINOSAUR_SIZE = {
     },
 };
 
-export const CACTUS_TYPES = {
-    short: {
-        single: {
+export const OBSTACLES = {
+    spawnInterval: {
+        min: 0.5,
+        max: 2,
+    },
+    types: {
+        shortSingle: {
             width: 30,
             height: 66,
+            bottom: 8,
             url: "dinosaur/short_cactus.png",
+            weight: 15,
         },
-        small_group: {
+        shortSmallGroup: {
             width: 64,
             height: 66,
+            bottom: 8,
             url: "dinosaur/small_short_cactus_group.png",
+            weight: 15,
         },
-        large_group: {
+        shortLargeGroup: {
             width: 98,
             height: 66,
+            bottom: 8,
             url: "dinosaur/large_short_cactus_group.png",
+            weight: 15,
         },
-    },
-    tall: {
-        single: {
+        tallSingle: {
             width: 46,
             height: 96,
+            bottom: 4,
             url: "dinosaur/tall_cactus.png",
+            weight: 15,
         },
-        small_group: {
+        tallSmallGroup: {
             width: 96,
             height: 96,
+            bottom: 4,
             url: "dinosaur/small_tall_cactus_group.png",
+            weight: 15,
         },
-        large_group: {
+        tallLargeGroup: {
             width: 146,
             height: 96,
+            bottom: 4,
             url: "dinosaur/large_tall_cactus_group.png",
+            weight: 15,
+        },
+        pterodactyl: {
+            width: 84,
+            height: 72,
+            url: "dinosaur/pterodactyl.png",
+            weight: 10,
         },
     },
-};
+} as const;
 
 export const INITIAL_GAME_STATE: GameState = {
     dinosaur: {
-        pos: { x: 0, y: -FLOOR.heigth },
+        life: 1,
+        invulnerabilityTimer: 0,
+        pos: { x: 0, y: 0 },
         vel: { x: 0, y: 0 },
         isJumping: false,
         isDucking: false,
         isFastFalling: false,
         jumpStrength: 1200,
-        moveSpeed: 750,
+        moveSpeed: 600,
         moveDirection: "IDLE",
     },
-    worldSpeed: 50,
+    gameSpeed: 300,
+    gameSpeedMultiplier: 1,
+    obstacles: [],
+    obstacleSpawnTimer: 2,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: InputAction = {
@@ -71,5 +96,17 @@ export const INITIAL_INPUT_ACTIONS: InputAction = {
     right: false,
 } as const;
 
+export const ALL_SPRITES = {
+    floor: "/dinosaur/floor.png",
+    run: "/dinosaur/run.png",
+    duck: "/dinosaur/duck.png",
+    ...(Object.fromEntries(
+        Object.entries(OBSTACLES.types).map(([key, value]) => {
+            return [key, value.url];
+        })
+    ) as { [K in ObstacleType]: string }),
+};
+
 export const GRAVITY = 3000;
 export const FAST_FALL_MULTIPLIER = 5;
+export const INVULNERABILITY_DURATION = 1.5;

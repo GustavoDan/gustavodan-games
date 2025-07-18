@@ -1,9 +1,9 @@
 "use client";
 
-import { DINOSAUR_SIZE } from "./constants";
+import { ALL_SPRITES, DINOSAUR_SIZE } from "./constants";
 import { DinosaurState } from "./types";
 import { MachineState } from "@/hooks/useStateMachine";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
 import { cn } from "@/utils/cn";
 
@@ -11,12 +11,14 @@ interface DinosaurProps {
     dinosaurState: DinosaurState;
     engineState: MachineState;
     speedMultiplier: number;
+    onFrameUpdate: (getFrame: () => number | null) => void;
 }
 
 const Dinosaur = ({
     dinosaurState,
     engineState,
     speedMultiplier,
+    onFrameUpdate,
 }: DinosaurProps) => {
     const keyframes = useMemo(
         () => [{ maskPosition: "0 0" }, { maskPosition: "200% 0%" }],
@@ -37,11 +39,19 @@ const Dinosaur = ({
         playbackRate: speedMultiplier,
     };
 
-    const dinosaurRef = useControllableAnimation(
+    const { elementRef, getCurrentFrame } = useControllableAnimation(
         keyframes,
         options,
         animationControls
     );
+
+    useEffect(() => {
+        onFrameUpdate(getCurrentFrame);
+    }, [getCurrentFrame, onFrameUpdate]);
+
+    const isBlinking =
+        dinosaurState.invulnerabilityTimer > 0 &&
+        Math.floor(dinosaurState.invulnerabilityTimer * 5) % 2 === 0;
 
     const dinosaurSprite = dinosaurState.isDucking ? "duck" : "run";
     return (
@@ -52,15 +62,19 @@ const Dinosaur = ({
                 bottom: dinosaurState.pos.y,
                 left: dinosaurState.pos.x,
             }}
-            className="relative animate-neon-text-pulse"
+            className="absolute animate-neon-text-pulse"
         >
             <div
-                ref={dinosaurRef}
+                ref={elementRef}
+                style={{
+                    maskImage: `url(${
+                        ALL_SPRITES[dinosaurState.isDucking ? "duck" : "run"]
+                    })`,
+                }}
                 className={cn(
                     "size-full pointer-events-none bg-circle-gradient animate-circle-gradient",
-                    dinosaurState.isDucking
-                        ? "mask-[url(/dinosaur/duck.png)]"
-                        : "mask-[url(/dinosaur/run.png)]"
+                    "transition-opacity duration-300",
+                    isBlinking ? "opacity-25" : "opacity-100"
                 )}
             />
         </div>

@@ -1,14 +1,21 @@
 "use client";
 
-import { useCallback, useMemo, useReducer, useRef } from "react";
-import { INITIAL_GAME_STATE, INITIAL_INPUT_ACTIONS } from "./constants";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+    ALL_SPRITES,
+    INITIAL_GAME_STATE,
+    INITIAL_INPUT_ACTIONS,
+} from "./constants";
 import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
 import useStateMachine, { MachineState } from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
-import { MovementDirection } from "./types";
+import Cactus from "./Cactus";
 import { useGameContext } from "@/contexts/GameContext";
 import { gameReducer } from "./game/reducer";
+import useAssetLoader from "@/hooks/useAssetLoader";
+import Pterodactyl from "./Pterodactyl";
+import { VolatileData } from "./types";
 
 type Binding = {
     keys: string[];
@@ -17,41 +24,74 @@ type Binding = {
 };
 
 const DinosaurGame = () => {
+    const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const { worldWidth, worldHeight } = useGameContext();
-    const inputActionsStateRef = useRef({ ...INITIAL_INPUT_ACTIONS });
+    const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
+
+    const volatileDataRef = useRef<VolatileData>({
+        getDinosaurFrame: null,
+        getObstaclesFrame: new Map(),
+    });
+
+    const updateDinosaurFrame = useCallback((getFrame: () => number | null) => {
+        volatileDataRef.current.getDinosaurFrame = getFrame;
+    }, []);
+
+    const updateObstacleFrame = useCallback(
+        (id: string, getFrame: () => number | null) => {
+            volatileDataRef.current.getObstaclesFrame.set(id, getFrame);
+        },
+        []
+    );
+
+    const unregisterObstacle = useCallback((id: string) => {
+        volatileDataRef.current.getObstaclesFrame.delete(id);
+    }, []);
 
     const gameTick = useCallback(
         (deltaTime: number) => {
-            dispatch({
-                type: "TICK",
-                payload: {
-                    deltaTime,
-                    screenSize: { x: worldWidth, y: worldHeight },
-                    inputActions: inputActionsStateRef.current,
-                },
-            });
+            if (assets) {
+                dispatch({
+                    type: "TICK",
+                    payload: {
+                        deltaTime,
+                        screenSize: { x: worldWidth, y: worldHeight },
+                        inputActions: inputActionsRef.current,
+                        assets,
+                        volatileData: volatileDataRef.current,
+                    },
+                });
+            }
         },
-        [worldWidth, worldHeight]
+        [worldWidth, worldHeight, assets]
     );
 
     const resetInputs = useCallback(() => {
-        inputActionsStateRef.current = { ...INITIAL_INPUT_ACTIONS };
+        inputActionsRef.current = { ...INITIAL_INPUT_ACTIONS };
     }, []);
 
-    const { start, togglePause, engineState } = useStateMachine(gameTick, {
-        onPause: resetInputs,
-        onResume: resetInputs,
+    const { start, stop, togglePause, engineState } = useStateMachine(
+        gameTick,
+        {
+            onPause: resetInputs,
+            onResume: resetInputs,
+            onStop: resetInputs,
+        }
+    );
+
+    useEffect(() => {
+        if (gameState.dinosaur.life <= 0) stop();
     });
 
-    const parallaxMultiplier = useMemo(() => {
-        const multipliers: Partial<Record<MovementDirection, number>> = {
-            RIGHT: 2.0,
-            LEFT: 0.5,
-        };
-
-        return multipliers[gameState.dinosaur.moveDirection] ?? 1.0;
-    }, [gameState.dinosaur.moveDirection]);
+    const handleStart = useCallback(() => {
+        if (gameState.dinosaur.life <= 0) {
+            dispatch({
+                type: "RESET",
+            });
+        }
+        start();
+    }, [gameState, start]);
 
     const bindings = useMemo(
         (): Binding[] => [
@@ -59,35 +99,35 @@ const DinosaurGame = () => {
                 keys: ["Space"],
                 states: ["IDLE"],
                 action: (type) => {
-                    if (type === "keydown") start();
+                    if (type === "keydown") handleStart();
                 },
             },
             {
                 keys: ["Space", "ArrowUp", "KeyW"],
                 states: ["RUNNING"],
                 action: (type) => {
-                    inputActionsStateRef.current.up = type === "keydown";
+                    inputActionsRef.current.up = type === "keydown";
                 },
             },
             {
                 keys: ["ArrowLeft", "KeyA"],
                 states: ["RUNNING"],
                 action: (type) => {
-                    inputActionsStateRef.current.left = type === "keydown";
+                    inputActionsRef.current.left = type === "keydown";
                 },
             },
             {
                 keys: ["ArrowRight", "KeyD"],
                 states: ["RUNNING"],
                 action: (type) => {
-                    inputActionsStateRef.current.right = type === "keydown";
+                    inputActionsRef.current.right = type === "keydown";
                 },
             },
             {
                 keys: ["ArrowDown", "KeyS"],
                 states: ["RUNNING"],
                 action: (type) => {
-                    inputActionsStateRef.current.down = type === "keydown";
+                    inputActionsRef.current.down = type === "keydown";
                 },
             },
             {
@@ -98,7 +138,7 @@ const DinosaurGame = () => {
                 },
             },
         ],
-        [start, togglePause]
+        [togglePause, handleStart]
     );
 
     const handleInput = useCallback(
@@ -117,18 +157,41 @@ const DinosaurGame = () => {
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
 
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
     return (
         <>
-            {engineState}
+            <div className="flex gap-5 absolute bottom-[400px]">
+                <span>TEMPORARY: {"{"}</span>
+                <span>ENGINE: {engineState}</span>
+                <span>LIFES: {gameState.dinosaur.life}</span>
+                <span>Press Space to start/restart the game</span>
+                <span>The controls are WASD/Arrows/Space/Q{"}"}</span>
+            </div>
+            {gameState.obstacles.map((obstacle, index) =>
+                obstacle.type === "pterodactyl" ? (
+                    <Pterodactyl
+                        key={index}
+                        engineState={engineState}
+                        obstacleState={obstacle}
+                        onFrameUpdate={updateObstacleFrame}
+                        unregister={unregisterObstacle}
+                    />
+                ) : (
+                    <Cactus
+                        key={index}
+                        engineState={engineState}
+                        obstacleState={obstacle}
+                    />
+                )
+            )}
             <Dinosaur
                 engineState={engineState}
-                speedMultiplier={parallaxMultiplier}
+                speedMultiplier={gameState.gameSpeedMultiplier}
                 dinosaurState={gameState.dinosaur}
+                onFrameUpdate={updateDinosaurFrame}
             />
-            <Floor
-                engineState={engineState}
-                speedMultiplier={parallaxMultiplier}
-            />
+            <Floor engineState={engineState} gameState={gameState} />
         </>
     );
 };

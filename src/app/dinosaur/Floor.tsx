@@ -1,25 +1,29 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { FLOOR } from "./constants";
+import { ALL_SPRITES, FLOOR, INITIAL_GAME_STATE } from "./constants";
 import { MachineState } from "@/hooks/useStateMachine";
 import { useMemo } from "react";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
+import { GameState } from "./types";
 
 interface FloorProps {
     engineState: MachineState;
-    speedMultiplier: number;
+    gameState: GameState;
 }
 
-const Floor = ({ engineState, speedMultiplier }: FloorProps) => {
+const Floor = ({ engineState, gameState }: FloorProps) => {
     const keyframes = useMemo(
-        () => [{ maskPosition: "0 0" }, { maskPosition: "-2400px 0" }],
+        () => [
+            { maskPosition: "0 0" },
+            { maskPosition: `-${FLOOR.width}px 0` },
+        ],
         []
     );
 
     const options = useMemo(
         () => ({
-            duration: 4000,
+            duration: (FLOOR.width / INITIAL_GAME_STATE.gameSpeed) * 1000,
             iterations: Infinity,
         }),
         []
@@ -27,10 +31,12 @@ const Floor = ({ engineState, speedMultiplier }: FloorProps) => {
 
     const animationControls = {
         isPlaying: engineState === "RUNNING",
-        playbackRate: speedMultiplier,
+        playbackRate:
+            (gameState.gameSpeed / INITIAL_GAME_STATE.gameSpeed) *
+            gameState.gameSpeedMultiplier,
     };
 
-    const floorRef = useControllableAnimation(
+    const { elementRef } = useControllableAnimation(
         keyframes,
         options,
         animationControls
@@ -39,13 +45,16 @@ const Floor = ({ engineState, speedMultiplier }: FloorProps) => {
     return (
         <div
             style={{ height: FLOOR.heigth }}
-            className="relative z-[-1] overflow-hidden animate-neon-text-pulse"
+            className="absolute z-[-1] w-full overflow-hidden animate-neon-text-pulse"
         >
             <div
-                ref={floorRef}
+                ref={elementRef}
+                style={{
+                    maskImage: `url(${ALL_SPRITES.floor})`,
+                }}
                 className={cn(
                     "size-full pointer-events-none bg-circle-gradient animate-circle-gradient",
-                    "mask-[url(/dinosaur/background.png)] mask-repeat-x"
+                    "mask-repeat-x"
                 )}
             />
         </div>

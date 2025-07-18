@@ -1,4 +1,7 @@
+import { OBSTACLES } from "./constants";
+
 export type MovementDirection = "IDLE" | "LEFT" | "RIGHT";
+export type ObstacleType = keyof typeof OBSTACLES.types;
 
 export interface Vector2D {
     x: number;
@@ -6,6 +9,8 @@ export interface Vector2D {
 }
 
 export interface DinosaurState {
+    life: number;
+    invulnerabilityTimer: number;
     pos: Vector2D;
     vel: Vector2D;
     isJumping: boolean;
@@ -16,9 +21,22 @@ export interface DinosaurState {
     moveDirection: MovementDirection;
 }
 
+export interface ObstacleState {
+    id: string;
+    pos: Vector2D;
+    type: ObstacleType;
+}
+
 export interface GameState {
     dinosaur: DinosaurState;
-    worldSpeed: number;
+    gameSpeed: number;
+    gameSpeedMultiplier: number;
+    obstacles: ObstacleState[];
+    obstacleSpawnTimer: number;
+}
+export interface VolatileData {
+    getDinosaurFrame: (() => number | null) | null;
+    getObstaclesFrame: Map<string, () => number | null>;
 }
 
 export interface InputAction {
