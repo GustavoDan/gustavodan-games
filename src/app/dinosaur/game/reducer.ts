@@ -1,4 +1,5 @@
 import {
+    ADDITIONAL_GAME_SPEED_PER_SECOND,
     ALL_SPRITES,
     DINOSAUR_SIZE,
     FAST_FALL_MULTIPLIER,
@@ -17,9 +18,10 @@ import {
     ObstacleType,
     VolatileData,
 } from "../types";
-import { getRandomItem } from "@/utils/getRandomItem";
+import { getRandomInt, getRandomItem } from "@/utils/random";
 import { isPixelColliding } from "@/utils/collision";
 import { CollidableObject } from "@/types";
+import { easeInOutQuad } from "@/utils/easing";
 
 const OBSTACLE_TYPES_WEIGHTS: {
     type: ObstacleType;
@@ -129,42 +131,58 @@ const handleObstacles = (
         obstacle.pos.x -=
             gameState.gameSpeed * gameState.gameSpeedMultiplier * deltaTime;
     });
-    gameState.obstacleSpawnTimer -= deltaTime;
+    gameState.obstacleSpawnDistance -=
+        gameState.gameSpeed * gameState.gameSpeedMultiplier * deltaTime;
 
-    const currentObstacleType = getRandomItem(
-        OBSTACLE_TYPES_WEIGHTS,
-        (obstacle) => obstacle.weight
-    )?.type;
+    if (gameState.obstacleSpawnDistance <= 0) {
+        const currentObstacleType = getRandomItem(
+            OBSTACLE_TYPES_WEIGHTS,
+            (obstacle) => obstacle.weight
+        )?.type;
 
-    if (!currentObstacleType) {
-        throw new Error("OBSTACLE_TYPES_WEIGHTS cannot be an empty array.");
-    }
+        if (!currentObstacleType) {
+            throw new Error("OBSTACLE_TYPES_WEIGHTS cannot be an empty array.");
+        }
 
-    if (gameState.obstacleSpawnTimer <= 0) {
+        const obstacleData = OBSTACLES.types[currentObstacleType];
         const newObstacle: ObstacleState = {
             id: crypto.randomUUID(),
             pos: {
                 x: screenSize.x,
                 y:
-                    currentObstacleType !== "pterodactyl"
-                        ? OBSTACLES.types[currentObstacleType].bottom
-                        : 30,
+                    typeof obstacleData.bottom === "number"
+                        ? obstacleData.bottom
+                        : getRandomInt(
+                              obstacleData.bottom.min,
+                              obstacleData.bottom.max
+                          ),
             },
             type: currentObstacleType,
         };
         gameState.obstacles.push(newObstacle);
 
-        gameState.obstacleSpawnTimer =
-            Math.random() *
-                (OBSTACLES.spawnInterval.max - OBSTACLES.spawnInterval.min) +
-            OBSTACLES.spawnInterval.min;
+        const spawnData = OBSTACLES.spawnDistance;
+        const min = Math.max(
+            spawnData.final.min,
+            spawnData.initial.min -
+                gameState.gameSpeed * spawnData.decayRate.min,
+            OBSTACLES.types[currentObstacleType].width
+        );
+        const max = Math.max(
+            spawnData.final.max,
+            spawnData.initial.max -
+                gameState.gameSpeed * spawnData.decayRate.max
+        );
+
+        gameState.obstacleSpawnDistance =
+            min + (max - min) * easeInOutQuad(Math.random());
     }
 
     gameState.obstacles = gameState.obstacles.filter(
         (obstacle) => obstacle.pos.x > -OBSTACLES.types[obstacle.type].width
     );
 
-    gameState.gameSpeed += 1 * deltaTime;
+    gameState.gameSpeed += ADDITIONAL_GAME_SPEED_PER_SECOND * deltaTime;
 };
 
 const handleCollisions = (
@@ -185,7 +203,7 @@ const handleCollisions = (
         width: DINOSAUR_SIZE[dinosaurSprite].width,
         height: DINOSAUR_SIZE[dinosaurSprite].height,
         image: assets[dinosaurSprite],
-        frameIndex: volatileData.getDinosaurFrame?.() ?? 1,
+        frameIndex: volatileData.getDinosaurFrame?.() ?? 0,
     };
 
     const hasCollision = gameState.obstacles.some((obstacle) => {

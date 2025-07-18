@@ -14,9 +14,23 @@ export const DINOSAUR_SIZE = {
 };
 
 export const OBSTACLES = {
-    spawnInterval: {
-        min: 0.5,
-        max: 2,
+    spawnDistance: {
+        initial: {
+            min: 300,
+            max: 1200,
+        },
+        final: {
+            min: 0,
+            max: 300,
+        },
+        decayRate: {
+            // To calculate when min reaches the final value, use:
+            //(spawnData.initial.min - spawnData.final.min) / gameSpeed at desired time of game
+            min: 0.34,
+            // To calculate when max reaches the final value, use:
+            //(spawnData.initial.max - spawnData.final.max) / gameSpeed at desired time of game
+            max: 1,
+        },
     },
     types: {
         shortSingle: {
@@ -65,7 +79,11 @@ export const OBSTACLES = {
             width: 84,
             height: 72,
             url: "dinosaur/pterodactyl.png",
-            weight: 10,
+            weight: 10000000,
+            bottom: {
+                min: 30,
+                max: 100,
+            },
         },
     },
 } as const;
@@ -86,7 +104,11 @@ export const INITIAL_GAME_STATE: GameState = {
     gameSpeed: 300,
     gameSpeedMultiplier: 1,
     obstacles: [],
-    obstacleSpawnTimer: 2,
+    obstacleSpawnDistance: 0,
+    obstacleSpawnInterval: {
+        min: 0.5,
+        max: 2,
+    },
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: InputAction = {
@@ -110,3 +132,4 @@ export const ALL_SPRITES = {
 export const GRAVITY = 3000;
 export const FAST_FALL_MULTIPLIER = 5;
 export const INVULNERABILITY_DURATION = 1.5;
+export const ADDITIONAL_GAME_SPEED_PER_SECOND = 1;

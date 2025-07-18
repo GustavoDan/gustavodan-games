@@ -32,7 +32,11 @@ export interface GameState {
     gameSpeed: number;
     gameSpeedMultiplier: number;
     obstacles: ObstacleState[];
-    obstacleSpawnTimer: number;
+    obstacleSpawnDistance: number;
+    obstacleSpawnInterval: {
+        min: number;
+        max: number;
+    };
 }
 export interface VolatileData {
     getDinosaurFrame: (() => number | null) | null;
