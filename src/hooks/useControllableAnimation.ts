@@ -44,7 +44,7 @@ const useControllableAnimation = (
         const cycleTime = currentTimeFloat % animationDuration;
         const frameIndex = Math.floor(cycleTime / durationPerFrame);
 
-        return frameIndex + 1;
+        return frameIndex;
     }, [animationDuration, durationPerFrame]);
 
     useEffect(() => {
