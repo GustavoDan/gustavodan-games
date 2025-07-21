@@ -1,6 +1,6 @@
 "use client";
 
-import { RestartButton } from "@/components/buttons";
+import { GameActionButton } from "@/components/buttons";
 import Board from "@/app/tic-tac-toe/Board";
 import { TicTacToeMarker } from "@/app/tic-tac-toe/types";
 import { checkDraw, checkWinner } from "@/app/tic-tac-toe/utils";
@@ -65,7 +65,9 @@ const TicTacToe = () => {
                 <Board board={board} winnerCells={winnerCells} isNeonEffect />
             </div>
 
-            <RestartButton onClick={handleRestart} />
+            <GameActionButton onClick={handleRestart}>
+                Restart Game
+            </GameActionButton>
         </>
     );
 };

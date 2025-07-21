@@ -1,19 +1,21 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { BaseButton, BaseButtonProps } from "./";
+import { BaseButton, BaseButtonProps } from ".";
 
-type RestartProps = Omit<BaseButtonProps, "children">;
-
-const Restart = ({ className, ...props }: RestartProps) => {
+const GameActionButton = ({
+    className,
+    children,
+    ...props
+}: BaseButtonProps) => {
     return (
         <BaseButton
             className={cn("py-3.5 px-5 text-2xl md:text-3xl", className)}
             {...props}
         >
-            Restart Game
+            {children}
         </BaseButton>
     );
 };
 
-export default Restart;
+export default GameActionButton;
