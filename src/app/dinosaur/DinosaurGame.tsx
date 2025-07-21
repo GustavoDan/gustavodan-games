@@ -130,7 +130,11 @@ const DinosaurGame = () => {
     }, [gameState.dinosaur.isJumping, playJumpSound]);
 
     useEffect(() => {
-        if (previousLife !== 0) {
+        if (previousLife == null) {
+            return;
+        }
+
+        if (previousLife > gameState.dinosaur.life) {
             playHitSound();
         }
     }, [gameState.dinosaur.life, previousLife, playHitSound]);
