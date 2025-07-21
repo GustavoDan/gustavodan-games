@@ -8,6 +8,24 @@ export const INITIAL_GAME_SPEED = 300;
 
 export const FLOOR = { heigth: 24, width: 2400 };
 
+const cactusDefaults = {
+    weight: 15,
+};
+
+const shortCactus = {
+    ...cactusDefaults,
+    height: 66,
+    bottom: 8,
+};
+
+const tallCactus = {
+    ...cactusDefaults,
+    height: 96,
+    bottom: 4,
+};
+
+const imagePath = "dinosaur/";
+
 export const DINOSAUR_SIZE = {
     run: {
         width: 80,
@@ -40,52 +58,40 @@ export const OBSTACLES = {
     },
     types: {
         shortSingle: {
+            ...shortCactus,
             width: 30,
-            height: 66,
-            bottom: 8,
-            url: "dinosaur/short_cactus.png",
-            weight: 15,
+            fileName: "short_cactus.png",
         },
         shortSmallGroup: {
+            ...shortCactus,
             width: 64,
-            height: 66,
-            bottom: 8,
-            url: "dinosaur/small_short_cactus_group.png",
-            weight: 15,
+            fileName: "small_short_cactus_group.png",
         },
         shortLargeGroup: {
+            ...shortCactus,
             width: 98,
-            height: 66,
-            bottom: 8,
-            url: "dinosaur/large_short_cactus_group.png",
-            weight: 15,
+            fileName: "large_short_cactus_group.png",
         },
         tallSingle: {
+            ...tallCactus,
             width: 46,
-            height: 96,
-            bottom: 4,
-            url: "dinosaur/tall_cactus.png",
-            weight: 15,
+            fileName: "tall_cactus.png",
         },
         tallSmallGroup: {
+            ...tallCactus,
             width: 96,
-            height: 96,
-            bottom: 4,
-            url: "dinosaur/small_tall_cactus_group.png",
-            weight: 15,
+            fileName: "small_tall_cactus_group.png",
         },
         tallLargeGroup: {
+            ...tallCactus,
             width: 146,
-            height: 96,
-            bottom: 4,
-            url: "dinosaur/large_tall_cactus_group.png",
-            weight: 15,
+            fileName: "large_tall_cactus_group.png",
         },
         pterodactyl: {
             width: 84,
             height: 72,
-            url: "dinosaur/pterodactyl.png",
-            weight: 10000000,
+            fileName: "pterodactyl.png",
+            weight: 10,
             bottom: {
                 min: 30,
                 max: 100,
@@ -127,12 +133,12 @@ export const INITIAL_INPUT_ACTIONS: InputAction = {
 } as const;
 
 export const ALL_SPRITES = {
-    floor: "/dinosaur/floor.png",
-    run: "/dinosaur/run.png",
-    duck: "/dinosaur/duck.png",
+    floor: `${imagePath}floor.png`,
+    run: `${imagePath}run.png`,
+    duck: `${imagePath}duck.png`,
     ...(Object.fromEntries(
         Object.entries(OBSTACLES.types).map(([key, value]) => {
-            return [key, value.url];
+            return [key, `${imagePath}${value.fileName}`];
         })
     ) as { [K in ObstacleType]: string }),
 };
