@@ -19,7 +19,7 @@ import {
     ObstacleType,
     VolatileData,
 } from "../types";
-import { getRandomInt, getRandomItem } from "@/utils/random";
+import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
 import { isPixelColliding } from "@/utils/collision";
 import { CollidableObject } from "@/types";
 import { easeInOutQuad } from "@/utils/easing";
@@ -136,7 +136,10 @@ const handleObstacles = (
 ) => {
     gameState.obstacles.forEach((obstacle) => {
         obstacle.pos.x -=
-            gameState.gameSpeed * gameState.gameSpeedMultiplier * deltaTime;
+            gameState.gameSpeed *
+            gameState.gameSpeedMultiplier *
+            obstacle.speedMultiplier *
+            deltaTime;
     });
     gameState.obstacleSpawnDistance -=
         gameState.gameSpeed * gameState.gameSpeedMultiplier * deltaTime;
@@ -165,6 +168,7 @@ const handleObstacles = (
                           ),
             },
             type: currentObstacleType,
+            speedMultiplier: obstacleData.static ? 1 : getRandomFloat(1.3, 2),
         };
         gameState.obstacles.push(newObstacle);
 

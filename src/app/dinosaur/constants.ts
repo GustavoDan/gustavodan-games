@@ -10,6 +10,7 @@ export const FLOOR = { heigth: 24, width: 2400 };
 
 const cactusDefaults = {
     weight: 15,
+    static: true,
 };
 
 const shortCactus = {
@@ -92,6 +93,7 @@ export const OBSTACLES = {
             height: 72,
             fileName: "pterodactyl.png",
             weight: 10,
+            static: false,
             bottom: {
                 min: 30,
                 max: 100,

@@ -25,6 +25,7 @@ export interface ObstacleState {
     id: string;
     pos: Vector2D;
     type: ObstacleType;
+    speedMultiplier: number;
 }
 
 export interface GameState {

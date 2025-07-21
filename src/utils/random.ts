@@ -38,3 +38,19 @@ export const getRandomInt = (min: number, max: number) => {
 
     return Math.floor(Math.random() * (maxFloored - minCeiled + 1)) + minCeiled;
 };
+
+export const getRandomFloat = (
+    min: number,
+    max: number,
+    precision?: number
+) => {
+    const randomFloat = Math.random() * (max - min) + min;
+
+    if (precision != null) {
+        const factor = Math.pow(10, precision);
+
+        return Math.round(randomFloat * factor) / factor;
+    }
+
+    return randomFloat;
+};
