@@ -104,7 +104,7 @@ export const OBSTACLES = {
 
 export const INITIAL_GAME_STATE: GameState = {
     dinosaur: {
-        life: 1,
+        life: 3,
         invulnerabilityTimer: 0,
         pos: { x: 0, y: 0 },
         vel: { x: 0, y: 0 },

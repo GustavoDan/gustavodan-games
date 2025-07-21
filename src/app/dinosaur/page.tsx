@@ -14,8 +14,8 @@ export default function DinosaurGameServer() {
     return (
         <GameContainer
             gameTitle={metadata.title}
-            className="max-w-7xl"
-            childrenClassName="relative justify-end overflow-hidden"
+            className="max-w-7xl [@media(min-height:800px)]:max-h-7/12"
+            childrenClassName="relative overflow-hidden"
         >
             <style>
                 {`@property --flow-position {
