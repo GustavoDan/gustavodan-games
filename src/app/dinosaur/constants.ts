@@ -1,5 +1,6 @@
 import { GameState, InputAction, ObstacleType } from "./types";
 
+export const ASSETS_PATH = "dinosaur/";
 export const GRAVITY = 3000;
 export const FAST_FALL_MULTIPLIER = 5;
 export const INVULNERABILITY_DURATION = 1.5;
@@ -24,8 +25,6 @@ const tallCactus = {
     height: 96,
     bottom: 4,
 };
-
-const imagePath = "dinosaur/";
 
 export const DINOSAUR_SIZE = {
     run: {
@@ -135,12 +134,12 @@ export const INITIAL_INPUT_ACTIONS: InputAction = {
 } as const;
 
 export const ALL_SPRITES = {
-    floor: `${imagePath}floor.png`,
-    run: `${imagePath}run.png`,
-    duck: `${imagePath}duck.png`,
+    floor: `${ASSETS_PATH}floor.png`,
+    run: `${ASSETS_PATH}run.png`,
+    duck: `${ASSETS_PATH}duck.png`,
     ...(Object.fromEntries(
         Object.entries(OBSTACLES.types).map(([key, value]) => {
-            return [key, `${imagePath}${value.fileName}`];
+            return [key, `${ASSETS_PATH}${value.fileName}`];
         })
     ) as { [K in ObstacleType]: string }),
 };

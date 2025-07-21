@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import {
     ALL_SPRITES,
+    ASSETS_PATH,
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
 } from "./constants";
@@ -18,6 +19,8 @@ import Pterodactyl from "./Pterodactyl";
 import { VolatileData } from "./types";
 import GameOverlay from "@/components/GameOverlay";
 import { GameActionButton } from "@/components/buttons";
+import useSound from "@/hooks/useSound";
+import usePrevious from "@/hooks/usePrevious";
 
 type Binding = {
     keys: string[];
@@ -30,6 +33,12 @@ const DinosaurGame = () => {
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const { worldWidth, worldHeight } = useGameContext();
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
+
+    const playJumpSound = useSound(`${ASSETS_PATH}jump.ogx`);
+    const playHitSound = useSound(`${ASSETS_PATH}hit.ogx`);
+    const playScoreSound = useSound(`${ASSETS_PATH}score.ogx`);
+    const previousScore = usePrevious(gameState.score);
+    const previousLife = usePrevious(gameState.dinosaur.life);
 
     const volatileDataRef = useRef<VolatileData>({
         getDinosaurFrame: null,
@@ -113,6 +122,31 @@ const DinosaurGame = () => {
         }
         start();
     }, [gameState.dinosaur.life, start]);
+
+    useEffect(() => {
+        if (gameState.dinosaur.isJumping === true) {
+            playJumpSound();
+        }
+    }, [gameState.dinosaur.isJumping, playJumpSound]);
+
+    useEffect(() => {
+        if (previousLife !== 0) {
+            playHitSound();
+        }
+    }, [gameState.dinosaur.life, previousLife, playHitSound]);
+
+    useEffect(() => {
+        if (previousScore == null) {
+            return;
+        }
+
+        const previousScoreBlock = Math.floor(previousScore / 30);
+        const currentScoreBlock = Math.floor(gameState.score / 30);
+
+        if (currentScoreBlock > previousScoreBlock) {
+            playScoreSound();
+        }
+    }, [gameState.score, previousScore, playScoreSound]);
 
     const bindings = useMemo(
         (): Binding[] => [
