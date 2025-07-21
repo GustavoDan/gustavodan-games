@@ -81,8 +81,27 @@ const DinosaurGame = () => {
     );
 
     useEffect(() => {
-        if (gameState.dinosaur.life <= 0) stop();
-    });
+        const storedHighScore = localStorage.getItem("dino_hs");
+        if (storedHighScore) {
+            dispatch({
+                type: "LOAD_HIGH_SCORE",
+                payload: parseInt(storedHighScore),
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("dino_hs", gameState.highScore.toString());
+    }, [gameState.highScore]);
+
+    useEffect(() => {
+        if (gameState.dinosaur.life <= 0) {
+            stop();
+            dispatch({
+                type: "GAME_OVER",
+            });
+        }
+    }, [gameState.dinosaur.life, stop]);
 
     const handleStart = useCallback(() => {
         if (gameState.dinosaur.life <= 0) {
@@ -91,7 +110,7 @@ const DinosaurGame = () => {
             });
         }
         start();
-    }, [gameState, start]);
+    }, [gameState.dinosaur.life, start]);
 
     const bindings = useMemo(
         (): Binding[] => [
@@ -161,12 +180,12 @@ const DinosaurGame = () => {
     if (error) return <div>Error: {error}</div>;
     return (
         <>
-            <div className="flex gap-5 absolute bottom-[400px]">
-                <span>TEMPORARY: {"{"}</span>
-                <span>ENGINE: {engineState}</span>
-                <span>LIFES: {gameState.dinosaur.life}</span>
-                <span>Press Space to start/restart the game</span>
-                <span>The controls are WASD/Arrows/Space/Q{"}"}</span>
+            <div className="flex justify-around items-center text-3xl mt-2.5 text-neon-red-500">
+                <span className="text-5xl min-w-28 min-h-12">
+                    {"♡".repeat(gameState.dinosaur.life)}
+                </span>
+                <span>Score: {Math.floor(gameState.score)}</span>
+                <span>High score: {Math.floor(gameState.highScore)}</span>
             </div>
             {gameState.obstacles.map((obstacle, index) =>
                 obstacle.type === "pterodactyl" ? (

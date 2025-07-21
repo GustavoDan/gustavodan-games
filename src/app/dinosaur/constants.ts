@@ -1,5 +1,11 @@
 import { GameState, InputAction, ObstacleType } from "./types";
 
+export const GRAVITY = 3000;
+export const FAST_FALL_MULTIPLIER = 5;
+export const INVULNERABILITY_DURATION = 1.5;
+export const SCORE_PER_SECOND = 1;
+export const INITIAL_GAME_SPEED = 300;
+
 export const FLOOR = { heigth: 24, width: 2400 };
 
 export const DINOSAUR_SIZE = {
@@ -101,7 +107,7 @@ export const INITIAL_GAME_STATE: GameState = {
         moveSpeed: 600,
         moveDirection: "IDLE",
     },
-    gameSpeed: 300,
+    gameSpeed: INITIAL_GAME_SPEED,
     gameSpeedMultiplier: 1,
     obstacles: [],
     obstacleSpawnDistance: 0,
@@ -109,6 +115,8 @@ export const INITIAL_GAME_STATE: GameState = {
         min: 0.5,
         max: 2,
     },
+    score: 0,
+    highScore: 0,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: InputAction = {
@@ -128,8 +136,3 @@ export const ALL_SPRITES = {
         })
     ) as { [K in ObstacleType]: string }),
 };
-
-export const GRAVITY = 3000;
-export const FAST_FALL_MULTIPLIER = 5;
-export const INVULNERABILITY_DURATION = 1.5;
-export const ADDITIONAL_GAME_SPEED_PER_SECOND = 1;

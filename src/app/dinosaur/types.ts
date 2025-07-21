@@ -37,6 +37,8 @@ export interface GameState {
         min: number;
         max: number;
     };
+    score: number;
+    highScore: number;
 }
 export interface VolatileData {
     getDinosaurFrame: (() => number | null) | null;

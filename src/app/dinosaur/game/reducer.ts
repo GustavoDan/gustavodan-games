@@ -1,12 +1,13 @@
 import {
-    ADDITIONAL_GAME_SPEED_PER_SECOND,
     ALL_SPRITES,
     DINOSAUR_SIZE,
     FAST_FALL_MULTIPLIER,
     GRAVITY,
+    INITIAL_GAME_SPEED,
     INITIAL_GAME_STATE,
     INVULNERABILITY_DURATION,
     OBSTACLES,
+    SCORE_PER_SECOND,
 } from "../constants";
 import {
     GameState,
@@ -46,7 +47,13 @@ type TickAction = {
     };
 };
 type ResetAction = { type: "RESET" };
-export type GameAction = TickAction | ResetAction;
+type LoadHighScoreAction = { type: "LOAD_HIGH_SCORE"; payload: number };
+type GameOverAction = { type: "GAME_OVER" };
+export type GameAction =
+    | TickAction
+    | ResetAction
+    | LoadHighScoreAction
+    | GameOverAction;
 
 const clamp = (value: number, min: number, max: number) =>
     Math.max(min, Math.min(value, max));
@@ -181,8 +188,6 @@ const handleObstacles = (
     gameState.obstacles = gameState.obstacles.filter(
         (obstacle) => obstacle.pos.x > -OBSTACLES.types[obstacle.type].width
     );
-
-    gameState.gameSpeed += ADDITIONAL_GAME_SPEED_PER_SECOND * deltaTime;
 };
 
 const handleCollisions = (
@@ -225,6 +230,11 @@ const handleCollisions = (
     }
 };
 
+const updateGameProgression = (gameState: GameState, deltaTime: number) => {
+    gameState.score += SCORE_PER_SECOND * deltaTime;
+    gameState.gameSpeed = INITIAL_GAME_SPEED + gameState.score;
+};
+
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -253,11 +263,20 @@ export const gameReducer = (
             });
 
             handleGameSpeedMultiplier(newState, dinosaurState.moveDirection);
+            updateGameProgression(newState, deltaTime);
 
             return newState;
         }
         case "RESET": {
-            return INITIAL_GAME_STATE;
+            return { ...INITIAL_GAME_STATE, highScore: gameState.highScore };
+        }
+        case "LOAD_HIGH_SCORE": {
+            return { ...gameState, highScore: action.payload };
+        }
+        case "GAME_OVER": {
+            return gameState.score <= gameState.highScore
+                ? gameState
+                : { ...gameState, highScore: gameState.score };
         }
         default:
             return gameState;
