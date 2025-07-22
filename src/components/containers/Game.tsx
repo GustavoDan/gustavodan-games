@@ -26,7 +26,7 @@ const GameContainer = ({
     return (
         <BaseContainer
             className={cn(
-                "py-5 px-7.5 w-11/12 h-11/12 overflow-hidden",
+                "py-5 px-7.5 w-11/12 h-11/12 overflow-hidden sm-h:p-1.5",
                 className
             )}
             {...props}
@@ -34,7 +34,7 @@ const GameContainer = ({
             <div className="flex items-center justify-between">
                 <BackButton />
                 <Title>{gameTitle}</Title>
-                <div className="spacer md:size-10.5"></div>
+                <div className="spacer md:size-10.5 sm-h:size-7"></div>
             </div>
             <div
                 ref={gameAreaRef}

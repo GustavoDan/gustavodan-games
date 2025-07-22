@@ -62,7 +62,7 @@ const Dinosaur = ({
                 bottom: dinosaurState.pos.y,
                 left: dinosaurState.pos.x,
             }}
-            className="absolute animate-neon-text-pulse"
+            className="absolute text-green-300 animate-neon-text-pulse "
         >
             <div
                 ref={elementRef}
@@ -72,7 +72,7 @@ const Dinosaur = ({
                     })`,
                 }}
                 className={cn(
-                    "size-full pointer-events-none bg-circle-gradient animate-circle-gradient",
+                    "size-full pointer-events-none bg-dinosaur animate-diagonal-stripes-gradient",
                     "transition-opacity duration-300",
                     isBlinking ? "opacity-25" : "opacity-100"
                 )}

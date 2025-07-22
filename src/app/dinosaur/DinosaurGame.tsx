@@ -29,6 +29,8 @@ import { GameActionButton } from "@/components/buttons";
 import useSound from "@/hooks/useSound";
 import usePrevious from "@/hooks/usePrevious";
 import PhysicsToggle from "./PhysicsToggle";
+import Loading from "@/components/Loading";
+import DisplayError from "@/components/DisplayError";
 
 type Binding = {
     keys: string[];
@@ -232,17 +234,10 @@ const DinosaurGame = () => {
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (isLoading) return <Loading />;
+    if (error) return <DisplayError message={error} />;
     return (
         <>
-            <div className="flex justify-around items-center text-3xl mt-2.5 text-neon-red-500">
-                <span className="text-5xl min-w-28 min-h-12">
-                    {"♡".repeat(gameState.dinosaur.life)}
-                </span>
-                <span>Score: {Math.floor(gameState.score)}</span>
-                <span>High score: {Math.floor(gameState.highScore)}</span>
-            </div>
             {gameState.obstacles.map((obstacle, index) =>
                 obstacle.type === "pterodactyl" ? (
                     <Pterodactyl
@@ -268,13 +263,21 @@ const DinosaurGame = () => {
             />
             <Floor engineState={engineState} gameState={gameState} />
 
+            <div className="flex justify-around items-center mt-2.5 text-center text-neon-red-500 text-lg md:text-3xl">
+                <span className="min-w-28 min-h-12 text-left text-5xl">
+                    {"♡".repeat(gameState.dinosaur.life)}
+                </span>
+                <span>Score: {Math.floor(gameState.score)}</span>
+                <span>High score: {Math.floor(gameState.highScore)}</span>
+            </div>
+
             <GameOverlay
                 engineState={engineState}
                 isGameOver={gameState.dinosaur.life <= 0}
             >
                 <GameOverlay.StartScreen>
-                    <h1 className="text-5xl font-bold">CONTROLS</h1>
-                    <div className="flex text-lg">
+                    <h1 className="text-4xl md:text-5xl font-bold">CONTROLS</h1>
+                    <div className="flex md:text-lg">
                         <div className="text-left flex flex-col">
                             <span>Move:</span>
                             <span>Duck:</span>
@@ -298,7 +301,9 @@ const DinosaurGame = () => {
                         <GameActionButton onClick={handleStart}>
                             Start Game
                         </GameActionButton>
-                        <span className="text-sm">(or Spacebar to Start)</span>
+                        <span className="text-xs md:text-sm">
+                            (or Spacebar to Start)
+                        </span>
                     </div>
                 </GameOverlay.StartScreen>
                 <GameOverlay.PauseScreen>
@@ -307,8 +312,10 @@ const DinosaurGame = () => {
                 </GameOverlay.PauseScreen>
 
                 <GameOverlay.GameOverScreen>
-                    <h1 className="text-5xl font-bold">GAME OVER</h1>
-                    <div className="text-2xl flex flex-col gap-2">
+                    <h1 className="text-4xl md:text-5xl font-bold">
+                        GAME OVER
+                    </h1>
+                    <div className="text-xl md:text-2xl flex flex-col gap-2">
                         <span>
                             Score: <span>{Math.floor(gameState.score)}</span>
                         </span>
@@ -327,7 +334,7 @@ const DinosaurGame = () => {
                         <GameActionButton onClick={handleStart}>
                             Play Again
                         </GameActionButton>
-                        <span className="text-sm">
+                        <span className="text-xs md:text-sm">
                             (or press Spacebar to Restart)
                         </span>
                     </div>

@@ -45,7 +45,7 @@ const Floor = ({ engineState, gameState }: FloorProps) => {
     return (
         <div
             style={{ height: FLOOR.heigth }}
-            className="absolute bottom-0 z-[-1] w-full overflow-hidden animate-neon-text-pulse"
+            className="absolute bottom-0 z-[-1] w-full overflow-hidden text-gray-400 animate-neon-text-pulse"
         >
             <div
                 ref={elementRef}
@@ -53,7 +53,7 @@ const Floor = ({ engineState, gameState }: FloorProps) => {
                     maskImage: `url(${ALL_SPRITES.floor})`,
                 }}
                 className={cn(
-                    "size-full pointer-events-none bg-circle-gradient animate-circle-gradient",
+                    "size-full pointer-events-none bg-gray-400",
                     "mask-repeat-x"
                 )}
             />

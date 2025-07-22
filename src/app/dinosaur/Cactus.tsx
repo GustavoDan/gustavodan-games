@@ -19,7 +19,7 @@ const Cactus = ({ engineState, obstacleState }: CactusProps) => {
                 bottom: obstacleState.pos.y,
                 left: obstacleState.pos.x,
             }}
-            className={cn("absolute animate-neon-text-pulse")}
+            className={cn("absolute text-red-400 animate-neon-text-pulse")}
         >
             <div
                 style={{
@@ -28,7 +28,7 @@ const Cactus = ({ engineState, obstacleState }: CactusProps) => {
                 className={cn(
                     "size-full",
                     "before:absolute before:inset-0 before:pointer-events-none",
-                    "before:bg-circle-gradient before:animate-circle-gradient",
+                    "before:bg-danger before:animate-diagonal-stripes-gradient",
                     engineState === "RUNNING"
                         ? "animation-run"
                         : " animation-pause"

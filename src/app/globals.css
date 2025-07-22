@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
+@custom-variant sm-h (@media (max-height: 500px));
+
 @theme {
+    --diagonal-stripe-gradient-width: 12px;
+
     --font-main: var(--font-main);
     --font-title: var(--font-title);
 
+    --color-main: #e3e3ff;
     --color-transparent-dark-blue: rgba(22, 33, 62, 0.25);
     --color-transparent-grey: rgba(227, 227, 255, 0.2);
     --color-tictactoe-primary: #ff6cf7;
-    --color-tictactoe-secundary: #00f6ff;
+    --color-tictactoe-secondary: #00f6ff;
     --color-tictactoe-draw: #999999;
+    --color-danger-primary: #ff0000;
+    --color-danger-secondary: #8b0000;
+    --color-dinosaur-primary: #228b22;
+    --color-dinosaur-secondary: #006400;
 
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.37);
     --shadow-button: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -36,6 +45,9 @@
     --animate-tictactoe-gameover-pulse: tictactoe-gameover-pulse 1s linear
         infinite;
     --animate-circle-gradient: circle-wave 2.5s linear infinite;
+    --animate-diagonal-stripes-gradient: move-diagonal-stripes-gradient 0.5s
+        linear infinite;
+    --animate-blink: blink 1.4s infinite both;
 }
 
 @utility animation-pause {
@@ -54,14 +66,40 @@
     background-size: 100% 4px;
 }
 
-@utility text-neon-* {
-    color: --value(--color);
-    color: --value([color]);
+@utility bg-danger {
+    background-image: repeating-linear-gradient(
+        -36.87deg,
+        var(--color-danger-primary),
+        var(--color-danger-primary)
+            calc(var(--diagonal-stripe-gradient-width) / 2),
+        var(--color-danger-secondary)
+            calc(var(--diagonal-stripe-gradient-width) / 2),
+        var(--color-danger-secondary) var(--diagonal-stripe-gradient-width)
+    );
+    background-size: 200% 200%;
+}
 
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1px currentColor;
+@utility bg-dinosaur {
+    background: repeating-linear-gradient(
+        -36.87deg,
+        var(--color-dinosaur-primary),
+        var(--color-dinosaur-primary)
+            calc(var(--diagonal-stripe-gradient-width) / 2),
+        var(--color-dinosaur-secondary)
+            calc(var(--diagonal-stripe-gradient-width) / 2),
+        var(--color-dinosaur-secondary) var(--diagonal-stripe-gradient-width)
+    );
 
-    animation: neon-text-pulse 1s linear infinite;
+    background-size: 200% 100%;
+}
+
+@utility bg-circle-gradient {
+    background-image: repeating-radial-gradient(
+        circle at center,
+        var(--color-tictactoe-primary) var(--flow-position),
+        var(--color-tictactoe-secondary) calc(var(--flow-position) + 50%),
+        var(--color-tictactoe-primary) calc(var(--flow-position) + 100%)
+    );
 }
 
 @utility tictactoe-grid {
@@ -96,13 +134,14 @@
         );
 }
 
-@utility bg-circle-gradient {
-    background-image: repeating-radial-gradient(
-        circle at center,
-        var(--color-tictactoe-primary) var(--flow-position),
-        var(--color-tictactoe-secundary) calc(var(--flow-position) + 50%),
-        var(--color-tictactoe-primary) calc(var(--flow-position) + 100%)
-    );
+@utility text-neon-* {
+    color: --value(--color);
+    color: --value([color]);
+
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px currentColor;
+
+    animation: neon-text-pulse 1s linear infinite;
 }
 
 @keyframes circle-wave {
@@ -143,5 +182,26 @@
     50% {
         filter: drop-shadow(0 0 1px currentColor)
             drop-shadow(0 0 4px currentColor) drop-shadow(0 0 14px currentColor);
+    }
+}
+
+@keyframes move-diagonal-stripes-gradient {
+    from {
+        background-position: calc(
+            var(--diagonal-stripe-gradient-width) * 5 / 3 * -1
+        );
+    }
+    to {
+        background-position: 0;
+    }
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
     }
 }

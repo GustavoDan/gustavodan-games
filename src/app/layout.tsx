@@ -31,7 +31,7 @@ export default function RootLayout({
         <html lang="en" className={cn(main_font.variable, title_font.variable)}>
             <body
                 className={cn(
-                    "font-main antialiased text-[#e3e3ff] bg-[#121212] bg-gradient bg-blend-lighten",
+                    "font-main antialiased text-main bg-[#121212] bg-gradient bg-blend-lighten",
                     "w-screen h-screen overflow-hidden flex items-center justify-center",
                     "before:absolute before:inset-0 before:size-full before:pointer-events-none before:bg-stripe"
                 )}
