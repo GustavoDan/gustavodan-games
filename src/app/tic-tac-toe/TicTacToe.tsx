@@ -46,8 +46,8 @@ const TicTacToe = () => {
                         ? "text-neon-tictactoe-draw"
                         : currentPlayer === "X"
                         ? "text-neon-tictactoe-primary"
-                        : "text-neon-tictactoe-secundary"
-                }`}
+                        : "text-neon-tictactoe-secondary"
+                } sm-h:text-xl`}
             >
                 {winnerCells
                     ? winnerCells.length === 1
@@ -56,7 +56,7 @@ const TicTacToe = () => {
                     : `${currentPlayer}'s Turn`}
             </span>
 
-            <div className="relative w-full max-w-md aspect-square">
+            <div className="relative w-full max-w-md aspect-square sm-h:w-7/12">
                 <Board
                     board={board}
                     winnerCells={winnerCells}

@@ -20,7 +20,7 @@ const Cell = ({
     return (
         <div
             className={cn(
-                "relative flex justify-center items-center font-title text-[3.5rem] cursor-pointer text-shadow-tictactoe md:text-7xl",
+                "relative flex justify-center items-center font-title text-[3.5rem] cursor-pointer text-shadow-tictactoe md:text-7xl sm-h:text-5xl",
                 !isNeonEffect &&
                     "before:absolute before:inset-0 before:bg-tictactoe-cell md:before:transition-opacity md:before:duration-300 md:before:ease-in",
                 !isNeonEffect &&
@@ -30,7 +30,7 @@ const Cell = ({
                     ? "text-tictactoe-draw"
                     : text === "X"
                     ? "text-tictactoe-primary"
-                    : "text-tictactoe-secundary",
+                    : "text-tictactoe-secondary",
                 className
             )}
             onTouchEnd={(event) => {

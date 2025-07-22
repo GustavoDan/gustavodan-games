@@ -16,7 +16,7 @@ const Menu = ({ children, id, className, ...props }: MenuProps) => {
     return (
         <BaseButton
             id={id}
-            className={cn("w-full py-4 px-5", className)}
+            className={cn("w-full py-4 px-5 sm-h:py-2.5", className)}
             onClick={() => router.push(`/${id}`)}
             {...props}
         >

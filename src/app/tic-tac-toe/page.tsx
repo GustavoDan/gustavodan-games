@@ -9,7 +9,7 @@ export default function TicTacToeServer() {
     return (
         <GameContainer
             gameTitle={metadata.title}
-            className="max-w-3xl"
+            className="max-w-3xl sm-h:max-w-sm"
             childrenClassName="items-center justify-evenly"
         >
             <style>
