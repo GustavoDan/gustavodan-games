@@ -25,7 +25,7 @@ This project was built using the following technologies:
 -   **[Next.js](https://nextjs.org/)** (v15) - React Framework
 -   **[React](https://react.dev/)** - UI Library
 -   **[TypeScript](https://www.typescriptlang.org/)** - Typed JavaScript
--   **[Tailwind CSS](https://tailwindcss.com/)** (ou outra tecnologia de estilo) - CSS Framework
+-   **[Tailwind CSS](https://tailwindcss.com/)** - CSS Framework
 -   **Deployed on [Vercel](https://vercel.com/)**
 
 ---
