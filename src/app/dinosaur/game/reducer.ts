@@ -44,6 +44,7 @@ type TickAction = {
         inputActions: InputAction;
         assets: Assets;
         volatileData: VolatileData;
+        useRelativePhysics: boolean;
     };
 };
 type ResetAction = { type: "RESET" };
@@ -252,6 +253,7 @@ export const gameReducer = (
                 inputActions,
                 assets,
                 volatileData,
+                useRelativePhysics,
             } = action.payload;
 
             const dinosaurState = newState.dinosaur;
@@ -266,7 +268,12 @@ export const gameReducer = (
                 handleCollisions(newState, assets, volatileData);
             });
 
-            handleGameSpeedMultiplier(newState, dinosaurState.moveDirection);
+            if (useRelativePhysics) {
+                handleGameSpeedMultiplier(
+                    newState,
+                    dinosaurState.moveDirection
+                );
+            }
             updateGameProgression(newState, deltaTime);
 
             return newState;

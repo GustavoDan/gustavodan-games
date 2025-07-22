@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useReducer,
+    useRef,
+    useState,
+} from "react";
 import {
     ALL_SPRITES,
     ASSETS_PATH,
@@ -21,6 +28,7 @@ import GameOverlay from "@/components/GameOverlay";
 import { GameActionButton } from "@/components/buttons";
 import useSound from "@/hooks/useSound";
 import usePrevious from "@/hooks/usePrevious";
+import PhysicsToggle from "./PhysicsToggle";
 
 type Binding = {
     keys: string[];
@@ -31,6 +39,7 @@ type Binding = {
 const DinosaurGame = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
+    const [useRelativePhysics, setUseRelativePhysics] = useState(true);
     const { worldWidth, worldHeight } = useGameContext();
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
 
@@ -71,12 +80,19 @@ const DinosaurGame = () => {
                         inputActions: inputActionsRef.current,
                         assets,
                         volatileData: volatileDataRef.current,
+                        useRelativePhysics,
                     },
                 });
             }
         },
-        [worldWidth, worldHeight, assets]
+        [worldWidth, worldHeight, assets, useRelativePhysics]
     );
+
+    const handlePhysicsToggle = useCallback(() => {
+        setUseRelativePhysics(
+            (prevUseRelativePhysics) => !prevUseRelativePhysics
+        );
+    }, []);
 
     const resetInputs = useCallback(() => {
         inputActionsRef.current = { ...INITIAL_INPUT_ACTIONS };
@@ -273,6 +289,11 @@ const DinosaurGame = () => {
                         </div>
                     </div>
 
+                    <PhysicsToggle
+                        onClick={handlePhysicsToggle}
+                        defaultCheckedValue={useRelativePhysics}
+                    />
+
                     <div className="flex flex-col gap-2">
                         <GameActionButton onClick={handleStart}>
                             Start Game
@@ -296,6 +317,12 @@ const DinosaurGame = () => {
                             <span>{Math.floor(gameState.highScore)}</span>
                         </span>
                     </div>
+
+                    <PhysicsToggle
+                        onClick={handlePhysicsToggle}
+                        defaultCheckedValue={useRelativePhysics}
+                    />
+
                     <div className="flex flex-col gap-2">
                         <GameActionButton onClick={handleStart}>
                             Play Again
