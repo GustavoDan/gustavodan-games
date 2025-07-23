@@ -12,17 +12,20 @@ import {
 import {
     GameState,
     DinosaurState,
-    InputAction,
-    Vector2D,
     ObstacleState,
-    MovementDirection,
     ObstacleType,
     VolatileData,
 } from "../types";
 import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
 import { isPixelColliding } from "@/utils/collision";
-import { CollidableObject } from "@/types";
+import {
+    BaseInputAction,
+    CollidableObject,
+    HorizontalMovementDirection,
+    Vector2D,
+} from "@/types";
 import { easeInOutQuad } from "@/utils/easing";
+import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 
 const OBSTACLE_TYPES_WEIGHTS: {
     type: ObstacleType;
@@ -41,7 +44,7 @@ type TickAction = {
     payload: {
         deltaTime: number;
         screenSize: Vector2D;
-        inputActions: InputAction;
+        inputActions: BaseInputAction;
         assets: Assets;
         volatileData: VolatileData;
         useRelativePhysics: boolean;
@@ -50,25 +53,17 @@ type TickAction = {
 type ResetAction = { type: "RESET" };
 type LoadHighScoreAction = { type: "LOAD_HIGH_SCORE"; payload: number };
 type GameOverAction = { type: "GAME_OVER" };
-export type GameAction =
+type GameAction =
     | TickAction
     | ResetAction
     | LoadHighScoreAction
     | GameOverAction;
 
-const clamp = (value: number, min: number, max: number) =>
-    Math.max(min, Math.min(value, max));
-
 const handleDinosaurInput = (
     dinosaurState: DinosaurState,
-    input: InputAction
+    input: BaseInputAction
 ) => {
-    const isMovingLeft = input.left && !input.right;
-    const isMovingRight = input.right && !input.left;
-
-    if (isMovingLeft) dinosaurState.moveDirection = "LEFT";
-    else if (isMovingRight) dinosaurState.moveDirection = "RIGHT";
-    else dinosaurState.moveDirection = "IDLE";
+    dinosaurState.moveDirection = getDirectionOnAxis(input, "horizontal");
 
     if (input.up && !dinosaurState.isJumping && !dinosaurState.isDucking) {
         dinosaurState.isJumping = true;
@@ -90,15 +85,15 @@ const handleDinosaurPhysics = (
         dinosaurState.invulnerabilityTimer = 0;
     }
 
-    if (dinosaurState.moveDirection === "LEFT")
-        dinosaurState.pos.x -= dinosaurState.moveSpeed * deltaTime;
-    else if (dinosaurState.moveDirection === "RIGHT")
-        dinosaurState.pos.x += dinosaurState.moveSpeed * deltaTime;
-
     const dinosaurSprite = dinosaurState.isDucking ? "duck" : "run";
-    const screenWidth = screenSize.x - DINOSAUR_SIZE[dinosaurSprite].width;
-    //Keeps dinosaur inside screen
-    dinosaurState.pos.x = clamp(dinosaurState.pos.x, 0, screenWidth);
+    const maxDinosaurX = screenSize.x - DINOSAUR_SIZE[dinosaurSprite].width;
+    dinosaurState.pos.x = moveOnAxis(
+        dinosaurState.pos.x,
+        dinosaurState.moveDirection,
+        dinosaurState.moveSpeed,
+        deltaTime,
+        { max: maxDinosaurX }
+    );
 
     if (!dinosaurState.isJumping) return;
 
@@ -120,9 +115,9 @@ const handleDinosaurPhysics = (
 
 const handleGameSpeedMultiplier = (
     gameState: GameState,
-    moveDirection: MovementDirection
+    moveDirection: HorizontalMovementDirection
 ) => {
-    const multipliers: Partial<Record<MovementDirection, number>> = {
+    const multipliers: Partial<Record<HorizontalMovementDirection, number>> = {
         RIGHT: 2.0,
         LEFT: 0.5,
     };
@@ -136,11 +131,14 @@ const handleObstacles = (
     screenSize: Vector2D
 ) => {
     gameState.obstacles.forEach((obstacle) => {
-        obstacle.pos.x -=
+        obstacle.pos.x = moveOnAxis(
+            obstacle.pos.x,
+            "LEFT",
             gameState.gameSpeed *
-            gameState.gameSpeedMultiplier *
-            obstacle.speedMultiplier *
-            deltaTime;
+                gameState.gameSpeedMultiplier *
+                obstacle.speedMultiplier,
+            deltaTime
+        );
     });
     gameState.obstacleSpawnDistance -=
         gameState.gameSpeed * gameState.gameSpeedMultiplier * deltaTime;

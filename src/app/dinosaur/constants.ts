@@ -1,4 +1,5 @@
-import { GameState, InputAction, ObstacleType } from "./types";
+import { BaseInputAction } from "@/types";
+import { GameState, ObstacleType } from "./types";
 
 export const ASSETS_PATH = "dinosaur/";
 export const GRAVITY = 3000;
@@ -126,7 +127,7 @@ export const INITIAL_GAME_STATE: GameState = {
     highScore: 0,
 } as const;
 
-export const INITIAL_INPUT_ACTIONS: InputAction = {
+export const INITIAL_INPUT_ACTIONS: BaseInputAction = {
     down: false,
     up: false,
     left: false,

@@ -16,7 +16,7 @@ import {
 } from "./constants";
 import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
-import useStateMachine, { MachineState } from "@/hooks/useStateMachine";
+import useStateMachine from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
 import Cactus from "./Cactus";
 import { useGameContext } from "@/contexts/GameContext";
@@ -31,12 +31,7 @@ import usePrevious from "@/hooks/usePrevious";
 import PhysicsToggle from "./PhysicsToggle";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
-
-type Binding = {
-    keys: string[];
-    states: MachineState[];
-    action: (eventType: KeyboardEvent["type"]) => void;
-};
+import { Binding } from "@/types";
 
 const DinosaurGame = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
