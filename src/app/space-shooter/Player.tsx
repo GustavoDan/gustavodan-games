@@ -1,7 +1,9 @@
 "use client";
 
+import { cn } from "@/utils/cn";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
 import { PlayerState } from "./types";
+import { checkIsBlinking } from "@/utils/checkIsBlinking";
 
 interface PlayerProps {
     playerState: PlayerState;
@@ -17,11 +19,14 @@ const Player = ({ playerState }: PlayerProps) => {
                 bottom: playerState.pos.y,
                 left: playerState.pos.x,
             }}
-            className="absolute bg-cover text-purple-300 animate-neon-text-pulse"
-        >
-            {/*  "transition-opacity duration-300"
-             isBlinking ? "opacity-25" : "opacity-100" */}
-        </div>
+            className={cn(
+                "absolute bg-cover text-purple-300 animate-neon-text-pulse",
+                "transition-opacity duration-300",
+                checkIsBlinking(playerState.invulnerabilityTimer)
+                    ? "opacity-25"
+                    : "opacity-100"
+            )}
+        ></div>
     );
 };
 export default Player;

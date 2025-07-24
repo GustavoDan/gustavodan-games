@@ -6,6 +6,7 @@ import { MachineState } from "@/hooks/useStateMachine";
 import { useEffect, useMemo } from "react";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
 import { cn } from "@/utils/cn";
+import { checkIsBlinking } from "@/utils/checkIsBlinking";
 
 interface DinosaurProps {
     dinosaurState: DinosaurState;
@@ -49,10 +50,6 @@ const Dinosaur = ({
         onFrameUpdate(getCurrentFrame);
     }, [getCurrentFrame, onFrameUpdate]);
 
-    const isBlinking =
-        dinosaurState.invulnerabilityTimer > 0 &&
-        Math.floor(dinosaurState.invulnerabilityTimer * 5) % 2 === 0;
-
     const dinosaurSprite = dinosaurState.isDucking ? "duck" : "run";
     return (
         <div
@@ -74,7 +71,9 @@ const Dinosaur = ({
                 className={cn(
                     "size-full pointer-events-none bg-dinosaur animate-diagonal-stripes-gradient",
                     "transition-opacity duration-300",
-                    isBlinking ? "opacity-25" : "opacity-100"
+                    checkIsBlinking(dinosaurState.invulnerabilityTimer)
+                        ? "opacity-25"
+                        : "opacity-100"
                 )}
             />
         </div>
