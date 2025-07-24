@@ -1,14 +1,15 @@
 import { GameContainer } from "@/components/containers";
 import DinosaurGame from "./DinosaurGame";
 import { preload } from "react-dom";
+import { ALL_SPRITES } from "./constants";
 
 export const metadata = {
     title: "DINOSAUR GAME",
 };
 
-preload("/dinosaur/run.png", { as: "image" });
-preload("/dinosaur/duck.png", { as: "image" });
-preload("/dinosaur/background.png", { as: "image" });
+Object.values(ALL_SPRITES).forEach((sprite) => {
+    preload(sprite, { as: "image" });
+});
 
 export default function DinosaurGameServer() {
     return (
