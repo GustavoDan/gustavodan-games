@@ -11,7 +11,9 @@ const Enemy = ({ enemyState }: EnemyProps) => {
     return (
         <div
             style={{
-                backgroundImage: `url(${ALL_SPRITES.enemies[enemyState.type]})`,
+                backgroundImage: `url(${
+                    ALL_SPRITES[`${enemyState.type}Enemy`]
+                })`,
                 width: currentEnemyType.width,
                 height: currentEnemyType.height,
                 bottom: enemyState.pos.y,
