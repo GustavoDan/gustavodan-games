@@ -77,11 +77,9 @@ export const ALL_SPRITES = {
     background: `${ASSETS_PATH}background.png`,
     player: `${ASSETS_PATH}player.png`,
     shot: `${ASSETS_PATH}shot.png`,
-    enemies: {
-        extraSmall: `${ASSETS_PATH}extraSmallEnemy.png`,
-        small: `${ASSETS_PATH}smallEnemy.png`,
-        medium: `${ASSETS_PATH}mediumEnemy.png`,
-        large: `${ASSETS_PATH}largeEnemy.png`,
-        extraLarge: `${ASSETS_PATH}extraLargeEnemy.png`,
-    },
+    extraSmallEnemy: `${ASSETS_PATH}extraSmallEnemy.png`,
+    smallEnemy: `${ASSETS_PATH}smallEnemy.png`,
+    mediumEnemy: `${ASSETS_PATH}mediumEnemy.png`,
+    largeEnemy: `${ASSETS_PATH}largeEnemy.png`,
+    extraLargeEnemy: `${ASSETS_PATH}extraLargeEnemy.png`,
 };

@@ -47,5 +47,17 @@ export interface ShooterInputAction extends BaseInputAction {
 }
 
 export interface VolatileData {
-    isShotAnimFinished: Map<string, () => boolean>;
+    shot: Map<
+        string,
+        {
+            getCurrentFrame: () => number | null;
+            isAnimationFinished: () => boolean;
+        }
+    >;
 }
+
+export type VolatileDataShotFn = (
+    id: string,
+    getCurrentFrame: () => number | null,
+    isAnimationFinished: () => boolean
+) => void;

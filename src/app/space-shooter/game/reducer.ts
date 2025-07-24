@@ -1,4 +1,4 @@
-import { BoundingBox, Vector2D } from "@/types";
+import { BoundingBox, CollidableObject, Vector2D } from "@/types";
 import {
     EnemyState,
     EnemyType,
@@ -9,6 +9,7 @@ import {
     VolatileData,
 } from "../types";
 import {
+    ALL_SPRITES,
     CONSTANT_SIZES,
     EMPTY_MARKED_FOR_DELETION,
     ENEMY_SPAWN_TIME_RANGE,
@@ -18,7 +19,9 @@ import {
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import { handleTimer } from "@/utils/timer";
 import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
-import { areBoxesOverlapping } from "@/utils/collision";
+import { areBoxesOverlapping, isPixelColliding } from "@/utils/collision";
+
+type Assets = { [k in keyof typeof ALL_SPRITES]: HTMLImageElement };
 
 type TickAction = {
     type: "TICK";
@@ -27,6 +30,7 @@ type TickAction = {
         screenSize: Vector2D;
         inputActions: ShooterInputAction;
         volatileData: VolatileData;
+        assets: Assets;
     };
 };
 type InitializePlayerYAction = {
@@ -92,6 +96,11 @@ const handlePlayerPhysics = (
     screenSize: Vector2D,
     deltaTime: number
 ) => {
+    playerState.invulnerabilityTimer = handleTimer(
+        playerState.invulnerabilityTimer,
+        deltaTime
+    );
+
     const maxPlayerPos = {
         x: screenSize.x / 2 - CONSTANT_SIZES.player.width,
         y: screenSize.y - CONSTANT_SIZES.player.height,
@@ -121,7 +130,9 @@ const handleShots = (
     deltaTime: number
 ) => {
     gameState.shots.forEach((shot) => {
-        const isShotAnimFinished = volatileData.isShotAnimFinished.get(shot.id);
+        const isShotAnimFinished = volatileData.shot.get(
+            shot.id
+        )?.isAnimationFinished;
 
         if (isShotAnimFinished?.()) {
             shot.pos.x = moveOnAxis(shot.pos.x, "RIGHT", 600, deltaTime);
@@ -177,7 +188,11 @@ export const handleEnemies = (
     );
 };
 
-const checkEnemyShotCollisions = (gameState: GameState) => {
+const checkEnemyShotCollisions = (
+    gameState: GameState,
+    volatileData: VolatileData,
+    assets: Assets
+) => {
     const { enemies, shots, markedForDeletion } = gameState;
     const { enemies: markedEnemies, shots: markedShots } = markedForDeletion;
 
@@ -185,24 +200,31 @@ const checkEnemyShotCollisions = (gameState: GameState) => {
         if (markedEnemies.has(enemy.id)) continue;
 
         const enemySize = CONSTANT_SIZES.enemies[enemy.type];
-        const enemyBox: BoundingBox = {
+        const enemyBox: CollidableObject = {
             x: enemy.pos.x,
             y: enemy.pos.y,
             width: enemySize.width,
             height: enemySize.height,
+            image: assets[`${enemy.type}Enemy`],
         };
 
         for (const shot of shots) {
             if (markedShots.has(shot.id)) continue;
 
-            const shotBox: BoundingBox = {
+            const getShotFrame = volatileData.shot.get(
+                shot.id
+            )?.getCurrentFrame;
+
+            const shotBox: CollidableObject = {
                 x: shot.pos.x,
                 y: shot.pos.y,
                 width: CONSTANT_SIZES.shot.width,
                 height: CONSTANT_SIZES.shot.height,
+                image: assets.shot,
+                frameIndex: getShotFrame?.() ?? 0,
             };
 
-            if (areBoxesOverlapping(enemyBox, shotBox)) {
+            if (isPixelColliding(enemyBox, shotBox)) {
                 markedShots.add(shot.id);
                 markedEnemies.add(enemy.id);
                 break;
@@ -244,8 +266,12 @@ const checkPlayerEnemyCollisions = (gameState: GameState) => {
     }
 };
 
-const handleCollisions = (gameState: GameState) => {
-    checkEnemyShotCollisions(gameState);
+const handleCollisions = (
+    gameState: GameState,
+    volatileData: VolatileData,
+    assets: Assets
+) => {
+    checkEnemyShotCollisions(gameState, volatileData, assets);
     checkPlayerEnemyCollisions(gameState);
 };
 
@@ -269,23 +295,25 @@ export const gameReducer = (
     switch (action.type) {
         case "TICK": {
             const newState = structuredClone(gameState);
-            const { deltaTime, screenSize, inputActions, volatileData } =
-                action.payload;
-
-            const playerState = newState.player;
-
-            handlePlayerInput(newState, inputActions);
+            const {
+                deltaTime,
+                screenSize,
+                inputActions,
+                volatileData,
+                assets,
+            } = action.payload;
 
             const subSteps = 4;
             const stepTime = deltaTime / subSteps;
             Array.from({ length: subSteps }).forEach(() => {
-                handlePlayerPhysics(playerState, screenSize, stepTime);
+                handlePlayerPhysics(newState.player, screenSize, stepTime);
                 handleShots(newState, volatileData, screenSize, stepTime);
                 handleEnemies(newState, screenSize, stepTime);
-                handleCollisions(newState);
+                handleCollisions(newState, volatileData, assets);
             });
 
             deleteObjects(newState);
+            handlePlayerInput(newState, inputActions);
 
             return newState;
         }

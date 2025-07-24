@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo } from "react";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
-import { ShotState } from "./types";
+import { ShotState, VolatileDataShotFn } from "./types";
 import { MachineState } from "@/hooks/useStateMachine";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
 
 interface ShotProps {
     shotState: ShotState;
     engineState: MachineState;
-    onShotAnimUpdate: (id: string, isFinished: () => boolean) => void;
+    onShotAnimationUpdate: VolatileDataShotFn;
     unregister: (id: string) => void;
 }
 
@@ -18,7 +18,7 @@ const STEPS = 5;
 const Shot = ({
     shotState,
     engineState,
-    onShotAnimUpdate,
+    onShotAnimationUpdate,
     unregister,
 }: ShotProps) => {
     const keyframes = useMemo(
@@ -43,19 +43,16 @@ const Shot = ({
         playbackRate: 1,
     };
 
-    const { elementRef, isFinished } = useControllableAnimation(
-        keyframes,
-        options,
-        animationControls
-    );
+    const { elementRef, getCurrentFrame, isFinished } =
+        useControllableAnimation(keyframes, options, animationControls);
 
     useEffect(() => {
-        onShotAnimUpdate(shotState.id, isFinished);
+        onShotAnimationUpdate(shotState.id, getCurrentFrame, isFinished);
 
         return () => {
             unregister(shotState.id);
         };
-    }, [isFinished, onShotAnimUpdate, shotState.id, unregister]);
+    }, [isFinished, onShotAnimationUpdate, shotState.id, unregister]);
 
     return (
         <div

@@ -17,43 +17,53 @@ import useEventListener from "@/hooks/useEventListener";
 import GameOverlay from "@/components/GameOverlay";
 import { GameActionButton } from "@/components/buttons";
 import Shot from "./Shot";
-import { VolatileData } from "./types";
+import { VolatileData, VolatileDataShotFn } from "./types";
 import Enemy from "./Enemy";
+import useAssetLoader from "@/hooks/useAssetLoader";
+import Loading from "@/components/Loading";
+import DisplayError from "@/components/DisplayError";
 
 const SpaceShooter = () => {
+    const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
     const { worldWidth, worldHeight } = useGameContext();
     const previousWorldHeight = usePrevious(worldHeight);
 
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
     const volatileDataRef = useRef<VolatileData>({
-        isShotAnimFinished: new Map(),
+        shot: new Map(),
     });
 
-    const updateIsShotAnimFinished = useCallback(
-        (id: string, isFinished: () => boolean) => {
-            volatileDataRef.current.isShotAnimFinished.set(id, isFinished);
+    const updateShotAnimationData = useCallback<VolatileDataShotFn>(
+        (id, getCurrentFrame, isAnimationFinished) => {
+            volatileDataRef.current.shot.set(id, {
+                getCurrentFrame,
+                isAnimationFinished,
+            });
         },
         []
     );
 
     const unregisterShot = useCallback((id: string) => {
-        volatileDataRef.current.isShotAnimFinished.delete(id);
+        volatileDataRef.current.shot.delete(id);
     }, []);
 
     const gameTick = useCallback(
         (deltaTime: number) => {
-            dispatch({
-                type: "TICK",
-                payload: {
-                    deltaTime,
-                    screenSize: { x: worldWidth, y: worldHeight },
-                    inputActions: inputActionsRef.current,
-                    volatileData: volatileDataRef.current,
-                },
-            });
+            if (assets) {
+                dispatch({
+                    type: "TICK",
+                    payload: {
+                        deltaTime,
+                        screenSize: { x: worldWidth, y: worldHeight },
+                        inputActions: inputActionsRef.current,
+                        volatileData: volatileDataRef.current,
+                        assets,
+                    },
+                });
+            }
         },
-        [worldWidth, worldHeight]
+        [worldWidth, worldHeight, assets]
     );
 
     const resetInputs = useCallback(() => {
@@ -148,6 +158,8 @@ const SpaceShooter = () => {
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
 
+    if (isLoading) return <Loading />;
+    if (error) return <DisplayError message={error} />;
     return (
         <div
             style={{ backgroundImage: `url(${ALL_SPRITES.background})` }}
@@ -162,12 +174,14 @@ const SpaceShooter = () => {
                     key={shot.id}
                     shotState={shot}
                     engineState={engineState}
-                    onShotAnimUpdate={updateIsShotAnimFinished}
+                    onShotAnimationUpdate={updateShotAnimationData}
                     unregister={unregisterShot}
                 />
             ))}
 
             <Player playerState={gameState.player} />
+
+            <div>{gameState.player.life}</div>
 
             <GameOverlay engineState={engineState} isGameOver={false}>
                 <GameOverlay.StartScreen>
