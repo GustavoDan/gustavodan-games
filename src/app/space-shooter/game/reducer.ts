@@ -247,11 +247,10 @@ const checkPlayerEnemyCollisions = (gameState: GameState) => {
 const handleCollisions = (gameState: GameState) => {
     checkEnemyShotCollisions(gameState);
     checkPlayerEnemyCollisions(gameState);
-    console.log(gameState.markedForDeletion);
 };
 
 const deleteObjects = (gameState: GameState) => {
-    let { enemies: markedEnemies, shots: markedShots } =
+    const { enemies: markedEnemies, shots: markedShots } =
         gameState.markedForDeletion;
 
     gameState.shots = gameState.shots.filter(
