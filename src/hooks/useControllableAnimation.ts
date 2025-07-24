@@ -76,7 +76,7 @@ const useControllableAnimation = (
         }
 
         animation.playbackRate = controls.playbackRate;
-    }, [controls.isPlaying, controls.playbackRate]);
+    }, [controls.isPlaying, controls.playbackRate, isFinished]);
 
     return {
         getCurrentFrame,
