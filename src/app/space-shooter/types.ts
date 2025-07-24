@@ -4,6 +4,9 @@ import {
     Vector2D,
     VerticalMovementDirection,
 } from "@/types";
+import { CONSTANT_SIZES } from "./constants";
+
+export type EnemyType = keyof typeof CONSTANT_SIZES.enemies;
 
 export interface PlayerState {
     pos: Vector2D;
@@ -20,9 +23,17 @@ export interface ShotState {
     pos: Vector2D;
 }
 
+export interface EnemyState {
+    id: string;
+    pos: Vector2D;
+    type: EnemyType;
+}
+
 export interface GameState {
     player: PlayerState;
     shots: ShotState[];
+    enemies: EnemyState[];
+    enemySpawnTimer: number;
 }
 
 export interface ShooterInputAction extends BaseInputAction {

@@ -18,6 +18,7 @@ import GameOverlay from "@/components/GameOverlay";
 import { GameActionButton } from "@/components/buttons";
 import Shot from "./Shot";
 import { VolatileData } from "./types";
+import Enemy from "./Enemy";
 
 const SpaceShooter = () => {
     const { worldWidth, worldHeight } = useGameContext();
@@ -69,7 +70,7 @@ const SpaceShooter = () => {
         if (worldHeight <= 0 || previousWorldHeight) return;
 
         dispatch({
-            type: "INITIALIZE_PLAYER_Y",
+            type: "INITIALIZE_GAME_STATE",
             payload: {
                 playerY: (worldHeight - CONSTANT_SIZES.player.height) / 2,
             },
@@ -152,7 +153,10 @@ const SpaceShooter = () => {
             style={{ backgroundImage: `url(${ALL_SPRITES.background})` }}
             className="size-full rendering-pixelated"
         >
-            <Player playerState={gameState.player} />
+            {gameState.enemies.map((enemy) => (
+                <Enemy key={enemy.id} enemyState={enemy} />
+            ))}
+
             {gameState.shots.map((shot) => (
                 <Shot
                     key={shot.id}
@@ -162,6 +166,8 @@ const SpaceShooter = () => {
                     unregister={unregisterShot}
                 />
             ))}
+
+            <Player playerState={gameState.player} />
 
             <GameOverlay engineState={engineState} isGameOver={false}>
                 <GameOverlay.StartScreen>

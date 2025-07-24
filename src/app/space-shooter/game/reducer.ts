@@ -1,14 +1,21 @@
 import { Vector2D } from "@/types";
 import {
+    EnemyState,
+    EnemyType,
     GameState,
     PlayerState,
     ShooterInputAction,
     ShotState,
     VolatileData,
 } from "../types";
-import { CONSTANT_SIZES, SHOT_COOLDOWN } from "../constants";
+import {
+    CONSTANT_SIZES,
+    ENEMY_SPAWN_TIME_RANGE,
+    SHOT_COOLDOWN,
+} from "../constants";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import { handleTimer } from "@/utils/timer";
+import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
 
 type TickAction = {
     type: "TICK";
@@ -20,13 +27,25 @@ type TickAction = {
     };
 };
 type InitializePlayerYAction = {
-    type: "INITIALIZE_PLAYER_Y";
+    type: "INITIALIZE_GAME_STATE";
     payload: {
         playerY: number;
     };
 };
 
 type GameAction = TickAction | InitializePlayerYAction;
+
+const ENEMY_TYPES = (Object.keys(CONSTANT_SIZES.enemies) as EnemyType[]).map(
+    (key) => key
+);
+
+const getNewSpawnTimer = () => {
+    return getRandomFloat(
+        ENEMY_SPAWN_TIME_RANGE.min,
+        ENEMY_SPAWN_TIME_RANGE.max,
+        3
+    );
+};
 
 const getPlayerGunPos = (playerPos: Vector2D): Vector2D => {
     return {
@@ -118,6 +137,43 @@ const handleShots = (
     );
 };
 
+export const handleEnemies = (
+    gameState: GameState,
+    screenSize: Vector2D,
+    deltaTime: number
+) => {
+    gameState.enemies.forEach((enemie) => {
+        enemie.pos.x = moveOnAxis(enemie.pos.x, "LEFT", 600, deltaTime);
+    });
+
+    gameState.enemySpawnTimer -= deltaTime;
+
+    if (gameState.enemySpawnTimer <= 0) {
+        const currentEnemyType = getRandomItem(ENEMY_TYPES);
+
+        if (!currentEnemyType) {
+            throw new Error("ENEMY_TYPES cannot be an empty array.");
+        }
+
+        const enemyHeigth = CONSTANT_SIZES.enemies[currentEnemyType].height;
+        const newEnemy: EnemyState = {
+            id: crypto.randomUUID(),
+            pos: {
+                x: screenSize.x,
+                y: getRandomInt(0, screenSize.y - enemyHeigth),
+            },
+            type: currentEnemyType,
+        };
+        gameState.enemies.push(newEnemy);
+
+        gameState.enemySpawnTimer = getNewSpawnTimer();
+    }
+
+    gameState.enemies = gameState.enemies.filter(
+        (enemy) => enemy.pos.x > -CONSTANT_SIZES.enemies[enemy.type].width
+    );
+};
+
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -137,11 +193,12 @@ export const gameReducer = (
             Array.from({ length: subSteps }).forEach(() => {
                 handlePlayerPhysics(playerState, screenSize, stepTime);
                 handleShots(gameState, volatileData, screenSize, stepTime);
+                handleEnemies(gameState, screenSize, stepTime);
             });
 
             return newState;
         }
-        case "INITIALIZE_PLAYER_Y":
+        case "INITIALIZE_GAME_STATE":
             return {
                 ...gameState,
                 player: {
@@ -151,6 +208,7 @@ export const gameReducer = (
                         y: action.payload.playerY,
                     },
                 },
+                enemySpawnTimer: getNewSpawnTimer(),
             };
 
         default:
