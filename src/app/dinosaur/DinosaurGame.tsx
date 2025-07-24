@@ -233,10 +233,10 @@ const DinosaurGame = () => {
     if (error) return <DisplayError message={error} />;
     return (
         <>
-            {gameState.obstacles.map((obstacle, index) =>
+            {gameState.obstacles.map((obstacle) =>
                 obstacle.type === "pterodactyl" ? (
                     <Pterodactyl
-                        key={index}
+                        key={obstacle.id}
                         engineState={engineState}
                         obstacleState={obstacle}
                         onFrameUpdate={updateObstacleFrame}
@@ -244,7 +244,7 @@ const DinosaurGame = () => {
                     />
                 ) : (
                     <Cactus
-                        key={index}
+                        key={obstacle.id}
                         engineState={engineState}
                         obstacleState={obstacle}
                     />
