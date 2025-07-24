@@ -26,6 +26,7 @@ import {
 } from "@/types";
 import { easeInOutQuad } from "@/utils/easing";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
+import { handleTimer } from "@/utils/timer";
 
 const OBSTACLE_TYPES_WEIGHTS: {
     type: ObstacleType;
@@ -79,11 +80,10 @@ const handleDinosaurPhysics = (
     deltaTime: number,
     screenSize: Vector2D
 ) => {
-    if (dinosaurState.invulnerabilityTimer > 0) {
-        dinosaurState.invulnerabilityTimer -= deltaTime;
-    } else {
-        dinosaurState.invulnerabilityTimer = 0;
-    }
+    dinosaurState.invulnerabilityTimer = handleTimer(
+        dinosaurState.invulnerabilityTimer,
+        deltaTime
+    );
 
     const dinosaurSprite = dinosaurState.isDucking ? "duck" : "run";
     const maxDinosaurX = screenSize.x - DINOSAUR_SIZE[dinosaurSprite].width;
