@@ -1,7 +1,14 @@
 import { Vector2D } from "@/types";
-import { GameState, PlayerState, ShooterInputAction } from "../types";
-import { PLAYER_SIZE } from "../constants";
+import {
+    GameState,
+    PlayerState,
+    ShooterInputAction,
+    ShotState,
+    VolatileData,
+} from "../types";
+import { CONSTANT_SIZES, SHOT_COOLDOWN } from "../constants";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
+import { handleTimer } from "@/utils/timer";
 
 type TickAction = {
     type: "TICK";
@@ -9,6 +16,7 @@ type TickAction = {
         deltaTime: number;
         screenSize: Vector2D;
         inputActions: ShooterInputAction;
+        volatileData: VolatileData;
     };
 };
 type InitializePlayerYAction = {
@@ -20,25 +28,51 @@ type InitializePlayerYAction = {
 
 type GameAction = TickAction | InitializePlayerYAction;
 
-const handlePlayerInput = (
-    playerState: PlayerState,
-    input: ShooterInputAction
-) => {
-    playerState.moveDirection.vertical = getDirectionOnAxis(input, "vertical");
-    playerState.moveDirection.horizontal = getDirectionOnAxis(
+const getPlayerGunPos = (playerPos: Vector2D): Vector2D => {
+    return {
+        x: playerPos.x + CONSTANT_SIZES.player.width,
+        y:
+            playerPos.y +
+            (CONSTANT_SIZES.player.height - CONSTANT_SIZES.shot.height) / 2,
+    };
+};
+
+const handleShooting = (gameState: GameState) => {
+    if (gameState.player.currentShotCooldown !== 0) return;
+
+    const newShot: ShotState = {
+        id: crypto.randomUUID(),
+        pos: getPlayerGunPos(gameState.player.pos),
+    };
+
+    gameState.shots.push(newShot);
+    gameState.player.currentShotCooldown = SHOT_COOLDOWN;
+};
+
+const handlePlayerInput = (gameState: GameState, input: ShooterInputAction) => {
+    gameState.player.moveDirection.vertical = getDirectionOnAxis(
+        input,
+        "vertical"
+    );
+
+    gameState.player.moveDirection.horizontal = getDirectionOnAxis(
         input,
         "horizontal"
     );
+
+    if (input.shoot) {
+        handleShooting(gameState);
+    }
 };
 
 const handlePlayerPhysics = (
     playerState: PlayerState,
-    deltaTime: number,
-    screenSize: Vector2D
+    screenSize: Vector2D,
+    deltaTime: number
 ) => {
     const maxPlayerPos = {
-        x: screenSize.x / 2 - PLAYER_SIZE.width,
-        y: screenSize.y - PLAYER_SIZE.height,
+        x: screenSize.x / 2 - CONSTANT_SIZES.player.width,
+        y: screenSize.y - CONSTANT_SIZES.player.height,
     };
 
     playerState.pos.x = moveOnAxis(
@@ -58,6 +92,32 @@ const handlePlayerPhysics = (
     );
 };
 
+const handleShots = (
+    gameState: GameState,
+    volatileData: VolatileData,
+    screenSize: Vector2D,
+    deltaTime: number
+) => {
+    gameState.shots.forEach((shot) => {
+        const isShotAnimFinished = volatileData.isShotAnimFinished.get(shot.id);
+
+        if (isShotAnimFinished?.()) {
+            shot.pos.x = moveOnAxis(shot.pos.x, "RIGHT", 600, deltaTime);
+        } else {
+            shot.pos = getPlayerGunPos(gameState.player.pos);
+        }
+    });
+
+    gameState.player.currentShotCooldown = handleTimer(
+        gameState.player.currentShotCooldown,
+        deltaTime
+    );
+
+    gameState.shots = gameState.shots.filter(
+        (shot) => shot.pos.x < screenSize.x
+    );
+};
+
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -65,16 +125,18 @@ export const gameReducer = (
     switch (action.type) {
         case "TICK": {
             const newState = structuredClone(gameState);
-            const { deltaTime, screenSize, inputActions } = action.payload;
+            const { deltaTime, screenSize, inputActions, volatileData } =
+                action.payload;
 
             const playerState = newState.player;
 
-            handlePlayerInput(playerState, inputActions);
+            handlePlayerInput(gameState, inputActions);
 
             const subSteps = 4;
             const stepTime = deltaTime / subSteps;
             Array.from({ length: subSteps }).forEach(() => {
-                handlePlayerPhysics(playerState, stepTime, screenSize);
+                handlePlayerPhysics(playerState, screenSize, stepTime);
+                handleShots(gameState, volatileData, screenSize, stepTime);
             });
 
             return newState;

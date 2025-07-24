@@ -1,11 +1,17 @@
 import { GameState, ShooterInputAction } from "./types";
 
 export const ASSETS_PATH = "space-shooter/";
-const PLAYER_SCALE = 0.75;
+export const SHOT_COOLDOWN = 0.5;
 
-export const PLAYER_SIZE = {
-    width: 140 * PLAYER_SCALE,
-    height: 94 * PLAYER_SCALE,
+export const CONSTANT_SIZES = {
+    player: {
+        width: 105,
+        height: 70.5,
+    },
+    shot: {
+        width: 96,
+        height: 36,
+    },
 };
 
 export const INITIAL_GAME_STATE: GameState = {
@@ -16,7 +22,9 @@ export const INITIAL_GAME_STATE: GameState = {
             vertical: "IDLE",
             horizontal: "IDLE",
         },
+        currentShotCooldown: 0,
     },
+    shots: [],
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
@@ -30,4 +38,5 @@ export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
 export const ALL_SPRITES = {
     background: `${ASSETS_PATH}background.png`,
     player: `${ASSETS_PATH}player.png`,
+    shot: `${ASSETS_PATH}shot.png`,
 };

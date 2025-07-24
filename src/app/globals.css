@@ -58,6 +58,10 @@
     animation-play-state: running;
 }
 
+@utility rendering-pixelated {
+    image-rendering: pixelated;
+}
+
 @utility bg-stripe {
     background-image: linear-gradient(
         rgba(18, 18, 18, 0.4) 50%,

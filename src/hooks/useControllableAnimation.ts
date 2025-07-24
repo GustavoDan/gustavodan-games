@@ -47,6 +47,10 @@ const useControllableAnimation = (
         return frameIndex;
     }, [animationDuration, durationPerFrame]);
 
+    const isFinished = useCallback(() => {
+        return animationRef.current?.playState === "finished";
+    }, []);
+
     useEffect(() => {
         const element = elementRef.current;
         if (!element) return;
@@ -63,7 +67,7 @@ const useControllableAnimation = (
 
     useEffect(() => {
         const animation = animationRef.current;
-        if (!animation) return;
+        if (!animation || isFinished()) return;
 
         if (controls.isPlaying) {
             animation.play();
@@ -74,7 +78,11 @@ const useControllableAnimation = (
         animation.playbackRate = controls.playbackRate;
     }, [controls.isPlaying, controls.playbackRate]);
 
-    return { getCurrentFrame, elementRef };
+    return {
+        getCurrentFrame,
+        isFinished,
+        elementRef,
+    };
 };
 
 export default useControllableAnimation;
