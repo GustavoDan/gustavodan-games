@@ -2,11 +2,17 @@ import { GameState, ShooterInputAction } from "./types";
 
 export const ASSETS_PATH = "space-shooter/";
 export const SHOT_COOLDOWN = 0.5;
+export const INVULNERABILITY_DURATION = 1.5;
 
 export const ENEMY_SPAWN_TIME_RANGE = {
     min: 0.5,
     max: 2.5,
 };
+
+export const EMPTY_MARKED_FOR_DELETION = {
+    shots: new Set<string>(),
+    enemies: new Set<string>(),
+} as const;
 
 export const CONSTANT_SIZES = {
     player: {
@@ -43,6 +49,7 @@ export const CONSTANT_SIZES = {
 
 export const INITIAL_GAME_STATE: GameState = {
     player: {
+        life: 3,
         pos: { x: 0, y: 0 },
         moveSpeed: 600,
         moveDirection: {
@@ -50,10 +57,12 @@ export const INITIAL_GAME_STATE: GameState = {
             horizontal: "IDLE",
         },
         currentShotCooldown: 0,
+        invulnerabilityTimer: 0,
     },
     shots: [],
     enemies: [],
     enemySpawnTimer: 0,
+    markedForDeletion: EMPTY_MARKED_FOR_DELETION,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {

@@ -9,6 +9,7 @@ import { CONSTANT_SIZES } from "./constants";
 export type EnemyType = keyof typeof CONSTANT_SIZES.enemies;
 
 export interface PlayerState {
+    life: number;
     pos: Vector2D;
     moveSpeed: number;
     moveDirection: {
@@ -16,6 +17,7 @@ export interface PlayerState {
         horizontal: HorizontalMovementDirection;
     };
     currentShotCooldown: number;
+    invulnerabilityTimer: number;
 }
 
 export interface ShotState {
@@ -34,6 +36,10 @@ export interface GameState {
     shots: ShotState[];
     enemies: EnemyState[];
     enemySpawnTimer: number;
+    markedForDeletion: {
+        shots: Set<string>;
+        enemies: Set<string>;
+    };
 }
 
 export interface ShooterInputAction extends BaseInputAction {

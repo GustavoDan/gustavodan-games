@@ -1,4 +1,4 @@
-import { Vector2D } from "@/types";
+import { BoundingBox, Vector2D } from "@/types";
 import {
     EnemyState,
     EnemyType,
@@ -10,12 +10,15 @@ import {
 } from "../types";
 import {
     CONSTANT_SIZES,
+    EMPTY_MARKED_FOR_DELETION,
     ENEMY_SPAWN_TIME_RANGE,
+    INVULNERABILITY_DURATION,
     SHOT_COOLDOWN,
 } from "../constants";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import { handleTimer } from "@/utils/timer";
 import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
+import { areBoxesOverlapping } from "@/utils/collision";
 
 type TickAction = {
     type: "TICK";
@@ -174,6 +177,92 @@ export const handleEnemies = (
     );
 };
 
+const checkEnemyShotCollisions = (gameState: GameState) => {
+    const { enemies, shots, markedForDeletion } = gameState;
+    const { enemies: markedEnemies, shots: markedShots } = markedForDeletion;
+
+    for (const enemy of enemies) {
+        if (markedEnemies.has(enemy.id)) continue;
+
+        const enemySize = CONSTANT_SIZES.enemies[enemy.type];
+        const enemyBox: BoundingBox = {
+            x: enemy.pos.x,
+            y: enemy.pos.y,
+            width: enemySize.width,
+            height: enemySize.height,
+        };
+
+        for (const shot of shots) {
+            if (markedShots.has(shot.id)) continue;
+
+            const shotBox: BoundingBox = {
+                x: shot.pos.x,
+                y: shot.pos.y,
+                width: CONSTANT_SIZES.shot.width,
+                height: CONSTANT_SIZES.shot.height,
+            };
+
+            if (areBoxesOverlapping(enemyBox, shotBox)) {
+                markedShots.add(shot.id);
+                markedEnemies.add(enemy.id);
+                break;
+            }
+        }
+    }
+};
+
+const checkPlayerEnemyCollisions = (gameState: GameState) => {
+    const { player, enemies, markedForDeletion } = gameState;
+    const markedEnemies = markedForDeletion.enemies;
+
+    const playerBox: BoundingBox = {
+        x: player.pos.x,
+        y: player.pos.y,
+        width: CONSTANT_SIZES.player.width,
+        height: CONSTANT_SIZES.player.height,
+    };
+
+    for (const enemy of enemies) {
+        if (markedEnemies.has(enemy.id)) continue;
+
+        const enemySize = CONSTANT_SIZES.enemies[enemy.type];
+        const enemyBox: BoundingBox = {
+            x: enemy.pos.x,
+            y: enemy.pos.y,
+            width: enemySize.width,
+            height: enemySize.height,
+        };
+
+        if (areBoxesOverlapping(playerBox, enemyBox)) {
+            markedEnemies.add(enemy.id);
+
+            if (player.invulnerabilityTimer <= 0) {
+                player.life -= 1;
+                player.invulnerabilityTimer = INVULNERABILITY_DURATION;
+            }
+        }
+    }
+};
+
+const handleCollisions = (gameState: GameState) => {
+    checkEnemyShotCollisions(gameState);
+    checkPlayerEnemyCollisions(gameState);
+    console.log(gameState.markedForDeletion);
+};
+
+const deleteObjects = (gameState: GameState) => {
+    let { enemies: markedEnemies, shots: markedShots } =
+        gameState.markedForDeletion;
+
+    gameState.shots = gameState.shots.filter(
+        (shot) => !markedShots.has(shot.id)
+    );
+    gameState.enemies = gameState.enemies.filter(
+        (shot) => !markedEnemies.has(shot.id)
+    );
+    gameState.markedForDeletion = EMPTY_MARKED_FOR_DELETION;
+};
+
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -186,15 +275,18 @@ export const gameReducer = (
 
             const playerState = newState.player;
 
-            handlePlayerInput(gameState, inputActions);
+            handlePlayerInput(newState, inputActions);
 
             const subSteps = 4;
             const stepTime = deltaTime / subSteps;
             Array.from({ length: subSteps }).forEach(() => {
                 handlePlayerPhysics(playerState, screenSize, stepTime);
-                handleShots(gameState, volatileData, screenSize, stepTime);
-                handleEnemies(gameState, screenSize, stepTime);
+                handleShots(newState, volatileData, screenSize, stepTime);
+                handleEnemies(newState, screenSize, stepTime);
+                handleCollisions(newState);
             });
+
+            deleteObjects(newState);
 
             return newState;
         }
