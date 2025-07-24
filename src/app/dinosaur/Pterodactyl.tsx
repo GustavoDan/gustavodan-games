@@ -60,7 +60,7 @@ const Pterodactyl = ({
                 bottom: obstacleState.pos.y,
                 left: obstacleState.pos.x,
             }}
-            className={cn("absolute text-red-400 animate-neon-text-pulse")}
+            className={"absolute text-red-400 animate-neon-text-pulse"}
         >
             <div
                 ref={elementRef}
@@ -70,10 +70,7 @@ const Pterodactyl = ({
                 className={cn(
                     "size-full",
                     "before:absolute before:inset-0 before:pointer-events-none",
-                    "before:bg-danger before:animate-diagonal-stripes-gradient",
-                    engineState === "RUNNING"
-                        ? "animation-run"
-                        : " animation-pause"
+                    "before:bg-danger before:animate-diagonal-stripes-gradient"
                 )}
             />
         </div>

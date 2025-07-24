@@ -243,11 +243,7 @@ const DinosaurGame = () => {
                         unregister={unregisterObstacle}
                     />
                 ) : (
-                    <Cactus
-                        key={obstacle.id}
-                        engineState={engineState}
-                        obstacleState={obstacle}
-                    />
+                    <Cactus key={obstacle.id} obstacleState={obstacle} />
                 )
             )}
             <Dinosaur
