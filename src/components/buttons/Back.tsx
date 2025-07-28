@@ -11,7 +11,7 @@ const Back = ({ className, ...props }: BackProps) => {
 
     return (
         <BaseButton
-            onClick={router.back}
+            onClick={() => router.push("/")}
             className={cn(
                 "text-sm p-2 leading-0.5 aspect-square md:text-xl md:p-0 md:leading-none md:indent-0.5 md:size-10.5",
                 "sm-h:text-xs sm-h:p-0 sm-h:size-7",
