@@ -47,6 +47,7 @@
     --animate-circle-gradient: circle-wave 2.5s linear infinite;
     --animate-diagonal-stripes-gradient: move-diagonal-stripes-gradient 0.5s
         linear infinite;
+    --animate-heartbeat: heartbeat 1.3s steps(10) infinite;
     --animate-blink: blink 1.4s infinite both;
 }
 
@@ -197,6 +198,15 @@
     }
     to {
         background-position: 0;
+    }
+}
+
+@keyframes heartbeat {
+    from {
+        background-position: 400px;
+    }
+    to {
+        background-position: 4400px;
     }
 }
 

@@ -6,6 +6,7 @@ import {
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
     CONSTANT_SIZES,
+    MAX_PLAYER_LIFE,
 } from "./constants";
 import Player from "./Player";
 import { gameReducer } from "./game/reducer";
@@ -22,6 +23,7 @@ import Enemy from "./Enemy";
 import useAssetLoader from "@/hooks/useAssetLoader";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
+import HeartContainer from "./HeartContainer";
 
 const SpaceShooter = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -181,7 +183,18 @@ const SpaceShooter = () => {
 
             <Player playerState={gameState.player} />
 
-            <div>{gameState.player.life}</div>
+            <div className="flex justify-between">
+                <div className="flex">
+                    {Array.from({ length: MAX_PLAYER_LIFE }).map((_, index) => (
+                        <HeartContainer
+                            key={index}
+                            isEmpty={index >= gameState.player.life}
+                        />
+                    ))}
+                </div>
+
+                {gameState.score}
+            </div>
 
             <GameOverlay engineState={engineState} isGameOver={false}>
                 <GameOverlay.StartScreen>

@@ -228,6 +228,7 @@ const checkEnemyShotCollisions = (
             if (isPixelColliding(enemyBox, shotBox)) {
                 markedShots.add(shot.id);
                 markedEnemies.add(enemy.id);
+                gameState.score += 1;
                 break;
             }
         }

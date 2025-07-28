@@ -40,6 +40,7 @@ export interface GameState {
         shots: Set<string>;
         enemies: Set<string>;
     };
+    score: number;
 }
 
 export interface ShooterInputAction extends BaseInputAction {

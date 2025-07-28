@@ -3,6 +3,7 @@ import { GameState, ShooterInputAction } from "./types";
 export const ASSETS_PATH = "space-shooter/";
 export const SHOT_COOLDOWN = 0.5;
 export const INVULNERABILITY_DURATION = 1.5;
+export const MAX_PLAYER_LIFE = 3;
 
 export const ENEMY_SPAWN_TIME_RANGE = {
     min: 0.5,
@@ -47,11 +48,15 @@ export const CONSTANT_SIZES = {
             height: 61,
         },
     },
+    heartContainer: {
+        width: 40,
+        height: 40,
+    },
 };
 
 export const INITIAL_GAME_STATE: GameState = {
     player: {
-        life: 3,
+        life: MAX_PLAYER_LIFE,
         pos: { x: 0, y: 0 },
         moveSpeed: 600,
         moveDirection: {
@@ -65,6 +70,7 @@ export const INITIAL_GAME_STATE: GameState = {
     enemies: [],
     enemySpawnTimer: 0,
     markedForDeletion: EMPTY_MARKED_FOR_DELETION,
+    score: 0,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
@@ -84,4 +90,5 @@ export const ALL_SPRITES = {
     mediumEnemy: `${ASSETS_PATH}mediumEnemy.png`,
     largeEnemy: `${ASSETS_PATH}largeEnemy.png`,
     extraLargeEnemy: `${ASSETS_PATH}extraLargeEnemy.png`,
+    HeartContainer: `${ASSETS_PATH}heartContainer.png`,
 };
