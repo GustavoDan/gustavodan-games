@@ -206,20 +206,22 @@ const handleCollisions = (
 
     const dinosaurSprite = dinosaur.isDucking ? "duck" : "run";
     const dinosaurBox: CollidableObject = {
-        x: dinosaur.pos.x,
-        y: dinosaur.pos.y,
-        width: DINOSAUR_SIZE[dinosaurSprite].width,
-        height: DINOSAUR_SIZE[dinosaurSprite].height,
+        pos: { ...dinosaur.pos },
+        size: {
+            x: DINOSAUR_SIZE[dinosaurSprite].width,
+            y: DINOSAUR_SIZE[dinosaurSprite].height,
+        },
         image: assets[dinosaurSprite],
         frameIndex: volatileData.getDinosaurFrame?.() ?? 0,
     };
 
     const hasCollision = gameState.obstacles.some((obstacle) => {
         const obstacleBox: CollidableObject = {
-            x: obstacle.pos.x,
-            y: obstacle.pos.y,
-            width: OBSTACLES.types[obstacle.type].width,
-            height: OBSTACLES.types[obstacle.type].height,
+            pos: { ...obstacle.pos },
+            size: {
+                x: OBSTACLES.types[obstacle.type].width,
+                y: OBSTACLES.types[obstacle.type].height,
+            },
             image: assets[obstacle.type],
             frameIndex: volatileData.getObstaclesFrame.get(obstacle.id)?.(),
         };

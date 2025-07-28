@@ -1,6 +1,6 @@
 import { cn } from "@/utils/cn";
 import { TicTacToeMarker } from "./types";
-import { isTouchInside } from "@/utils/isTouchInside";
+import { areBoxesOverlapping, toBoundingBox } from "@/utils/collision";
 
 interface CellProps {
     text?: TicTacToeMarker;
@@ -35,7 +35,13 @@ const Cell = ({
             )}
             onTouchEnd={(event) => {
                 const target = event.currentTarget;
-                if (isTouchInside(target, event.changedTouches[0])) {
+
+                if (
+                    areBoxesOverlapping(
+                        toBoundingBox(target),
+                        toBoundingBox(event.changedTouches[0])
+                    )
+                ) {
                     target.click();
                 }
             }}

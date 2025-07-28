@@ -1,4 +1,35 @@
+import { Touch } from "react";
 import { BoundingBox, CollidableObject } from "@/types";
+
+export const toBoundingBox = (entity: HTMLElement | Touch): BoundingBox => {
+    if (entity instanceof HTMLElement) {
+        const rect = entity.getBoundingClientRect();
+        return {
+            pos: {
+                x: rect.left,
+                y: rect.top,
+            },
+            size: {
+                x: rect.width,
+                y: rect.height,
+            },
+        };
+    }
+
+    return {
+        pos: { x: entity.clientX, y: entity.clientY },
+        size: { x: 0, y: 0 },
+    };
+};
+
+export const areBoxesOverlapping = (box1: BoundingBox, box2: BoundingBox) => {
+    return (
+        box1.pos.x < box2.pos.x + box2.size.x &&
+        box1.pos.x + box1.size.x > box2.pos.x &&
+        box1.pos.y < box2.pos.y + box2.size.y &&
+        box1.pos.y + box1.size.y > box2.pos.y
+    );
+};
 
 const getImageData = (
     obj: CollidableObject,
@@ -8,8 +39,8 @@ const getImageData = (
     overlapHeight: number
 ) => {
     const canvas = document.createElement("canvas");
-    canvas.width = obj.width;
-    canvas.height = obj.height;
+    canvas.width = obj.size.x;
+    canvas.height = obj.size.y;
     const context = canvas.getContext("2d", { willReadFrequently: true })!;
     const spriteScaleX =
         typeof obj.spriteScale === "number"
@@ -22,9 +53,9 @@ const getImageData = (
     let sx: number, sWidth: number, sHeight: number;
 
     if (obj.frameIndex != null) {
-        sx = obj.frameIndex * (obj.width / spriteScaleX);
-        sWidth = obj.width / spriteScaleX;
-        sHeight = obj.height / spriteScaleY;
+        sx = obj.frameIndex * (obj.size.x / spriteScaleX);
+        sWidth = obj.size.x / spriteScaleX;
+        sHeight = obj.size.y / spriteScaleY;
     } else {
         sx = 0;
         sWidth = obj.image.width;
@@ -39,37 +70,28 @@ const getImageData = (
         sHeight,
         0,
         0,
-        obj.width,
-        obj.height
+        obj.size.x,
+        obj.size.y
     );
 
     return context.getImageData(
-        overlapX - obj.x,
-        overlapY - obj.y,
+        overlapX - obj.pos.x,
+        overlapY - obj.pos.y,
         overlapWidth,
         overlapHeight
     ).data;
-};
-
-export const areBoxesOverlapping = (box1: BoundingBox, box2: BoundingBox) => {
-    return (
-        box1.x < box2.x + box2.width &&
-        box1.x + box1.width > box2.x &&
-        box1.y < box2.y + box2.height &&
-        box1.y + box1.height > box2.y
-    );
 };
 
 export const isPixelColliding = (
     obj1: CollidableObject,
     obj2: CollidableObject
 ) => {
-    const overlapX = Math.max(obj1.x, obj2.x);
-    const overlapY = Math.max(obj1.y, obj2.y);
+    const overlapX = Math.max(obj1.pos.x, obj2.pos.x);
+    const overlapY = Math.max(obj1.pos.y, obj2.pos.y);
     const overlapWidth =
-        Math.min(obj1.x + obj1.width, obj2.x + obj2.width) - overlapX;
+        Math.min(obj1.pos.x + obj1.size.x, obj2.pos.x + obj2.size.x) - overlapX;
     const overlapHeight =
-        Math.min(obj1.y + obj1.height, obj2.y + obj2.height) - overlapY;
+        Math.min(obj1.pos.y + obj1.size.y, obj2.pos.y + obj2.size.y) - overlapY;
 
     if (overlapWidth < 1 || overlapHeight < 1) {
         return false;

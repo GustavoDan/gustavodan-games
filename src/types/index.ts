@@ -6,22 +6,20 @@ export type AllMovementDirection =
     | HorizontalMovementDirection
     | VerticalMovementDirection;
 
-export interface BoundingBox {
+export interface Vector2D {
     x: number;
     y: number;
-    width: number;
-    height: number;
+}
+
+export interface BoundingBox {
+    pos: Vector2D;
+    size: Vector2D;
 }
 
 export interface CollidableObject extends BoundingBox {
     image: HTMLImageElement;
     spriteScale?: number | Vector2D;
     frameIndex?: number | null;
-}
-
-export interface Vector2D {
-    x: number;
-    y: number;
 }
 
 export type Binding = {

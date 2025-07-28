@@ -9,7 +9,7 @@ import type {
 } from "react";
 import { cn } from "@/utils/cn";
 import useFocusHandler from "@/hooks/useFocusHandler";
-import { isTouchInside } from "@/utils/isTouchInside";
+import { areBoxesOverlapping, toBoundingBox } from "@/utils/collision";
 
 export interface BaseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;
@@ -53,12 +53,23 @@ const Base = forwardRef(
                 onTouchEnd: createHandler((target, event) => {
                     event.preventDefault();
 
-                    if (!isTouchInside(target, event.changedTouches[0])) return;
+                    if (
+                        !areBoxesOverlapping(
+                            toBoundingBox(target),
+                            toBoundingBox(event.changedTouches[0])
+                        )
+                    )
+                        return;
                     event.currentTarget.click();
                     removeFocus(event.currentTarget);
                 }, onTouchEnd),
                 onTouchMove: createHandler((target, event) => {
-                    if (isTouchInside(target, event.touches[0])) {
+                    if (
+                        areBoxesOverlapping(
+                            toBoundingBox(target),
+                            toBoundingBox(event.touches[0])
+                        )
+                    ) {
                         setFocus(target);
                         return;
                     }

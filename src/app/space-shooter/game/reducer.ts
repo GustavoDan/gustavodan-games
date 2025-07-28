@@ -201,10 +201,13 @@ const checkEnemyShotCollisions = (
 
         const enemySize = CONSTANT_SIZES.enemies[enemy.type];
         const enemyBox: CollidableObject = {
-            x: enemy.pos.x,
-            y: enemy.pos.y,
-            width: enemySize.width,
-            height: enemySize.height,
+            pos: {
+                ...enemy.pos,
+            },
+            size: {
+                x: enemySize.width,
+                y: enemySize.height,
+            },
             image: assets[`${enemy.type}Enemy`],
         };
 
@@ -216,10 +219,13 @@ const checkEnemyShotCollisions = (
             )?.getCurrentFrame;
 
             const shotBox: CollidableObject = {
-                x: shot.pos.x,
-                y: shot.pos.y,
-                width: CONSTANT_SIZES.shot.width,
-                height: CONSTANT_SIZES.shot.height,
+                pos: {
+                    ...shot.pos,
+                },
+                size: {
+                    x: CONSTANT_SIZES.shot.width,
+                    y: CONSTANT_SIZES.shot.height,
+                },
                 image: assets.shot,
                 spriteScale: CONSTANT_SIZES.shot.spriteScale,
                 frameIndex: getShotFrame?.() ?? 0,
@@ -240,10 +246,11 @@ const checkPlayerEnemyCollisions = (gameState: GameState) => {
     const markedEnemies = markedForDeletion.enemies;
 
     const playerBox: BoundingBox = {
-        x: player.pos.x,
-        y: player.pos.y,
-        width: CONSTANT_SIZES.player.width,
-        height: CONSTANT_SIZES.player.height,
+        pos: { ...player.pos },
+        size: {
+            x: CONSTANT_SIZES.player.width,
+            y: CONSTANT_SIZES.player.height,
+        },
     };
 
     for (const enemy of enemies) {
@@ -251,10 +258,11 @@ const checkPlayerEnemyCollisions = (gameState: GameState) => {
 
         const enemySize = CONSTANT_SIZES.enemies[enemy.type];
         const enemyBox: BoundingBox = {
-            x: enemy.pos.x,
-            y: enemy.pos.y,
-            width: enemySize.width,
-            height: enemySize.height,
+            pos: { ...enemy.pos },
+            size: {
+                x: enemySize.width,
+                y: enemySize.height,
+            },
         };
 
         if (areBoxesOverlapping(playerBox, enemyBox)) {
