@@ -18,10 +18,12 @@ export const CONSTANT_SIZES = {
     player: {
         width: 105,
         height: 70.5,
+        spriteScale: 0.75,
     },
     shot: {
         width: 96,
         height: 36,
+        spriteScale: { x: 2, y: 3 },
     },
     enemies: {
         extraSmall: {

@@ -15,6 +15,7 @@ export interface BoundingBox {
 
 export interface CollidableObject extends BoundingBox {
     image: HTMLImageElement;
+    spriteScale?: number | Vector2D;
     frameIndex?: number | null;
 }
 

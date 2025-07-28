@@ -11,12 +11,20 @@ const getImageData = (
     canvas.width = obj.width;
     canvas.height = obj.height;
     const context = canvas.getContext("2d", { willReadFrequently: true })!;
+    const spriteScaleX =
+        typeof obj.spriteScale === "number"
+            ? obj.spriteScale
+            : obj.spriteScale?.x ?? 1;
+    const spriteScaleY =
+        typeof obj.spriteScale === "number"
+            ? obj.spriteScale
+            : obj.spriteScale?.y ?? 1;
     let sx: number, sWidth: number, sHeight: number;
 
     if (obj.frameIndex != null) {
-        sx = obj.frameIndex * obj.width;
-        sWidth = obj.width;
-        sHeight = obj.height;
+        sx = obj.frameIndex * (obj.width / spriteScaleX);
+        sWidth = obj.width / spriteScaleX;
+        sHeight = obj.height / spriteScaleY;
     } else {
         sx = 0;
         sWidth = obj.image.width;

@@ -221,6 +221,7 @@ const checkEnemyShotCollisions = (
                 width: CONSTANT_SIZES.shot.width,
                 height: CONSTANT_SIZES.shot.height,
                 image: assets.shot,
+                spriteScale: CONSTANT_SIZES.shot.spriteScale,
                 frameIndex: getShotFrame?.() ?? 0,
             };
 
