@@ -194,9 +194,13 @@ export const handleEnemies = (
         gameState.enemySpawnTimer = getNewSpawnTimer();
     }
 
+    const initialEnemyCount = gameState.enemies.length;
+
     gameState.enemies = gameState.enemies.filter(
         (enemy) => enemy.pos.x > -CONSTANT_SIZES.enemies[enemy.type].width
     );
+
+    gameState.player.life -= initialEnemyCount - gameState.enemies.length;
 };
 
 const checkEnemyShotCollisions = (
