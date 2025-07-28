@@ -81,7 +81,7 @@ const useControllableAnimation = (
 
     const isFinished = useMemo(() => {
         return animationRef.current?.playState === "finished";
-    }, []);
+    }, [animationRef.current?.playState]);
 
     useEffect(() => {
         const element = elementRef.current;
