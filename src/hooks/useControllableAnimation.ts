@@ -1,10 +1,22 @@
-import getStepsFromEasingString from "@/utils/getStepsFromEasingString";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 interface AnimationControls {
     isPlaying: boolean;
     playbackRate: number;
 }
+
+const parseStepsEasing = (easingString: string | undefined) => {
+    const match = easingString?.match(/steps\((\d+)(?:,\s*(start|end))?\)/);
+
+    if (!match) {
+        return null;
+    }
+
+    const amount = parseInt(match[1], 10);
+    const jump = match[2] || "end";
+
+    return { amount, jump };
+};
 
 const handleDuration = (
     duration: CSSNumericValue | string | number | undefined
@@ -21,8 +33,8 @@ const useControllableAnimation = (
 ) => {
     const elementRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<Animation | null>(null);
-    const stepsAmount = useMemo(
-        () => getStepsFromEasingString(options.easing),
+    const stepsConfig = useMemo(
+        () => parseStepsEasing(options.easing),
         [options.easing]
     );
     const animationDuration = useMemo(
@@ -30,22 +42,41 @@ const useControllableAnimation = (
         [options.duration]
     );
     const durationPerFrame = useMemo(() => {
-        if (!animationDuration || !stepsAmount || stepsAmount === 0)
-            return null;
-        return animationDuration / stepsAmount;
-    }, [animationDuration, stepsAmount]);
+        if (!animationDuration || !stepsConfig?.amount) return null;
+
+        return animationDuration / stepsConfig.amount;
+    }, [animationDuration, stepsConfig?.amount]);
 
     const getCurrentFrame = useCallback(() => {
         const currentTime = animationRef.current?.currentTime;
-        if (!animationDuration || !durationPerFrame || !currentTime)
+
+        if (
+            !animationDuration ||
+            !durationPerFrame ||
+            !stepsConfig ||
+            !stepsConfig.amount ||
+            currentTime == null
+        )
             return null;
 
         const currentTimeFloat = parseFloat(currentTime.toString());
+
+        if (
+            options.fill === "forwards" &&
+            currentTimeFloat === animationDuration
+        ) {
+            return stepsConfig.amount;
+        }
+
         const cycleTime = currentTimeFloat % animationDuration;
         const frameIndex = Math.floor(cycleTime / durationPerFrame);
 
+        if (stepsConfig.jump === "start") {
+            return currentTimeFloat !== animationDuration ? frameIndex + 1 : 0;
+        }
+
         return frameIndex;
-    }, [animationDuration, durationPerFrame]);
+    }, [animationDuration, durationPerFrame, options.fill, stepsConfig]);
 
     const isFinished = useCallback(() => {
         return animationRef.current?.playState === "finished";
