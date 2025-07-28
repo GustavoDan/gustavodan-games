@@ -7,6 +7,11 @@ import {
 import { CONSTANT_SIZES } from "./constants";
 
 export type EnemyType = keyof typeof CONSTANT_SIZES.enemies;
+export type DeletableObject = keyof GameState["markedForDeletion"];
+export type DeleteObjectFn = (
+    objectType: DeletableObject,
+    objectId: string
+) => void;
 
 export interface PlayerState {
     life: number;
@@ -47,18 +52,17 @@ export interface ShooterInputAction extends BaseInputAction {
     shoot: boolean;
 }
 
+interface VolatileDataShot {
+    getCurrentFrame: () => number | null;
+    isAnimationFinished: boolean;
+}
+
 export interface VolatileData {
-    shot: Map<
-        string,
-        {
-            getCurrentFrame: () => number | null;
-            isAnimationFinished: () => boolean;
-        }
-    >;
+    shot: Map<string, VolatileDataShot>;
 }
 
 export type VolatileDataShotFn = (
     id: string,
-    getCurrentFrame: () => number | null,
-    isAnimationFinished: () => boolean
+    getCurrentFrame: VolatileDataShot["getCurrentFrame"],
+    isAnimationFinished: VolatileDataShot["isAnimationFinished"]
 ) => void;

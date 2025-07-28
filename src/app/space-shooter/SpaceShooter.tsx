@@ -18,7 +18,7 @@ import useEventListener from "@/hooks/useEventListener";
 import GameOverlay from "@/components/GameOverlay";
 import { GameActionButton } from "@/components/buttons";
 import Shot from "./Shot";
-import { VolatileData, VolatileDataShotFn } from "./types";
+import { DeleteObjectFn, VolatileData, VolatileDataShotFn } from "./types";
 import Enemy from "./Enemy";
 import useAssetLoader from "@/hooks/useAssetLoader";
 import Loading from "@/components/Loading";
@@ -77,6 +77,16 @@ const SpaceShooter = () => {
         onResume: resetInputs,
         onStop: resetInputs,
     });
+
+    const deleteObject: DeleteObjectFn = useCallback((objectType, objectId) => {
+        dispatch({
+            type: "DELETE_OBJECT",
+            payload: {
+                objectType,
+                objectId,
+            },
+        });
+    }, []);
 
     useEffect(() => {
         if (worldHeight <= 0 || previousWorldHeight) return;
@@ -168,7 +178,15 @@ const SpaceShooter = () => {
             className="size-full rendering-pixelated"
         >
             {gameState.enemies.map((enemy) => (
-                <Enemy key={enemy.id} enemyState={enemy} />
+                <Enemy
+                    key={enemy.id}
+                    enemyState={enemy}
+                    engineState={engineState}
+                    isMarkedForDeletion={gameState.markedForDeletion.enemies.has(
+                        enemy.id
+                    )}
+                    deleteObject={deleteObject}
+                />
             ))}
 
             {gameState.shots.map((shot) => (
@@ -178,6 +196,10 @@ const SpaceShooter = () => {
                     engineState={engineState}
                     onShotAnimationUpdate={updateShotAnimationData}
                     unregister={unregisterShot}
+                    isMarkedForDeletion={gameState.markedForDeletion.shots.has(
+                        shot.id
+                    )}
+                    deleteObject={deleteObject}
                 />
             ))}
 

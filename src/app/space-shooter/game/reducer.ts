@@ -1,5 +1,6 @@
 import { BoundingBox, CollidableObject, Vector2D } from "@/types";
 import {
+    DeletableObject,
     EnemyState,
     EnemyType,
     GameState,
@@ -11,7 +12,6 @@ import {
 import {
     ALL_SPRITES,
     CONSTANT_SIZES,
-    EMPTY_MARKED_FOR_DELETION,
     ENEMY_SPAWN_TIME_RANGE,
     INVULNERABILITY_DURATION,
     SHOT_COOLDOWN,
@@ -39,8 +39,15 @@ type InitializePlayerYAction = {
         playerY: number;
     };
 };
+type DeleteObjectAction = {
+    type: "DELETE_OBJECT";
+    payload: {
+        objectType: DeletableObject;
+        objectId: string;
+    };
+};
 
-type GameAction = TickAction | InitializePlayerYAction;
+type GameAction = TickAction | InitializePlayerYAction | DeleteObjectAction;
 
 const ENEMY_TYPES = (Object.keys(CONSTANT_SIZES.enemies) as EnemyType[]).map(
     (key) => key
@@ -55,11 +62,11 @@ const getNewSpawnTimer = () => {
 };
 
 const getPlayerGunPos = (playerPos: Vector2D): Vector2D => {
+    const playerSize = CONSTANT_SIZES.player;
+    const shotSize = CONSTANT_SIZES.shot;
     return {
-        x: playerPos.x + CONSTANT_SIZES.player.width,
-        y:
-            playerPos.y +
-            (CONSTANT_SIZES.player.height - CONSTANT_SIZES.shot.height) / 2,
+        x: playerPos.x + playerSize.width,
+        y: playerPos.y + (playerSize.height - shotSize.height) / 2,
     };
 };
 
@@ -133,8 +140,10 @@ const handleShots = (
         const isShotAnimFinished = volatileData.shot.get(
             shot.id
         )?.isAnimationFinished;
+        const isShotMarked = gameState.markedForDeletion.shots.has(shot.id);
 
-        if (isShotAnimFinished?.()) {
+        if (isShotMarked) {
+        } else if (isShotAnimFinished) {
             shot.pos.x = moveOnAxis(shot.pos.x, "RIGHT", 600, deltaTime);
         } else {
             shot.pos = getPlayerGunPos(gameState.player.pos);
@@ -157,7 +166,9 @@ export const handleEnemies = (
     deltaTime: number
 ) => {
     gameState.enemies.forEach((enemie) => {
-        enemie.pos.x = moveOnAxis(enemie.pos.x, "LEFT", 600, deltaTime);
+        if (!gameState.markedForDeletion.enemies.has(enemie.id)) {
+            enemie.pos.x = moveOnAxis(enemie.pos.x, "LEFT", 600, deltaTime);
+        }
     });
 
     gameState.enemySpawnTimer -= deltaTime;
@@ -285,19 +296,6 @@ const handleCollisions = (
     checkPlayerEnemyCollisions(gameState);
 };
 
-const deleteObjects = (gameState: GameState) => {
-    const { enemies: markedEnemies, shots: markedShots } =
-        gameState.markedForDeletion;
-
-    gameState.shots = gameState.shots.filter(
-        (shot) => !markedShots.has(shot.id)
-    );
-    gameState.enemies = gameState.enemies.filter(
-        (shot) => !markedEnemies.has(shot.id)
-    );
-    gameState.markedForDeletion = EMPTY_MARKED_FOR_DELETION;
-};
-
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -322,12 +320,11 @@ export const gameReducer = (
                 handleCollisions(newState, volatileData, assets);
             });
 
-            deleteObjects(newState);
             handlePlayerInput(newState, inputActions);
 
             return newState;
         }
-        case "INITIALIZE_GAME_STATE":
+        case "INITIALIZE_GAME_STATE": {
             return {
                 ...gameState,
                 player: {
@@ -339,6 +336,25 @@ export const gameReducer = (
                 },
                 enemySpawnTimer: getNewSpawnTimer(),
             };
+        }
+        case "DELETE_OBJECT": {
+            const { objectType, objectId } = action.payload;
+            const newObjectSet = new Set(
+                gameState.markedForDeletion[objectType]
+            );
+            newObjectSet.delete(objectId);
+
+            return {
+                ...gameState,
+                markedForDeletion: {
+                    ...gameState.markedForDeletion,
+                    [objectType]: newObjectSet,
+                },
+                [objectType]: gameState[objectType].filter(
+                    (object) => object.id !== objectId
+                ),
+            };
+        }
 
         default:
             return gameState;

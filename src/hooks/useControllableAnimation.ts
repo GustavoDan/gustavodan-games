@@ -29,7 +29,8 @@ const handleDuration = (
 const useControllableAnimation = (
     keyframes: Keyframe[] | PropertyIndexedKeyframes,
     options: KeyframeAnimationOptions,
-    controls: AnimationControls
+    controls: AnimationControls,
+    onFinish?: () => void
 ) => {
     const elementRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<Animation | null>(null);
@@ -78,7 +79,7 @@ const useControllableAnimation = (
         return frameIndex;
     }, [animationDuration, durationPerFrame, options.fill, stepsConfig]);
 
-    const isFinished = useCallback(() => {
+    const isFinished = useMemo(() => {
         return animationRef.current?.playState === "finished";
     }, []);
 
@@ -89,16 +90,20 @@ const useControllableAnimation = (
         const animation = element.animate(keyframes, options);
         animation.pause();
 
+        animation.onfinish = () => {
+            onFinish?.();
+        };
+
         animationRef.current = animation;
 
         return () => {
             animation.cancel();
         };
-    }, [keyframes, options]);
+    }, [keyframes, options, onFinish]);
 
     useEffect(() => {
         const animation = animationRef.current;
-        if (!animation || isFinished()) return;
+        if (!animation || isFinished) return;
 
         if (controls.isPlaying) {
             animation.play();
@@ -107,7 +112,13 @@ const useControllableAnimation = (
         }
 
         animation.playbackRate = controls.playbackRate;
-    }, [controls.isPlaying, controls.playbackRate, isFinished]);
+    }, [
+        controls.isPlaying,
+        controls.playbackRate,
+        isFinished,
+        keyframes,
+        options,
+    ]);
 
     return {
         getCurrentFrame,
