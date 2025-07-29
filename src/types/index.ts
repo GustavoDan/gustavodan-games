@@ -6,6 +6,28 @@ export type AllMovementDirection =
     | HorizontalMovementDirection
     | VerticalMovementDirection;
 
+export interface ResetAction {
+    type: "RESET";
+}
+
+export interface LoadHighScoreAction {
+    type: "LOAD_HIGH_SCORE";
+    payload: number;
+}
+
+export interface GameOverAction {
+    type: "GAME_OVER";
+}
+
+export interface BaseTickAction {
+    type: "TICK";
+    payload: {
+        deltaTime: number;
+        screenSize: Vector2D;
+        inputActions: BaseInputAction;
+    };
+}
+
 export interface Vector2D {
     x: number;
     y: number;

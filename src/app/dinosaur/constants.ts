@@ -7,6 +7,7 @@ export const FAST_FALL_MULTIPLIER = 5;
 export const INVULNERABILITY_DURATION = 1.5;
 export const SCORE_PER_SECOND = 1;
 export const INITIAL_GAME_SPEED = 300;
+export const LOCALSTORAGE_HS_VAR = "dino_hs";
 
 export const FLOOR = { heigth: 24, width: 2400 };
 

@@ -20,8 +20,12 @@ import { getRandomFloat, getRandomInt, getRandomItem } from "@/utils/random";
 import { isPixelColliding } from "@/utils/collision";
 import {
     BaseInputAction,
+    BaseTickAction,
     CollidableObject,
+    GameOverAction,
     HorizontalMovementDirection,
+    LoadHighScoreAction,
+    ResetAction,
     Vector2D,
 } from "@/types";
 import { easeInOutQuad } from "@/utils/easing";
@@ -40,20 +44,14 @@ const OBSTACLE_TYPES_WEIGHTS: {
 
 type Assets = { [k in keyof typeof ALL_SPRITES]: HTMLImageElement };
 
-type TickAction = {
-    type: "TICK";
-    payload: {
-        deltaTime: number;
-        screenSize: Vector2D;
-        inputActions: BaseInputAction;
+interface TickAction extends BaseTickAction {
+    payload: BaseTickAction["payload"] & {
         assets: Assets;
         volatileData: VolatileData;
         useRelativePhysics: boolean;
     };
-};
-type ResetAction = { type: "RESET" };
-type LoadHighScoreAction = { type: "LOAD_HIGH_SCORE"; payload: number };
-type GameOverAction = { type: "GAME_OVER" };
+}
+
 type GameAction =
     | TickAction
     | ResetAction

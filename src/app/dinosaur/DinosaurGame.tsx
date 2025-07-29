@@ -13,6 +13,7 @@ import {
     ASSETS_PATH,
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
+    LOCALSTORAGE_HS_VAR,
 } from "./constants";
 import Dinosaur from "./Dinosaur";
 import Floor from "./Floor";
@@ -32,6 +33,8 @@ import PhysicsToggle from "./PhysicsToggle";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
 import { Binding } from "@/types";
+import { loadHighScore, setHighScore } from "@/utils/highScore";
+import { handleGameOver, handleGameStart } from "@/utils/reducerCommon";
 
 const DinosaurGame = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -105,35 +108,19 @@ const DinosaurGame = () => {
     );
 
     useEffect(() => {
-        const storedHighScore = localStorage.getItem("dino_hs");
-        if (storedHighScore) {
-            dispatch({
-                type: "LOAD_HIGH_SCORE",
-                payload: parseInt(storedHighScore),
-            });
-        }
+        loadHighScore(LOCALSTORAGE_HS_VAR, dispatch);
     }, []);
 
     useEffect(() => {
-        localStorage.setItem("dino_hs", gameState.highScore.toString());
+        setHighScore(LOCALSTORAGE_HS_VAR, gameState.highScore.toString());
     }, [gameState.highScore]);
 
     useEffect(() => {
-        if (gameState.dinosaur.life <= 0) {
-            stop();
-            dispatch({
-                type: "GAME_OVER",
-            });
-        }
+        handleGameOver(gameState.dinosaur.life, stop, dispatch);
     }, [gameState.dinosaur.life, stop]);
 
     const handleStart = useCallback(() => {
-        if (gameState.dinosaur.life <= 0) {
-            dispatch({
-                type: "RESET",
-            });
-        }
-        start();
+        handleGameStart(gameState.dinosaur.life, start, dispatch);
     }, [gameState.dinosaur.life, start]);
 
     useEffect(() => {
