@@ -34,7 +34,6 @@ import { areBoxesOverlapping, isPixelColliding } from "@/utils/collision";
 type Assets = { [k in keyof typeof ALL_SPRITES]: HTMLImageElement };
 
 interface TickAction extends BaseTickAction {
-    type: "TICK";
     payload: BaseTickAction["payload"] & {
         inputActions: ShooterInputAction;
         volatileData: VolatileData;
