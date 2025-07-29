@@ -16,7 +16,6 @@ import useStateMachine from "@/hooks/useStateMachine";
 import { Binding } from "@/types";
 import useEventListener from "@/hooks/useEventListener";
 import GameOverlay from "@/components/GameOverlay";
-import { GameActionButton } from "@/components/buttons";
 import Shot from "./Shot";
 import { DeleteObjectFn, VolatileData, VolatileDataShotFn } from "./types";
 import Enemy from "./Enemy";

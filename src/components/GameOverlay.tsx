@@ -79,14 +79,18 @@ const StartScreen = ({
                     </h2>
                     <div className="flex md:text-lg">
                         <div className="text-left flex flex-col">
-                            {Object.keys(controls).map((controlType) => (
-                                <span>{`${capitalize(controlType)}:`}</span>
+                            {Object.keys(controls).map((controlType, index) => (
+                                <span key={index}>{`${capitalize(
+                                    controlType
+                                )}:`}</span>
                             ))}
                         </div>
                         <div className="flex flex-col">
-                            {Object.values(controls).map((controlKeys) => (
-                                <span>{controlKeys}</span>
-                            ))}
+                            {Object.values(controls).map(
+                                (controlKeys, index) => (
+                                    <span key={index}>{controlKeys}</span>
+                                )
+                            )}
                         </div>
                     </div>
                 </div>

@@ -26,7 +26,6 @@ import useAssetLoader from "@/hooks/useAssetLoader";
 import Pterodactyl from "./Pterodactyl";
 import { VolatileData } from "./types";
 import GameOverlay from "@/components/GameOverlay";
-import { GameActionButton } from "@/components/buttons";
 import useSound from "@/hooks/useSound";
 import usePrevious from "@/hooks/usePrevious";
 import PhysicsToggle from "./PhysicsToggle";
