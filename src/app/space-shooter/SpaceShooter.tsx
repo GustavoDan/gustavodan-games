@@ -260,49 +260,19 @@ const SpaceShooter = () => {
                 engineState={engineState}
                 isGameOver={gameState.player.life <= 0}
             >
-                <GameOverlay.StartScreen>
-                    <div className="flex flex-col gap-25">
-                        <h1 className="text-5xl">
-                            An alien horde is approaching. Defend your planet at
-                            all costs!
-                        </h1>
+                <GameOverlay.StartScreen
+                    startFunction={handleStart}
+                    controls={{
+                        move: "WASD or ↑←↓→ Keys",
+                        shoot: "Spacebar or Shift",
+                        pause: "Q Key",
+                    }}
+                    headline="An alien horde is approaching. Defend your planet at all costs!"
+                />
 
-                        <div className="flex flex-col justify-center items-center gap-5">
-                            <h2 className="text-4xl font-bold">CONTROLS</h2>
-                            <div className="flex md:text-lg">
-                                <div className="text-left flex flex-col">
-                                    <span>Move:</span>
-                                    <span>Shoot:</span>
-                                    <span>Pause:</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span>WASD or ↑←↓→ Keys</span>
-                                    <span>Spacebar or Shift</span>
-                                    <span>Q Key</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <GameOverlay.PauseScreen />
 
-                    <div className="flex flex-col gap-2">
-                        <GameActionButton onClick={handleStart}>
-                            Start Game
-                        </GameActionButton>
-                        <span className="text-xs md:text-sm">
-                            (or Spacebar to Start)
-                        </span>
-                    </div>
-                </GameOverlay.StartScreen>
-
-                <GameOverlay.PauseScreen>
-                    <h1 className="text-5xl font-bold">PAUSED</h1>
-                    <span>Press Q to resume</span>
-                </GameOverlay.PauseScreen>
-
-                <GameOverlay.GameOverScreen>
-                    <h1 className="text-4xl md:text-5xl font-bold">
-                        GAME OVER
-                    </h1>
+                <GameOverlay.GameOverScreen restartFunction={handleStart}>
                     <div className="text-xl md:text-2xl flex flex-col gap-2">
                         <span>
                             Awesome! You obliterated{" "}
@@ -311,15 +281,6 @@ const SpaceShooter = () => {
                         <span>
                             Your current record is{" "}
                             {pluralize("ship", gameState.highScore, true)}!
-                        </span>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                        <GameActionButton onClick={handleStart}>
-                            Play Again
-                        </GameActionButton>
-                        <span className="text-xs md:text-sm">
-                            (or press Spacebar to Restart)
                         </span>
                     </div>
                 </GameOverlay.GameOverScreen>

@@ -259,46 +259,24 @@ const DinosaurGame = () => {
                 engineState={engineState}
                 isGameOver={gameState.dinosaur.life <= 0}
             >
-                <GameOverlay.StartScreen>
-                    <h1 className="text-4xl md:text-5xl font-bold">CONTROLS</h1>
-                    <div className="flex md:text-lg">
-                        <div className="text-left flex flex-col">
-                            <span>Move:</span>
-                            <span>Duck:</span>
-                            <span>Jump:</span>
-                            <span>Pause:</span>
-                        </div>
-                        <div className="flex flex-col">
-                            <span>A/D or ←/→ Keys</span>
-                            <span>S or ↓ Key</span>
-                            <span>W, ↑ Key or Spacebar</span>
-                            <span>Q Key</span>
-                        </div>
-                    </div>
-
+                <GameOverlay.StartScreen
+                    startFunction={handleStart}
+                    controls={{
+                        move: "A/D or ←/→ Keys",
+                        duck: "S or ↓ Key",
+                        jump: "W, ↑ Key or Spacebar",
+                        pause: "Q Key",
+                    }}
+                >
                     <PhysicsToggle
                         onClick={handlePhysicsToggle}
                         defaultCheckedValue={useRelativePhysics}
                     />
-
-                    <div className="flex flex-col gap-2">
-                        <GameActionButton onClick={handleStart}>
-                            Start Game
-                        </GameActionButton>
-                        <span className="text-xs md:text-sm">
-                            (or Spacebar to Start)
-                        </span>
-                    </div>
                 </GameOverlay.StartScreen>
-                <GameOverlay.PauseScreen>
-                    <h1 className="text-5xl font-bold">PAUSED</h1>
-                    <span>Press Q to resume</span>
-                </GameOverlay.PauseScreen>
 
-                <GameOverlay.GameOverScreen>
-                    <h1 className="text-4xl md:text-5xl font-bold">
-                        GAME OVER
-                    </h1>
+                <GameOverlay.PauseScreen />
+
+                <GameOverlay.GameOverScreen restartFunction={handleStart}>
                     <div className="text-xl md:text-2xl flex flex-col gap-2">
                         <span>
                             Score: <span>{Math.floor(gameState.score)}</span>
@@ -313,15 +291,6 @@ const DinosaurGame = () => {
                         onClick={handlePhysicsToggle}
                         defaultCheckedValue={useRelativePhysics}
                     />
-
-                    <div className="flex flex-col gap-2">
-                        <GameActionButton onClick={handleStart}>
-                            Play Again
-                        </GameActionButton>
-                        <span className="text-xs md:text-sm">
-                            (or press Spacebar to Restart)
-                        </span>
-                    </div>
                 </GameOverlay.GameOverScreen>
             </GameOverlay>
         </>

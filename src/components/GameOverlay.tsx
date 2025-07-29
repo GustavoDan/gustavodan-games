@@ -1,5 +1,8 @@
 import { createContext, ReactNode, useContext } from "react";
 import { MachineState } from "@/hooks/useStateMachine";
+import { GameActionButton } from "./buttons";
+import { capitalize } from "@/utils/string";
+import { cn } from "@/utils/cn";
 
 interface OverlayContextType {
     engineState: MachineState;
@@ -42,22 +45,98 @@ const GameOverlay = ({
     );
 };
 
-const StartScreen = ({ children }: { children: ReactNode }) => {
+interface BaseScreenProps {
+    children?: ReactNode;
+}
+
+interface StartScreenProps extends BaseScreenProps {
+    startFunction: () => void;
+    controls: Record<string, string>;
+    headline?: string;
+}
+
+const StartScreen = ({
+    children,
+    startFunction,
+    controls,
+    headline,
+}: StartScreenProps) => {
     const { engineState, isGameOver } = useOverlayContext();
 
-    return !isGameOver && engineState === "IDLE" ? <>{children}</> : null;
+    return !isGameOver && engineState === "IDLE" ? (
+        <>
+            <div className="flex flex-col gap-25">
+                {headline && <h1 className="text-5xl">{headline}</h1>}
+
+                <div className="flex flex-col justify-center items-center gap-5">
+                    <h2
+                        className={cn(
+                            "text-4xl font-bold",
+                            !headline && "md:text-5xl"
+                        )}
+                    >
+                        CONTROLS
+                    </h2>
+                    <div className="flex md:text-lg">
+                        <div className="text-left flex flex-col">
+                            {Object.keys(controls).map((controlType) => (
+                                <span>{`${capitalize(controlType)}:`}</span>
+                            ))}
+                        </div>
+                        <div className="flex flex-col">
+                            {Object.values(controls).map((controlKeys) => (
+                                <span>{controlKeys}</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {children}
+            <div className="flex flex-col gap-2">
+                <GameActionButton onClick={startFunction}>
+                    Start Game
+                </GameActionButton>
+                <span className="text-xs md:text-sm">
+                    (or Spacebar to Start)
+                </span>
+            </div>
+        </>
+    ) : null;
 };
 
-const PauseScreen = ({ children }: { children: ReactNode }) => {
+const PauseScreen = ({ children }: BaseScreenProps) => {
     const { engineState, isGameOver } = useOverlayContext();
 
-    return !isGameOver && engineState === "PAUSED" ? <>{children}</> : null;
+    return !isGameOver && engineState === "PAUSED" ? (
+        <>
+            <h1 className="text-5xl font-bold">PAUSED</h1>
+            <span>Press Q to resume</span>
+            {children}
+        </>
+    ) : null;
 };
 
-const GameOverScreen = ({ children }: { children: ReactNode }) => {
+interface GameOverScreenProps extends BaseScreenProps {
+    restartFunction: () => void;
+}
+
+const GameOverScreen = ({ children, restartFunction }: GameOverScreenProps) => {
     const { isGameOver } = useOverlayContext();
 
-    return isGameOver ? <>{children}</> : null;
+    return isGameOver ? (
+        <>
+            <h1 className="text-4xl md:text-5xl font-bold">GAME OVER</h1>
+            {children}
+            <div className="flex flex-col gap-2">
+                <GameActionButton onClick={restartFunction}>
+                    Play Again
+                </GameActionButton>
+                <span className="text-xs md:text-sm">
+                    (or press Spacebar to Restart)
+                </span>
+            </div>
+        </>
+    ) : null;
 };
 
 GameOverlay.StartScreen = StartScreen;
