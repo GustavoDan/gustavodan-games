@@ -106,6 +106,10 @@ const SpaceShooter = () => {
         });
     }, [gameState.player.life, start, worldHeight]);
 
+    const pause = useCallback(() => {
+        if (engineState === "RUNNING") togglePause();
+    }, [engineState, togglePause]);
+
     const deleteObject: DeleteObjectFn = useCallback((objectType, objectId) => {
         dispatch({
             type: "DELETE_OBJECT",
@@ -186,6 +190,8 @@ const SpaceShooter = () => {
 
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
+    useEventListener("blur", pause);
+    useEventListener("contextmenu", pause);
 
     const shouldRenderGameElements = useMemo(
         () => engineState !== "IDLE" || gameState.player.life === 0,

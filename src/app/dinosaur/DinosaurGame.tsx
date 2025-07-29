@@ -123,6 +123,10 @@ const DinosaurGame = () => {
         handleGameStart(gameState.dinosaur.life, start, dispatch);
     }, [gameState.dinosaur.life, start]);
 
+    const pause = useCallback(() => {
+        if (engineState === "RUNNING") togglePause();
+    }, [engineState, togglePause]);
+
     useEffect(() => {
         if (gameState.dinosaur.isJumping === true) {
             playJumpSound();
@@ -215,6 +219,8 @@ const DinosaurGame = () => {
 
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
+    useEventListener("blur", pause);
+    useEventListener("contextmenu", pause);
 
     if (isLoading) return <Loading />;
     if (error) return <DisplayError message={error} />;
