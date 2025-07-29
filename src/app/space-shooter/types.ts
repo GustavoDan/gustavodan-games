@@ -16,7 +16,6 @@ export type DeleteObjectFn = (
 export interface PlayerState {
     life: number;
     pos: Vector2D;
-    moveSpeed: number;
     moveDirection: {
         vertical: VerticalMovementDirection;
         horizontal: HorizontalMovementDirection;
@@ -46,6 +45,7 @@ export interface GameState {
         enemies: Set<string>;
     };
     score: number;
+    highScore: number;
 }
 
 export interface ShooterInputAction extends BaseInputAction {

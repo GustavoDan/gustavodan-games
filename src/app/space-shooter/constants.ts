@@ -4,10 +4,17 @@ export const ASSETS_PATH = "space-shooter/";
 export const SHOT_COOLDOWN = 0.5;
 export const INVULNERABILITY_DURATION = 1.5;
 export const MAX_PLAYER_LIFE = 3;
+export const LOCALSTORAGE_HS_VAR = "space_hs";
 
 export const ENEMY_SPAWN_TIME_RANGE = {
     min: 0.5,
     max: 2.5,
+};
+
+export const MOVE_SPEEDS = {
+    player: 600,
+    enemies: 300,
+    shot: 600,
 };
 
 export const CONSTANT_SIZES = {
@@ -54,7 +61,6 @@ export const INITIAL_GAME_STATE: GameState = {
     player: {
         life: MAX_PLAYER_LIFE,
         pos: { x: 0, y: 0 },
-        moveSpeed: 600,
         moveDirection: {
             vertical: "IDLE",
             horizontal: "IDLE",
@@ -67,6 +73,7 @@ export const INITIAL_GAME_STATE: GameState = {
     enemySpawnTimer: 0,
     markedForDeletion: { shots: new Set<string>(), enemies: new Set<string>() },
     score: 0,
+    highScore: 0,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {

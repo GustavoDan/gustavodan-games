@@ -7,11 +7,11 @@ import {
     INITIAL_INPUT_ACTIONS,
     CONSTANT_SIZES,
     MAX_PLAYER_LIFE,
+    LOCALSTORAGE_HS_VAR,
 } from "./constants";
 import Player from "./Player";
 import { gameReducer } from "./game/reducer";
 import { useGameContext } from "@/contexts/GameContext";
-import usePrevious from "@/hooks/usePrevious";
 import useStateMachine from "@/hooks/useStateMachine";
 import { Binding } from "@/types";
 import useEventListener from "@/hooks/useEventListener";
@@ -24,11 +24,13 @@ import useAssetLoader from "@/hooks/useAssetLoader";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
 import HeartContainer from "./HeartContainer";
+import { loadHighScore, setHighScore } from "@/utils/highScore";
+import { handleGameOver, handleGameStart } from "@/utils/reducerCommon";
+import pluralize from "pluralize";
 
 const SpaceShooter = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
     const { worldWidth, worldHeight } = useGameContext();
-    const previousWorldHeight = usePrevious(worldHeight);
 
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
@@ -72,11 +74,37 @@ const SpaceShooter = () => {
         inputActionsRef.current = { ...INITIAL_INPUT_ACTIONS };
     }, []);
 
-    const { start, togglePause, engineState } = useStateMachine(gameTick, {
-        onPause: resetInputs,
-        onResume: resetInputs,
-        onStop: resetInputs,
-    });
+    const { start, stop, togglePause, engineState } = useStateMachine(
+        gameTick,
+        {
+            onPause: resetInputs,
+            onResume: resetInputs,
+            onStop: resetInputs,
+        }
+    );
+
+    useEffect(() => {
+        loadHighScore(LOCALSTORAGE_HS_VAR, dispatch);
+    }, []);
+
+    useEffect(() => {
+        setHighScore(LOCALSTORAGE_HS_VAR, gameState.highScore.toString());
+    }, [gameState.highScore]);
+
+    useEffect(() => {
+        handleGameOver(gameState.player.life, stop, dispatch);
+    }, [gameState.player.life, stop]);
+
+    const handleStart = useCallback(() => {
+        handleGameStart(gameState.player.life, start, dispatch);
+
+        dispatch({
+            type: "INITIALIZE_GAME_STATE",
+            payload: {
+                playerY: (worldHeight - CONSTANT_SIZES.player.height) / 2,
+            },
+        });
+    }, [gameState.player.life, start, worldHeight]);
 
     const deleteObject: DeleteObjectFn = useCallback((objectType, objectId) => {
         dispatch({
@@ -88,24 +116,13 @@ const SpaceShooter = () => {
         });
     }, []);
 
-    useEffect(() => {
-        if (worldHeight <= 0 || previousWorldHeight) return;
-
-        dispatch({
-            type: "INITIALIZE_GAME_STATE",
-            payload: {
-                playerY: (worldHeight - CONSTANT_SIZES.player.height) / 2,
-            },
-        });
-    }, [worldHeight, previousWorldHeight]);
-
     const bindings = useMemo(
         (): Binding[] => [
             {
                 keys: ["Space"],
                 states: ["IDLE"],
                 action: (type) => {
-                    if (type === "keydown") start();
+                    if (type === "keydown") handleStart();
                 },
             },
             {
@@ -137,7 +154,7 @@ const SpaceShooter = () => {
                 },
             },
             {
-                keys: ["Space", "ShiftLeft"],
+                keys: ["Space", "ShiftLeft", "ShiftRight"],
                 states: ["RUNNING"],
                 action: (type) => {
                     inputActionsRef.current.shoot = type === "keydown";
@@ -151,7 +168,7 @@ const SpaceShooter = () => {
                 },
             },
         ],
-        [togglePause, start]
+        [togglePause, handleStart]
     );
 
     const handleInput = useCallback(
@@ -169,6 +186,11 @@ const SpaceShooter = () => {
 
     useEventListener("keydown", handleInput);
     useEventListener("keyup", handleInput);
+
+    const shouldRenderGameElements = useMemo(
+        () => engineState !== "IDLE" || gameState.player.life === 0,
+        [engineState, gameState.player.life]
+    );
 
     if (isLoading) return <Loading />;
     if (error) return <DisplayError message={error} />;
@@ -203,25 +225,59 @@ const SpaceShooter = () => {
                 />
             ))}
 
-            <Player playerState={gameState.player} />
+            {shouldRenderGameElements && (
+                <>
+                    <Player playerState={gameState.player} />
 
-            <div className="flex justify-between">
-                <div className="flex">
-                    {Array.from({ length: MAX_PLAYER_LIFE }).map((_, index) => (
-                        <HeartContainer
-                            key={index}
-                            isEmpty={index >= gameState.player.life}
-                        />
-                    ))}
-                </div>
+                    <div className="relative flex justify-between p-2.5">
+                        <div className="flex">
+                            {Array.from({ length: MAX_PLAYER_LIFE }).map(
+                                (_, index) => (
+                                    <HeartContainer
+                                        key={index}
+                                        isEmpty={index >= gameState.player.life}
+                                    />
+                                )
+                            )}
+                        </div>
 
-                {gameState.score}
-            </div>
+                        <span className="text-4xl">
+                            Score: {gameState.score}
+                        </span>
+                    </div>
+                </>
+            )}
 
-            <GameOverlay engineState={engineState} isGameOver={false}>
+            <GameOverlay
+                engineState={engineState}
+                isGameOver={gameState.player.life <= 0}
+            >
                 <GameOverlay.StartScreen>
+                    <div className="flex flex-col gap-25">
+                        <h1 className="text-5xl">
+                            An alien horde is approaching. Defend your planet at
+                            all costs!
+                        </h1>
+
+                        <div className="flex flex-col justify-center items-center gap-5">
+                            <h2 className="text-4xl font-bold">CONTROLS</h2>
+                            <div className="flex md:text-lg">
+                                <div className="text-left flex flex-col">
+                                    <span>Move:</span>
+                                    <span>Shoot:</span>
+                                    <span>Pause:</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span>WASD or ↑←↓→ Keys</span>
+                                    <span>Spacebar or Shift</span>
+                                    <span>Q Key</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex flex-col gap-2">
-                        <GameActionButton onClick={start}>
+                        <GameActionButton onClick={handleStart}>
                             Start Game
                         </GameActionButton>
                         <span className="text-xs md:text-sm">
@@ -229,10 +285,36 @@ const SpaceShooter = () => {
                         </span>
                     </div>
                 </GameOverlay.StartScreen>
+
                 <GameOverlay.PauseScreen>
                     <h1 className="text-5xl font-bold">PAUSED</h1>
                     <span>Press Q to resume</span>
                 </GameOverlay.PauseScreen>
+
+                <GameOverlay.GameOverScreen>
+                    <h1 className="text-4xl md:text-5xl font-bold">
+                        GAME OVER
+                    </h1>
+                    <div className="text-xl md:text-2xl flex flex-col gap-2">
+                        <span>
+                            Awesome! You obliterated{" "}
+                            {pluralize("ship", gameState.score, true)}!
+                        </span>
+                        <span>
+                            Your current record is{" "}
+                            {pluralize("ship", gameState.highScore, true)}!
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <GameActionButton onClick={handleStart}>
+                            Play Again
+                        </GameActionButton>
+                        <span className="text-xs md:text-sm">
+                            (or press Spacebar to Restart)
+                        </span>
+                    </div>
+                </GameOverlay.GameOverScreen>
             </GameOverlay>
         </div>
     );

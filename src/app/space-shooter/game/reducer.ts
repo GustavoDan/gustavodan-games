@@ -1,4 +1,12 @@
-import { BoundingBox, CollidableObject, Vector2D } from "@/types";
+import {
+    BaseTickAction,
+    BoundingBox,
+    CollidableObject,
+    GameOverAction,
+    LoadHighScoreAction,
+    ResetAction,
+    Vector2D,
+} from "@/types";
 import {
     DeletableObject,
     EnemyState,
@@ -13,7 +21,9 @@ import {
     ALL_SPRITES,
     CONSTANT_SIZES,
     ENEMY_SPAWN_TIME_RANGE,
+    INITIAL_GAME_STATE,
     INVULNERABILITY_DURATION,
+    MOVE_SPEEDS,
     SHOT_COOLDOWN,
 } from "../constants";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
@@ -23,31 +33,36 @@ import { areBoxesOverlapping, isPixelColliding } from "@/utils/collision";
 
 type Assets = { [k in keyof typeof ALL_SPRITES]: HTMLImageElement };
 
-type TickAction = {
+interface TickAction extends BaseTickAction {
     type: "TICK";
-    payload: {
-        deltaTime: number;
-        screenSize: Vector2D;
+    payload: BaseTickAction["payload"] & {
         inputActions: ShooterInputAction;
         volatileData: VolatileData;
         assets: Assets;
     };
-};
-type InitializePlayerYAction = {
+}
+
+interface InitializePlayerYAction {
     type: "INITIALIZE_GAME_STATE";
     payload: {
         playerY: number;
     };
-};
-type DeleteObjectAction = {
+}
+interface DeleteObjectAction {
     type: "DELETE_OBJECT";
     payload: {
         objectType: DeletableObject;
         objectId: string;
     };
-};
+}
 
-type GameAction = TickAction | InitializePlayerYAction | DeleteObjectAction;
+type GameAction =
+    | TickAction
+    | InitializePlayerYAction
+    | DeleteObjectAction
+    | LoadHighScoreAction
+    | ResetAction
+    | GameOverAction;
 
 const ENEMY_TYPES = (Object.keys(CONSTANT_SIZES.enemies) as EnemyType[]).map(
     (key) => key
@@ -116,7 +131,7 @@ const handlePlayerPhysics = (
     playerState.pos.x = moveOnAxis(
         playerState.pos.x,
         playerState.moveDirection.horizontal,
-        playerState.moveSpeed,
+        MOVE_SPEEDS.player,
         deltaTime,
         { max: maxPlayerPos.x }
     );
@@ -124,7 +139,7 @@ const handlePlayerPhysics = (
     playerState.pos.y = moveOnAxis(
         playerState.pos.y,
         playerState.moveDirection.vertical,
-        playerState.moveSpeed,
+        MOVE_SPEEDS.player,
         deltaTime,
         { max: maxPlayerPos.y }
     );
@@ -144,7 +159,12 @@ const handleShots = (
 
         if (isShotMarked) {
         } else if (isShotAnimFinished) {
-            shot.pos.x = moveOnAxis(shot.pos.x, "RIGHT", 600, deltaTime);
+            shot.pos.x = moveOnAxis(
+                shot.pos.x,
+                "RIGHT",
+                MOVE_SPEEDS.shot,
+                deltaTime
+            );
         } else {
             shot.pos = getPlayerGunPos(gameState.player.pos);
         }
@@ -167,7 +187,12 @@ export const handleEnemies = (
 ) => {
     gameState.enemies.forEach((enemie) => {
         if (!gameState.markedForDeletion.enemies.has(enemie.id)) {
-            enemie.pos.x = moveOnAxis(enemie.pos.x, "LEFT", 600, deltaTime);
+            enemie.pos.x = moveOnAxis(
+                enemie.pos.x,
+                "LEFT",
+                MOVE_SPEEDS.enemies,
+                deltaTime
+            );
         }
     });
 
@@ -359,7 +384,17 @@ export const gameReducer = (
                 ),
             };
         }
-
+        case "LOAD_HIGH_SCORE": {
+            return { ...gameState, highScore: action.payload };
+        }
+        case "RESET": {
+            return { ...INITIAL_GAME_STATE, highScore: gameState.highScore };
+        }
+        case "GAME_OVER": {
+            return gameState.score <= gameState.highScore
+                ? gameState
+                : { ...gameState, highScore: gameState.score };
+        }
         default:
             return gameState;
     }
