@@ -205,6 +205,8 @@ const SpaceShooter = () => {
             style={{ backgroundImage: `url(${ALL_SPRITES.background})` }}
             className="size-full rendering-pixelated"
         >
+            <div className="absolute w-1 h-full left-1/2 opacity-20 bg-blue-200" />
+
             {gameState.enemies.map((enemy) => (
                 <Enemy
                     key={enemy.id}
@@ -247,7 +249,7 @@ const SpaceShooter = () => {
                             )}
                         </div>
 
-                        <span className="text-4xl">
+                        <span className="text-lg md:text-4xl">
                             Score: {gameState.score}
                         </span>
                     </div>

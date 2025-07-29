@@ -15,7 +15,7 @@ export default function SpaceShooterServer() {
     return (
         <GameContainer
             gameTitle={metadata.title}
-            className="max-w-5xl"
+            className="2xl:max-w-9/12"
             childrenClassName="relative overflow-hidden"
         >
             <SpaceShooter />

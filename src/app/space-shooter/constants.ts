@@ -1,7 +1,7 @@
 import { GameState, ShooterInputAction } from "./types";
 
 export const ASSETS_PATH = "space-shooter/";
-export const SHOT_COOLDOWN = 0.5;
+export const SHOT_COOLDOWN = 0.65;
 export const INVULNERABILITY_DURATION = 1.5;
 export const MAX_PLAYER_LIFE = 3;
 export const LOCALSTORAGE_HS_VAR = "space_hs";
@@ -13,8 +13,8 @@ export const ENEMY_SPAWN_TIME_RANGE = {
 
 export const MOVE_SPEEDS = {
     player: 600,
-    enemies: 300,
-    shot: 600,
+    enemies: 450,
+    shot: 1500,
 };
 
 export const CONSTANT_SIZES = {
@@ -51,8 +51,8 @@ export const CONSTANT_SIZES = {
         },
     },
     heartContainer: {
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
     },
     enemyExplosion: { width: 128, height: 128 },
 };
