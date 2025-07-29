@@ -1,4 +1,5 @@
-import { GameState, ShooterInputAction } from "./types";
+import { ShooterInputAction } from "@/types";
+import { GameState } from "./types";
 
 export const ASSETS_PATH = "space-shooter/";
 export const SHOT_COOLDOWN = 0.65;

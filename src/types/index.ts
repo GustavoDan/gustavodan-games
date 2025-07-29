@@ -56,3 +56,7 @@ export interface BaseInputAction {
     left: boolean;
     right: boolean;
 }
+
+export interface ShooterInputAction extends BaseInputAction {
+    shoot: boolean;
+}

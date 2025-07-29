@@ -5,6 +5,7 @@ import {
     GameOverAction,
     LoadHighScoreAction,
     ResetAction,
+    ShooterInputAction,
     Vector2D,
 } from "@/types";
 import {
@@ -13,7 +14,6 @@ import {
     EnemyType,
     GameState,
     PlayerState,
-    ShooterInputAction,
     ShotState,
     VolatileData,
 } from "../types";

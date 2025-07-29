@@ -1,5 +1,4 @@
 import {
-    BaseInputAction,
     HorizontalMovementDirection,
     Vector2D,
     VerticalMovementDirection,
@@ -46,10 +45,6 @@ export interface GameState {
     };
     score: number;
     highScore: number;
-}
-
-export interface ShooterInputAction extends BaseInputAction {
-    shoot: boolean;
 }
 
 interface VolatileDataShot {
