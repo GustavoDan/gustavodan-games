@@ -66,6 +66,25 @@ type GameAction =
 const ENEMY_TYPES = (Object.keys(CONSTANT_SIZES.enemies) as EnemyType[]).map(
     (key) => key
 );
+const PLAYER_SIZE = {
+    x: CONSTANT_SIZES.player.width,
+    y: CONSTANT_SIZES.player.height,
+};
+const SHOT_SIZE = {
+    x: CONSTANT_SIZES.shot.width,
+    y: CONSTANT_SIZES.shot.height,
+};
+
+const getPlayerGunPos = (
+    playerPos: Vector2D,
+    playerSize: Vector2D,
+    shotSize: Vector2D
+) => {
+    return {
+        x: playerPos.x + playerSize.x,
+        y: playerPos.y + (playerSize.y - shotSize.y) / 2,
+    };
+};
 
 const getNewSpawnTimer = () => {
     return getRandomFloat(
@@ -75,21 +94,12 @@ const getNewSpawnTimer = () => {
     );
 };
 
-const getPlayerGunPos = (playerPos: Vector2D): Vector2D => {
-    const playerSize = CONSTANT_SIZES.player;
-    const shotSize = CONSTANT_SIZES.shot;
-    return {
-        x: playerPos.x + playerSize.width,
-        y: playerPos.y + (playerSize.height - shotSize.height) / 2,
-    };
-};
-
 const handleShooting = (gameState: GameState) => {
     if (gameState.player.currentShotCooldown !== 0) return;
 
     const newShot: ShotState = {
         id: crypto.randomUUID(),
-        pos: getPlayerGunPos(gameState.player.pos),
+        pos: getPlayerGunPos(gameState.player.pos, PLAYER_SIZE, SHOT_SIZE),
     };
 
     gameState.shots.push(newShot);
@@ -123,8 +133,8 @@ const handlePlayerPhysics = (
     );
 
     const maxPlayerPos = {
-        x: screenSize.x / 2 - CONSTANT_SIZES.player.width,
-        y: screenSize.y - CONSTANT_SIZES.player.height,
+        x: screenSize.x / 2 - PLAYER_SIZE.x,
+        y: screenSize.y - PLAYER_SIZE.y,
     };
 
     playerState.pos.x = moveOnAxis(
@@ -165,7 +175,11 @@ const handleShots = (
                 deltaTime
             );
         } else {
-            shot.pos = getPlayerGunPos(gameState.player.pos);
+            shot.pos = getPlayerGunPos(
+                gameState.player.pos,
+                PLAYER_SIZE,
+                SHOT_SIZE
+            );
         }
     });
 
@@ -184,10 +198,10 @@ export const handleEnemies = (
     screenSize: Vector2D,
     deltaTime: number
 ) => {
-    gameState.enemies.forEach((enemie) => {
-        if (!gameState.markedForDeletion.enemies.has(enemie.id)) {
-            enemie.pos.x = moveOnAxis(
-                enemie.pos.x,
+    gameState.enemies.forEach((enemy) => {
+        if (!gameState.markedForDeletion.enemies.has(enemy.id)) {
+            enemy.pos.x = moveOnAxis(
+                enemy.pos.x,
                 "LEFT",
                 MOVE_SPEEDS.enemies,
                 deltaTime
@@ -204,12 +218,12 @@ export const handleEnemies = (
             throw new Error("ENEMY_TYPES cannot be an empty array.");
         }
 
-        const enemyHeigth = CONSTANT_SIZES.enemies[currentEnemyType].height;
+        const enemyHeight = CONSTANT_SIZES.enemies[currentEnemyType].height;
         const newEnemy: EnemyState = {
             id: crypto.randomUUID(),
             pos: {
                 x: screenSize.x,
-                y: getRandomInt(0, screenSize.y - enemyHeigth),
+                y: getRandomInt(0, screenSize.y - enemyHeight),
             },
             type: currentEnemyType,
         };
@@ -262,8 +276,7 @@ const checkEnemyShotCollisions = (
                     ...shot.pos,
                 },
                 size: {
-                    x: CONSTANT_SIZES.shot.width,
-                    y: CONSTANT_SIZES.shot.height,
+                    ...SHOT_SIZE,
                 },
                 image: assets.shot,
                 spriteScale: CONSTANT_SIZES.shot.spriteScale,
@@ -287,8 +300,7 @@ const checkPlayerEnemyCollisions = (gameState: GameState) => {
     const playerBox: BoundingBox = {
         pos: { ...player.pos },
         size: {
-            x: CONSTANT_SIZES.player.width,
-            y: CONSTANT_SIZES.player.height,
+            ...PLAYER_SIZE,
         },
     };
 

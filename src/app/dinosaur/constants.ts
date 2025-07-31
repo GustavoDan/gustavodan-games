@@ -9,7 +9,7 @@ export const SCORE_PER_SECOND = 1;
 export const INITIAL_GAME_SPEED = 300;
 export const LOCALSTORAGE_HS_VAR = "dino_hs";
 
-export const FLOOR = { heigth: 24, width: 2400 };
+export const FLOOR = { height: 24, width: 2400 };
 
 const cactusDefaults = {
     weight: 15,

@@ -44,7 +44,7 @@ const Floor = ({ engineState, gameState }: FloorProps) => {
 
     return (
         <div
-            style={{ height: FLOOR.heigth }}
+            style={{ height: FLOOR.height }}
             className="absolute bottom-0 z-[-1] w-full overflow-hidden text-gray-400 animate-neon-text-pulse"
         >
             <div
