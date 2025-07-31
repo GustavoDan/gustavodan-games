@@ -20,6 +20,12 @@ interface DirectionInfo {
 const clamp = (value: number, min: number, max: number) =>
     Math.max(min, Math.min(value, max));
 
+const applyWrapAround = (pos: number, min: number, max: number) => {
+    if (pos > max) return min;
+    if (pos < min) return max;
+    return pos;
+};
+
 const DIRECTION_MULTIPLIERS = {
     UP: 1,
     RIGHT: 1,
@@ -50,16 +56,22 @@ export const moveOnAxis = (
     movementLimits?: {
         min?: number;
         max: number;
+        wrapAround?: boolean;
     }
 ) => {
     const directionMultiplier = DIRECTION_MULTIPLIERS[moveDirection];
-
     position += directionMultiplier * moveSpeed * deltaTime;
 
-    if (movementLimits)
-        position = clamp(position, movementLimits.min || 0, movementLimits.max);
+    if (!movementLimits) {
+        return position;
+    }
 
-    return position;
+    const min = movementLimits.min ?? 0;
+    const max = movementLimits.max;
+
+    return movementLimits.wrapAround
+        ? applyWrapAround(position, min, max)
+        : clamp(position, min, max);
 };
 
 // The 'as' assertion is required to satisfy the function overload type.
