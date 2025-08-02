@@ -60,3 +60,10 @@ export interface BaseInputAction {
 export interface ShooterInputAction extends BaseInputAction {
     shoot: boolean;
 }
+
+export interface InitializeGameState {
+    type: "INITIALIZE_GAME_STATE";
+    payload: {
+        playerY: number;
+    };
+}

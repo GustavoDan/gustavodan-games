@@ -3,6 +3,7 @@ import {
     BoundingBox,
     CollidableObject,
     GameOverAction,
+    InitializeGameState,
     LoadHighScoreAction,
     ResetAction,
     ShooterInputAction,
@@ -41,12 +42,6 @@ interface TickAction extends BaseTickAction {
     };
 }
 
-interface InitializePlayerYAction {
-    type: "INITIALIZE_GAME_STATE";
-    payload: {
-        playerY: number;
-    };
-}
 interface DeleteObjectAction {
     type: "DELETE_OBJECT";
     payload: {
@@ -57,7 +52,7 @@ interface DeleteObjectAction {
 
 type GameAction =
     | TickAction
-    | InitializePlayerYAction
+    | InitializeGameState
     | DeleteObjectAction
     | LoadHighScoreAction
     | ResetAction
