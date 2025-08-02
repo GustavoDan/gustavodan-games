@@ -67,3 +67,8 @@ export interface InitializeGameState {
         playerY: number;
     };
 }
+
+export interface BaseObjectState {
+    id: string;
+    pos: Vector2D;
+}

@@ -1,10 +1,11 @@
 "use client";
 
 import { MachineState } from "@/hooks/useStateMachine";
-import { BaseObjectState, DeleteAllyFn, VolatileDataFn } from "./types";
+import { DeleteAllyFn, VolatileDataFn } from "./types";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
 import { useEffect, useMemo } from "react";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
+import { BaseObjectState } from "@/types";
 
 interface AllyProps {
     allyState: BaseObjectState;

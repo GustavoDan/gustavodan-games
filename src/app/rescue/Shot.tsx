@@ -1,5 +1,5 @@
+import { BaseObjectState } from "@/types";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
-import { BaseObjectState } from "./types";
 
 interface ShotProps {
     shotState: BaseObjectState;

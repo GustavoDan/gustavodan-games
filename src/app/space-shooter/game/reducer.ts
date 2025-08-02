@@ -1,4 +1,5 @@
 import {
+    BaseObjectState,
     BaseTickAction,
     BoundingBox,
     CollidableObject,
@@ -15,7 +16,6 @@ import {
     EnemyType,
     GameState,
     PlayerState,
-    ShotState,
     VolatileData,
 } from "../types";
 import {
@@ -92,7 +92,7 @@ const getNewSpawnTimer = () => {
 const handleShooting = (gameState: GameState) => {
     if (gameState.player.currentShotCooldown !== 0) return;
 
-    const newShot: ShotState = {
+    const newShot: BaseObjectState = {
         id: crypto.randomUUID(),
         pos: getPlayerGunPos(gameState.player.pos, PLAYER_SIZE, SHOT_SIZE),
     };

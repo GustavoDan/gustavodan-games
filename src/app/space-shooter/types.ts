@@ -1,4 +1,5 @@
 import {
+    BaseObjectState,
     HorizontalMovementDirection,
     Vector2D,
     VerticalMovementDirection,
@@ -23,20 +24,13 @@ export interface PlayerState {
     invulnerabilityTimer: number;
 }
 
-export interface ShotState {
-    id: string;
-    pos: Vector2D;
-}
-
-export interface EnemyState {
-    id: string;
-    pos: Vector2D;
+export interface EnemyState extends BaseObjectState {
     type: EnemyType;
 }
 
 export interface GameState {
     player: PlayerState;
-    shots: ShotState[];
+    shots: BaseObjectState[];
     enemies: EnemyState[];
     enemySpawnTimer: number;
     markedForDeletion: {

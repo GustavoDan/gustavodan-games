@@ -1,4 +1,5 @@
 import {
+    BaseObjectState,
     BaseTickAction,
     BoundingBox,
     CollidableObject,
@@ -7,13 +8,7 @@ import {
     ShooterInputAction,
     Vector2D,
 } from "@/types";
-import {
-    BaseObjectState,
-    EnemyType,
-    GameState,
-    PlayerState,
-    VolatileData,
-} from "../types";
+import { EnemyType, GameState, PlayerState, VolatileData } from "../types";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import {
     ALL_SPRITES,

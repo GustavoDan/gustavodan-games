@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
-import { DeleteObjectFn, ShotState, VolatileDataShotFn } from "./types";
+import { DeleteObjectFn, VolatileDataShotFn } from "./types";
 import { MachineState } from "@/hooks/useStateMachine";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
+import { BaseObjectState } from "@/types";
 
 interface ShotProps {
-    shotState: ShotState;
+    shotState: BaseObjectState;
     engineState: MachineState;
     onShotAnimationUpdate: VolatileDataShotFn;
     unregister: (id: string) => void;

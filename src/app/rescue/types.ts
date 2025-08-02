@@ -1,4 +1,5 @@
 import {
+    BaseObjectState,
     HorizontalMovementDirection,
     Vector2D,
     VerticalMovementDirection,
@@ -16,11 +17,6 @@ export interface PlayerState {
     };
     currentShotCooldown: number;
     invulnerabilityTimer: number;
-}
-
-export interface BaseObjectState {
-    id: string;
-    pos: Vector2D;
 }
 
 export interface EnemyState extends BaseObjectState {
