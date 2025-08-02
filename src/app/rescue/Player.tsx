@@ -1,19 +1,22 @@
+"use client";
+
 import { checkIsBlinking } from "@/utils/checkIsBlinking";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
-import { PlayerState } from "./types";
+import { PlayerState, VolatileDataFn } from "./types";
 import { cn } from "@/utils/cn";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { MachineState } from "@/hooks/useStateMachine";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
 
 interface PlayerProps {
     playerState: PlayerState;
     engineState: MachineState;
+    onFrameUpdate: VolatileDataFn;
 }
 
 const STEPS = 2;
 
-const Player = ({ playerState, engineState }: PlayerProps) => {
+const Player = ({ playerState, engineState, onFrameUpdate }: PlayerProps) => {
     const playerSize = CONSTANT_SIZES.player;
 
     const keyframes = useMemo(
@@ -40,11 +43,15 @@ const Player = ({ playerState, engineState }: PlayerProps) => {
         playbackRate: 1,
     };
 
-    const { elementRef } = useControllableAnimation(
+    const { elementRef, getCurrentFrame } = useControllableAnimation(
         keyframes,
         options,
         animationControls
     );
+
+    useEffect(() => {
+        onFrameUpdate(getCurrentFrame);
+    }, [getCurrentFrame, onFrameUpdate]);
 
     return (
         <div

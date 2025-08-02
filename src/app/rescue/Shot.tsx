@@ -1,8 +1,8 @@
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
-import { ShotState } from "./types";
+import { BaseObjectState } from "./types";
 
 interface ShotProps {
-    shotState: ShotState;
+    shotState: BaseObjectState;
 }
 
 const Shot = ({ shotState }: ShotProps) => {

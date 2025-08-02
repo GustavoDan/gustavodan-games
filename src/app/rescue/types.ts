@@ -18,26 +18,42 @@ export interface PlayerState {
     invulnerabilityTimer: number;
 }
 
-export interface ShotState {
+export interface BaseObjectState {
     id: string;
     pos: Vector2D;
 }
 
-export interface EnemyState {
-    pos: Vector2D;
+export interface EnemyState extends BaseObjectState {
     type: EnemyType;
 }
 
 export interface GameState {
     player: PlayerState;
-    shots: ShotState[];
+    shots: BaseObjectState[];
     enemies: {
         truck: EnemyState | null;
         helicopter: EnemyState | null;
     };
+    ally: BaseObjectState | null;
+    explosions: BaseObjectState[];
     markedForDeletion: {
         shots: Set<string>;
-        enemies: Set<string>;
+        ally: boolean;
     };
-    truckSpawnTimer: number;
+    spawnTimers: {
+        truck: number;
+        ally: number;
+    };
 }
+
+type GetCurrentFrame = () => number | null;
+
+export interface VolatileData {
+    enemyAnimationFrame?: GetCurrentFrame;
+    playerAnimationFrame?: GetCurrentFrame;
+    allyAnimationFrame?: GetCurrentFrame;
+}
+
+export type VolatileDataFn = (getCurrentFrame: GetCurrentFrame) => void;
+
+export type DeleteAllyFn = () => void;

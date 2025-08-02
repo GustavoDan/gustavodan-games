@@ -5,16 +5,24 @@ export const ASSETS_PATH = "rescue/";
 export const MAX_PLAYER_LIFE = 3;
 export const SHOT_COOLDOWN = 0.5;
 export const FLOOR_HEIGHT = 140;
+export const INVULNERABILITY_DURATION = 1.5;
 
-export const TRUCK_SPAWN_TIME_RANGE = {
-    min: 3,
-    max: 6,
+export const SPAWN_TIMERS_RANGE = {
+    truck: {
+        min: 3,
+        max: 6,
+    },
+    ally: {
+        min: 2,
+        max: 8,
+    },
 };
 
 export const MOVE_SPEEDS = {
     player: 600,
     enemies: 450,
     shot: 1500,
+    ally: 300,
 };
 
 export const CONSTANT_SIZES = {
@@ -40,6 +48,19 @@ export const CONSTANT_SIZES = {
             height: 70,
         },
     },
+    ally: {
+        width: 34,
+        height: 40,
+    },
+    allyDeath: {
+        width: 41,
+        height: 51,
+    },
+};
+
+export const INITIAL_MARKED_FOR_DELETION = {
+    shots: new Set<string>(),
+    ally: false,
 };
 
 export const INITIAL_GAME_STATE: GameState = {
@@ -58,11 +79,10 @@ export const INITIAL_GAME_STATE: GameState = {
         truck: null,
         helicopter: null,
     },
-    markedForDeletion: {
-        shots: new Set(),
-        enemies: new Set(),
-    },
-    truckSpawnTimer: 0,
+    ally: null,
+    explosions: [],
+    markedForDeletion: INITIAL_MARKED_FOR_DELETION,
+    spawnTimers: { truck: 0, ally: 0 },
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
@@ -79,4 +99,6 @@ export const ALL_SPRITES = {
     shot: `${ASSETS_PATH}bullet.png`,
     enemyHelicopter: `${ASSETS_PATH}enemy-helicopter.png`,
     enemyTruck: `${ASSETS_PATH}enemy-truck.png`,
+    ally: `${ASSETS_PATH}ally.png`,
+    allyDeath: `${ASSETS_PATH}ally-death.png`,
 };
