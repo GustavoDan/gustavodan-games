@@ -61,6 +61,37 @@ export interface ShooterInputAction extends BaseInputAction {
     shoot: boolean;
 }
 
+export type GenericDeleteObjectAction<
+    TState extends object,
+    TDeletableKeys extends keyof TState,
+    TId extends string | number | bigint = string
+> = {
+    [K in TDeletableKeys]: {
+        type: "DELETE_OBJECT";
+        payload: TState[K] extends unknown[]
+            ? {
+                  objectType: K;
+                  objectId: TId;
+              }
+            : {
+                  objectType: K;
+                  objectId?: never;
+              };
+    };
+}[TDeletableKeys];
+
+export type GenericDeleteObjectFn<
+    TState extends object,
+    TDeletableKeys extends keyof TState,
+    TId extends string | number | bigint = string
+> = (
+    ...args: {
+        [K in TDeletableKeys]: TState[K] extends unknown[]
+            ? [objectType: K, objectId: TId]
+            : [objectType: K];
+    }[TDeletableKeys]
+) => void;
+
 export interface InitializeGameState {
     type: "INITIALIZE_GAME_STATE";
     payload: {

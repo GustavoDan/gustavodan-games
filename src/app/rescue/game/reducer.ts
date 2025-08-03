@@ -8,7 +8,13 @@ import {
     ShooterInputAction,
     Vector2D,
 } from "@/types";
-import { EnemyType, GameState, PlayerState, VolatileData } from "../types";
+import {
+    DeleteObjectAction,
+    EnemyType,
+    GameState,
+    PlayerState,
+    VolatileData,
+} from "../types";
 import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import {
     ALL_SPRITES,
@@ -36,11 +42,11 @@ interface TickAction extends BaseTickAction {
     };
 }
 
-interface DeleteAlly {
-    type: "DELETE_ALLY";
-}
-
-type GameAction = TickAction | InitializeGameState | ResetAction | DeleteAlly;
+type GameAction =
+    | TickAction
+    | InitializeGameState
+    | ResetAction
+    | DeleteObjectAction;
 
 const PLAYER_SIZE = {
     x: CONSTANT_SIZES.player.width,
@@ -504,14 +510,28 @@ export const gameReducer = (
                 },
             };
         }
-        case "DELETE_ALLY": {
+        case "DELETE_OBJECT": {
+            const { objectType, objectId } = action.payload;
+
             return {
                 ...gameState,
-                ally: null,
-                markedForDeletion: {
-                    ...gameState.markedForDeletion,
-                    ally: false,
-                },
+                ...(objectType in gameState.markedForDeletion && {
+                    markedForDeletion: {
+                        ...gameState.markedForDeletion,
+                        [objectType]:
+                            objectId == null
+                                ? false
+                                : gameState[objectType].filter(
+                                      (object) => object.id !== objectId
+                                  ),
+                    },
+                }),
+                [objectType]:
+                    objectId == null
+                        ? null
+                        : gameState[objectType].filter(
+                              (object) => object.id !== objectId
+                          ),
             };
         }
         default:

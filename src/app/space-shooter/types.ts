@@ -1,5 +1,7 @@
 import {
     BaseObjectState,
+    GenericDeleteObjectAction,
+    GenericDeleteObjectFn,
     HorizontalMovementDirection,
     Vector2D,
     VerticalMovementDirection,
@@ -8,10 +10,14 @@ import { CONSTANT_SIZES } from "./constants";
 
 export type EnemyType = keyof typeof CONSTANT_SIZES.enemies;
 export type DeletableObject = keyof GameState["markedForDeletion"];
-export type DeleteObjectFn = (
-    objectType: DeletableObject,
-    objectId: string
-) => void;
+type DeleteObjectArgs = Parameters<
+    GenericDeleteObjectFn<GameState, DeletableObject>
+>;
+export type DeleteObjectFn = (...args: DeleteObjectArgs) => void;
+export type DeleteObjectAction = GenericDeleteObjectAction<
+    GameState,
+    DeletableObject
+>;
 
 export interface PlayerState {
     life: number;

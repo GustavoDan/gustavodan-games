@@ -1,4 +1,9 @@
-import { GameOverAction, ResetAction } from "@/types";
+import {
+    GameOverAction,
+    GenericDeleteObjectAction,
+    GenericDeleteObjectFn,
+    ResetAction,
+} from "@/types";
 import { Dispatch } from "react";
 
 export const handleGameOver = (
@@ -25,4 +30,24 @@ export const handleGameStart = (
         });
     }
     start();
+};
+
+export const createDeleteObjectHandler = <
+    TState extends object,
+    TDeletableKeys extends keyof TState,
+    TId extends string | number | bigint = string
+>(
+    dispatch: Dispatch<GenericDeleteObjectAction<TState, TDeletableKeys, TId>>
+): GenericDeleteObjectFn<TState, TDeletableKeys, TId> => {
+    return ((objectType: TDeletableKeys, objectId?: TId) => {
+        const action = {
+            type: "DELETE_OBJECT",
+            payload: {
+                objectType,
+                objectId,
+            },
+        } as GenericDeleteObjectAction<TState, TDeletableKeys, TId>;
+
+        dispatch(action);
+    }) as GenericDeleteObjectFn<TState, TDeletableKeys, TId>;
 };

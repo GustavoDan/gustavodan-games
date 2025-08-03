@@ -17,14 +17,23 @@ import { Binding } from "@/types";
 import useEventListener from "@/hooks/useEventListener";
 import GameOverlay from "@/components/GameOverlay";
 import Shot from "./Shot";
-import { DeleteObjectFn, VolatileData, VolatileDataShotFn } from "./types";
+import {
+    DeletableObject,
+    GameState,
+    VolatileData,
+    VolatileDataShotFn,
+} from "./types";
 import Enemy from "./Enemy";
 import useAssetLoader from "@/hooks/useAssetLoader";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
 import HeartContainer from "./HeartContainer";
 import { loadHighScore, setHighScore } from "@/utils/highScore";
-import { handleGameOver, handleGameStart } from "@/utils/reducerCommon";
+import {
+    createDeleteObjectHandler,
+    handleGameOver,
+    handleGameStart,
+} from "@/utils/reducerCommon";
 import pluralize from "pluralize";
 
 const SpaceShooter = () => {
@@ -109,15 +118,10 @@ const SpaceShooter = () => {
         if (engineState === "RUNNING") togglePause();
     }, [engineState, togglePause]);
 
-    const deleteObject: DeleteObjectFn = useCallback((objectType, objectId) => {
-        dispatch({
-            type: "DELETE_OBJECT",
-            payload: {
-                objectType,
-                objectId,
-            },
-        });
-    }, []);
+    const deleteObject = useMemo(
+        () => createDeleteObjectHandler<GameState, DeletableObject>(dispatch),
+        [dispatch]
+    );
 
     const bindings = useMemo(
         (): Binding[] => [

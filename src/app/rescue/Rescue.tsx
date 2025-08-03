@@ -17,11 +17,19 @@ import Background from "./Background";
 import GameOverlay from "@/components/GameOverlay";
 import Shot from "./Shot";
 import Enemy from "./Enemy";
-import { handleGameStart } from "@/utils/reducerCommon";
+import {
+    createDeleteObjectHandler,
+    handleGameStart,
+} from "@/utils/reducerCommon";
 import useAssetLoader from "@/hooks/useAssetLoader";
 import Loading from "@/components/Loading";
 import DisplayError from "@/components/DisplayError";
-import { DeleteAllyFn, VolatileData, VolatileDataFn } from "./types";
+import {
+    DeletableObject,
+    GameState,
+    VolatileData,
+    VolatileDataFn,
+} from "./types";
 import Ally from "./Ally";
 
 const Rescue = () => {
@@ -95,11 +103,10 @@ const Rescue = () => {
         if (engineState === "RUNNING") togglePause();
     }, [engineState, togglePause]);
 
-    const deleteAlly: DeleteAllyFn = useCallback(() => {
-        dispatch({
-            type: "DELETE_ALLY",
-        });
-    }, []);
+    const deleteObject = useMemo(
+        () => createDeleteObjectHandler<GameState, DeletableObject>(dispatch),
+        [dispatch]
+    );
 
     const bindings = useMemo(
         (): Binding[] => [
@@ -202,7 +209,7 @@ const Rescue = () => {
                     engineState={engineState}
                     isMarkedForDeletion={gameState.markedForDeletion.ally}
                     onFrameUpdate={updateAllyAnimationData}
-                    deleteAlly={deleteAlly}
+                    deleteObject={deleteObject}
                 />
             )}
 

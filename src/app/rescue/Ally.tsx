@@ -1,7 +1,7 @@
 "use client";
 
 import { MachineState } from "@/hooks/useStateMachine";
-import { DeleteAllyFn, VolatileDataFn } from "./types";
+import { DeleteObjectFn, VolatileDataFn } from "./types";
 import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
 import { useEffect, useMemo } from "react";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
@@ -12,7 +12,7 @@ interface AllyProps {
     engineState: MachineState;
     isMarkedForDeletion: boolean;
     onFrameUpdate: VolatileDataFn;
-    deleteAlly: DeleteAllyFn;
+    deleteObject: DeleteObjectFn;
 }
 
 const DEFAULT_STEPS = 11;
@@ -23,7 +23,7 @@ const Ally = ({
     engineState,
     isMarkedForDeletion,
     onFrameUpdate,
-    deleteAlly,
+    deleteObject,
 }: AllyProps) => {
     const allySize = useMemo(
         () =>
@@ -75,9 +75,9 @@ const Ally = ({
 
     useEffect(() => {
         if (isMarkedForDeletion && isFinished) {
-            deleteAlly();
+            deleteObject("ally");
         }
-    }, [isFinished, isMarkedForDeletion, deleteAlly]);
+    }, [isFinished, isMarkedForDeletion, deleteObject]);
 
     return (
         <div

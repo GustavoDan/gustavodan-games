@@ -11,7 +11,7 @@ import {
     Vector2D,
 } from "@/types";
 import {
-    DeletableObject,
+    DeleteObjectAction,
     EnemyState,
     EnemyType,
     GameState,
@@ -39,14 +39,6 @@ interface TickAction extends BaseTickAction {
         inputActions: ShooterInputAction;
         volatileData: VolatileData;
         assets: Assets;
-    };
-}
-
-interface DeleteObjectAction {
-    type: "DELETE_OBJECT";
-    payload: {
-        objectType: DeletableObject;
-        objectId: string;
     };
 }
 
