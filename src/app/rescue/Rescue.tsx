@@ -31,6 +31,7 @@ import {
     VolatileDataFn,
 } from "./types";
 import Ally from "./Ally";
+import Explosion from "./Explosion";
 
 const Rescue = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -201,6 +202,15 @@ const Rescue = () => {
                         />
                     )
             )}
+
+            {gameState.explosions.map((explosion) => (
+                <Explosion
+                    key={explosion.id}
+                    explosionState={explosion}
+                    engineState={engineState}
+                    deleteObject={deleteObject}
+                />
+            ))}
 
             {gameState.ally && (
                 <Ally

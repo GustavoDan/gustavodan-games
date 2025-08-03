@@ -89,11 +89,15 @@ const getSpawnTimer = (type: SpawnTimerType) => {
 
 const handleEnemyKill = (gameState: GameState, enemyType: EnemyType) => {
     const enemy = gameState.enemies[enemyType];
+    const enemySize = CONSTANT_SIZES.enemies[enemyType];
     if (!enemy) return;
 
     gameState.explosions.push({
         id: crypto.randomUUID(),
-        pos: { ...enemy.pos },
+        pos: {
+            x: enemy.pos.x + enemySize.width / 2,
+            y: enemy.pos.y,
+        },
     });
 
     gameState.enemies[enemyType] = null;

@@ -56,6 +56,10 @@ export const CONSTANT_SIZES = {
         width: 41,
         height: 51,
     },
+    explosion: {
+        width: 80,
+        height: 80,
+    },
 };
 
 export const INITIAL_MARKED_FOR_DELETION = {
@@ -101,4 +105,5 @@ export const ALL_SPRITES = {
     enemyTruck: `${ASSETS_PATH}enemy-truck.png`,
     ally: `${ASSETS_PATH}ally.png`,
     allyDeath: `${ASSETS_PATH}ally-death.png`,
+    explosion: `${ASSETS_PATH}explosion.png`,
 };
