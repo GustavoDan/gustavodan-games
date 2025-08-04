@@ -2,6 +2,7 @@ import {
     BaseObjectState,
     BaseTickAction,
     BoundingBox,
+    ClearSoundsAction,
     CollidableObject,
     GameOverAction,
     InitializeGameState,
@@ -54,7 +55,8 @@ type GameAction =
     | ResetAction
     | DeleteObjectAction
     | LoadHighScoreAction
-    | GameOverAction;
+    | GameOverAction
+    | ClearSoundsAction;
 
 const PLAYER_SIZE = {
     x: CONSTANT_SIZES.player.width,
@@ -109,6 +111,13 @@ const handleEnemyKill = (gameState: GameState, enemyType: EnemyType) => {
     });
 
     gameState.enemies[enemyType] = null;
+    gameState.soundEvents.push("explosion");
+};
+
+const handleAllyKill = (gameState: GameState) => {
+    gameState.markedForDeletion.ally = true;
+    gameState.score += SCORE_GAIN.kill.ally;
+    gameState.soundEvents.push("allyDeath");
 };
 
 const handleShooting = (gameState: GameState) => {
@@ -121,6 +130,7 @@ const handleShooting = (gameState: GameState) => {
 
     gameState.shots.push(newShot);
     gameState.player.currentShotCooldown = SHOT_COOLDOWN;
+    gameState.soundEvents.push("shoot");
 };
 
 const handlePlayerInput = (gameState: GameState, input: ShooterInputAction) => {
@@ -389,6 +399,7 @@ const checkPlayerAllyCollisions = (gameState: GameState) => {
     if (areBoxesOverlapping(playerBox, allyBox)) {
         gameState.ally = null;
         gameState.score += SCORE_GAIN.rescue.ally;
+        gameState.soundEvents.push("allyRescued");
     }
 };
 
@@ -420,8 +431,7 @@ const checkAllyShotsCollision = (gameState: GameState, assets: Assets) => {
 
         if (isPixelColliding(allyBox, shotBox)) {
             markedShots.add(shot.id);
-            markedForDeletion.ally = true;
-            gameState.score += SCORE_GAIN.kill.ally;
+            handleAllyKill(gameState);
         }
     }
 };
@@ -453,8 +463,7 @@ const checkAllyEnemiesCollision = (gameState: GameState, assets: Assets) => {
         };
 
         if (isPixelColliding(allyBox, enemyBox)) {
-            markedForDeletion.ally = true;
-            gameState.score += SCORE_GAIN.kill.ally;
+            handleAllyKill(gameState);
         }
     }
 };
@@ -564,6 +573,12 @@ export const gameReducer = (
             return gameState.score <= gameState.highScore
                 ? gameState
                 : { ...gameState, highScore: gameState.score };
+        }
+        case "CLEAR_SOUND_EVENTS": {
+            return {
+                ...gameState,
+                soundEvents: [],
+            };
         }
         default:
             return gameState;

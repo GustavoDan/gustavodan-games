@@ -61,6 +61,10 @@ export interface ShooterInputAction extends BaseInputAction {
     shoot: boolean;
 }
 
+export interface ClearSoundsAction {
+    type: "CLEAR_SOUND_EVENTS";
+}
+
 export type GenericDeleteObjectAction<
     TState extends object,
     TDeletableKeys extends keyof TState,

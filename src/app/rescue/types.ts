@@ -6,7 +6,7 @@ import {
     Vector2D,
     VerticalMovementDirection,
 } from "@/types";
-import { CONSTANT_SIZES } from "./constants";
+import { ALL_SOUNDS, CONSTANT_SIZES } from "./constants";
 
 export type EnemyType = keyof typeof CONSTANT_SIZES.enemies;
 export type DeletableObject =
@@ -17,6 +17,7 @@ export type DeleteObjectAction = GenericDeleteObjectAction<
     GameState,
     DeletableObject
 >;
+export type SoundEvents = keyof typeof ALL_SOUNDS;
 
 export interface PlayerState {
     life: number;
@@ -53,6 +54,7 @@ export interface GameState {
     score: number;
     highScore: number;
     enemySpeedMultiplier: number;
+    soundEvents: SoundEvents[];
 }
 
 type GetCurrentFrame = () => number | null;

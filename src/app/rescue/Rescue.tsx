@@ -6,6 +6,7 @@ import useStateMachine from "@/hooks/useStateMachine";
 import { Binding } from "@/types";
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import {
+    ALL_SOUNDS,
     ALL_SPRITES,
     CONSTANT_SIZES,
     INITIAL_GAME_STATE,
@@ -36,6 +37,7 @@ import Ally from "./Ally";
 import Explosion from "./Explosion";
 import Hud from "./Hud";
 import { loadHighScore, setHighScore } from "@/utils/highScore";
+import useSound from "@/hooks/useSound";
 
 const Rescue = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -43,6 +45,7 @@ const Rescue = () => {
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
     const volatileDataRef = useRef<VolatileData>({});
+    const playSound = useSound(ALL_SOUNDS);
 
     const updateEnemyAnimationData = useCallback<VolatileDataFn>(
         (getCurrentFrame) => {
@@ -200,6 +203,16 @@ const Rescue = () => {
     useEventListener("keyup", handleInput);
     useEventListener("blur", pause);
     useEventListener("contextmenu", pause);
+
+    useEffect(() => {
+        gameState.soundEvents.forEach((event) => {
+            playSound[event]();
+        });
+
+        if (gameState.soundEvents.length > 0) {
+            dispatch({ type: "CLEAR_SOUND_EVENTS" });
+        }
+    }, [gameState.soundEvents]);
 
     const shouldRenderGameElements = useMemo(
         () => engineState !== "IDLE" || gameState.player.life === 0,

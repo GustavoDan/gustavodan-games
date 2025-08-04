@@ -107,6 +107,7 @@ export const INITIAL_GAME_STATE: GameState = {
     score: 0,
     highScore: 0,
     enemySpeedMultiplier: INITIAL_ENEMY_SPEED_MULTIPLIER,
+    soundEvents: [],
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
@@ -127,4 +128,13 @@ export const ALL_SPRITES = {
     allyDeath: `${ASSETS_PATH}ally-death.png`,
     explosion: `${ASSETS_PATH}explosion.png`,
     life: `${ASSETS_PATH}battery.png`,
+};
+
+export const ALL_SOUNDS = {
+    backgroundMusic: `${ASSETS_PATH}background-music.mp3`,
+    gameOverMusic: `${ASSETS_PATH}game-over-music.mp3`,
+    allyDeath: `${ASSETS_PATH}ally-death.mp3`,
+    allyRescued: `${ASSETS_PATH}ally-rescued.mp3`,
+    explosion: `${ASSETS_PATH}explosion.mp3`,
+    shoot: `${ASSETS_PATH}shoot-sound.mp3`,
 };
