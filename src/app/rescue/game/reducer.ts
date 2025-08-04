@@ -3,7 +3,9 @@ import {
     BaseTickAction,
     BoundingBox,
     CollidableObject,
+    GameOverAction,
     InitializeGameState,
+    LoadHighScoreAction,
     ResetAction,
     ShooterInputAction,
     Vector2D,
@@ -19,10 +21,14 @@ import { getDirectionOnAxis, moveOnAxis } from "@/utils/movement";
 import {
     ALL_SPRITES,
     CONSTANT_SIZES,
+    DIFFICULTY_SCALING_FACTOR,
     FLOOR_HEIGHT,
+    INITIAL_ENEMY_SPEED_MULTIPLIER,
+    INITIAL_GAME_STATE,
     INITIAL_MARKED_FOR_DELETION,
     INVULNERABILITY_DURATION,
     MOVE_SPEEDS,
+    SCORE_GAIN,
     SHOT_COOLDOWN,
     SPAWN_TIMERS_RANGE,
 } from "../constants";
@@ -46,7 +52,9 @@ type GameAction =
     | TickAction
     | InitializeGameState
     | ResetAction
-    | DeleteObjectAction;
+    | DeleteObjectAction
+    | LoadHighScoreAction
+    | GameOverAction;
 
 const PLAYER_SIZE = {
     x: CONSTANT_SIZES.player.width,
@@ -163,11 +171,7 @@ const handlePlayerPhysics = (
     );
 };
 
-const handleShots = (
-    gameState: GameState,
-    screenSize: Vector2D,
-    deltaTime: number
-) => {
+const handleShots = (gameState: GameState, deltaTime: number) => {
     gameState.shots.forEach((shot) => {
         shot.pos.x = moveOnAxis(
             shot.pos.x,
@@ -194,7 +198,7 @@ export const handleEnemies = (
         enemy.pos.x = moveOnAxis(
             enemy.pos.x,
             "LEFT",
-            MOVE_SPEEDS.enemies,
+            MOVE_SPEEDS.enemies * gameState.enemySpeedMultiplier,
             deltaTime,
             {
                 min: -CONSTANT_SIZES.enemies[enemy.type].width,
@@ -317,6 +321,7 @@ const checkEnemyShotCollisions = (
             if (isPixelColliding(enemyBox, shotBox)) {
                 markedShots.add(shot.id);
                 handleEnemyKill(gameState, enemy.type);
+                gameState.score += SCORE_GAIN.kill.enemy;
                 break;
             }
         }
@@ -383,6 +388,7 @@ const checkPlayerAllyCollisions = (gameState: GameState) => {
 
     if (areBoxesOverlapping(playerBox, allyBox)) {
         gameState.ally = null;
+        gameState.score += SCORE_GAIN.rescue.ally;
     }
 };
 
@@ -415,6 +421,7 @@ const checkAllyShotsCollision = (gameState: GameState, assets: Assets) => {
         if (isPixelColliding(allyBox, shotBox)) {
             markedShots.add(shot.id);
             markedForDeletion.ally = true;
+            gameState.score += SCORE_GAIN.kill.ally;
         }
     }
 };
@@ -447,6 +454,7 @@ const checkAllyEnemiesCollision = (gameState: GameState, assets: Assets) => {
 
         if (isPixelColliding(allyBox, enemyBox)) {
             markedForDeletion.ally = true;
+            gameState.score += SCORE_GAIN.kill.ally;
         }
     }
 };
@@ -472,6 +480,12 @@ const handleObjectsDeletion = (gameState: GameState, screenWidth: number) => {
     gameState.markedForDeletion.shots = INITIAL_MARKED_FOR_DELETION.shots;
 };
 
+const updateEnemySpeedMultiplier = (gameState: GameState) => {
+    gameState.enemySpeedMultiplier =
+        INITIAL_ENEMY_SPEED_MULTIPLIER +
+        gameState.score * DIFFICULTY_SCALING_FACTOR;
+};
+
 export const gameReducer = (
     gameState: GameState,
     action: GameAction
@@ -491,7 +505,7 @@ export const gameReducer = (
             const stepTime = deltaTime / subSteps;
             Array.from({ length: subSteps }).forEach(() => {
                 handlePlayerPhysics(newState.player, screenSize, stepTime);
-                handleShots(newState, screenSize, stepTime);
+                handleShots(newState, stepTime);
                 handleEnemies(newState, screenSize, stepTime);
                 handleAlly(newState, screenSize, stepTime);
                 handleCollisions(newState, volatileData, assets);
@@ -499,6 +513,8 @@ export const gameReducer = (
 
             handlePlayerInput(newState, inputActions);
             handleObjectsDeletion(newState, screenSize.x);
+
+            updateEnemySpeedMultiplier(newState);
 
             return newState;
         }
@@ -537,6 +553,17 @@ export const gameReducer = (
                               (object) => object.id !== objectId
                           ),
             };
+        }
+        case "LOAD_HIGH_SCORE": {
+            return { ...gameState, highScore: action.payload };
+        }
+        case "RESET": {
+            return { ...INITIAL_GAME_STATE, highScore: gameState.highScore };
+        }
+        case "GAME_OVER": {
+            return gameState.score <= gameState.highScore
+                ? gameState
+                : { ...gameState, highScore: gameState.score };
         }
         default:
             return gameState;

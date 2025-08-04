@@ -2,10 +2,23 @@ import { ShooterInputAction } from "@/types";
 import { GameState } from "./types";
 
 export const ASSETS_PATH = "rescue/";
+export const LOCALSTORAGE_HS_VAR = "rescue_hs";
 export const MAX_PLAYER_LIFE = 3;
 export const SHOT_COOLDOWN = 0.5;
 export const FLOOR_HEIGHT = 140;
 export const INVULNERABILITY_DURATION = 1.5;
+export const INITIAL_ENEMY_SPEED_MULTIPLIER = 1;
+export const DIFFICULTY_SCALING_FACTOR = 0.0003;
+
+export const SCORE_GAIN = {
+    kill: {
+        enemy: 100,
+        ally: -200,
+    },
+    rescue: {
+        ally: 200,
+    },
+};
 
 export const SPAWN_TIMERS_RANGE = {
     truck: {
@@ -60,6 +73,10 @@ export const CONSTANT_SIZES = {
         width: 80,
         height: 80,
     },
+    life: {
+        width: 35,
+        height: 25,
+    },
 };
 
 export const INITIAL_MARKED_FOR_DELETION = {
@@ -87,6 +104,9 @@ export const INITIAL_GAME_STATE: GameState = {
     explosions: [],
     markedForDeletion: INITIAL_MARKED_FOR_DELETION,
     spawnTimers: { truck: 0, ally: 0 },
+    score: 0,
+    highScore: 0,
+    enemySpeedMultiplier: INITIAL_ENEMY_SPEED_MULTIPLIER,
 } as const;
 
 export const INITIAL_INPUT_ACTIONS: ShooterInputAction = {
@@ -106,4 +126,5 @@ export const ALL_SPRITES = {
     ally: `${ASSETS_PATH}ally.png`,
     allyDeath: `${ASSETS_PATH}ally-death.png`,
     explosion: `${ASSETS_PATH}explosion.png`,
+    life: `${ASSETS_PATH}battery.png`,
 };

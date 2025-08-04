@@ -4,12 +4,13 @@ import { useGameContext } from "@/contexts/GameContext";
 import useEventListener from "@/hooks/useEventListener";
 import useStateMachine from "@/hooks/useStateMachine";
 import { Binding } from "@/types";
-import { useCallback, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import {
     ALL_SPRITES,
     CONSTANT_SIZES,
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
+    LOCALSTORAGE_HS_VAR,
 } from "./constants";
 import { gameReducer } from "./game/reducer";
 import Player from "./Player";
@@ -19,6 +20,7 @@ import Shot from "./Shot";
 import Enemy from "./Enemy";
 import {
     createDeleteObjectHandler,
+    handleGameOver,
     handleGameStart,
 } from "@/utils/reducerCommon";
 import useAssetLoader from "@/hooks/useAssetLoader";
@@ -32,6 +34,8 @@ import {
 } from "./types";
 import Ally from "./Ally";
 import Explosion from "./Explosion";
+import Hud from "./Hud";
+import { loadHighScore, setHighScore } from "@/utils/highScore";
 
 const Rescue = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -83,11 +87,26 @@ const Rescue = () => {
         inputActionsRef.current = { ...INITIAL_INPUT_ACTIONS };
     }, []);
 
-    const { start, togglePause, engineState } = useStateMachine(gameTick, {
-        onPause: resetInputs,
-        onResume: resetInputs,
-        onStop: resetInputs,
-    });
+    const { start, stop, togglePause, engineState } = useStateMachine(
+        gameTick,
+        {
+            onPause: resetInputs,
+            onResume: resetInputs,
+            onStop: resetInputs,
+        }
+    );
+
+    useEffect(() => {
+        loadHighScore(LOCALSTORAGE_HS_VAR, dispatch);
+    }, []);
+
+    useEffect(() => {
+        setHighScore(LOCALSTORAGE_HS_VAR, gameState.highScore.toString());
+    }, [gameState.highScore]);
+
+    useEffect(() => {
+        handleGameOver(gameState.player.life, stop, dispatch);
+    }, [gameState.player.life, stop]);
 
     const handleStart = useCallback(() => {
         handleGameStart(gameState.player.life, start, dispatch);
@@ -228,22 +247,48 @@ const Rescue = () => {
             ))}
 
             {shouldRenderGameElements && (
-                <Player
-                    playerState={gameState.player}
-                    engineState={engineState}
-                    onFrameUpdate={updatePlayerAnimationData}
-                />
+                <>
+                    <Player
+                        playerState={gameState.player}
+                        engineState={engineState}
+                        onFrameUpdate={updatePlayerAnimationData}
+                    />
+
+                    <Hud
+                        playerLife={gameState.player.life}
+                        score={gameState.score}
+                        highScore={gameState.highScore}
+                    />
+                </>
             )}
 
-            <GameOverlay engineState={engineState} isGameOver={false}>
+            <GameOverlay
+                engineState={engineState}
+                isGameOver={gameState.player.life <= 0}
+            >
                 <GameOverlay.StartScreen
                     startFunction={handleStart}
-                    controls={{ temp: "temp" }}
+                    controls={{
+                        move: "WASD or ↑←↓→ Keys",
+                        shoot: "Spacebar or Shift",
+                        pause: "Q Key",
+                    }}
+                    headline="Achieve the highest combat score by protecting our operatives and eliminating hostile threats."
                 />
 
                 <GameOverlay.PauseScreen />
 
-                <GameOverlay.GameOverScreen restartFunction={handleStart} />
+                <GameOverlay.GameOverScreen restartFunction={handleStart}>
+                    <div className="text-xl md:text-2xl flex flex-col gap-2">
+                        <span>
+                            Score: <span>{Math.floor(gameState.score)}</span>
+                        </span>
+                        <span>
+                            High Score:{" "}
+                            <span>{Math.floor(gameState.highScore)}</span>
+                        </span>
+                    </div>
+                </GameOverlay.GameOverScreen>
             </GameOverlay>
         </Background>
     );

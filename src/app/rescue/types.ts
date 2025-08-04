@@ -50,6 +50,9 @@ export interface GameState {
         truck: number;
         ally: number;
     };
+    score: number;
+    highScore: number;
+    enemySpeedMultiplier: number;
 }
 
 type GetCurrentFrame = () => number | null;
