@@ -108,8 +108,16 @@ const Rescue = () => {
     }, [gameState.highScore]);
 
     useEffect(() => {
-        handleGameOver(gameState.player.life, stop, dispatch);
-    }, [gameState.player.life, stop]);
+        handleGameOver(gameState.player.life, stop, dispatch, () => {
+            sounds.backgroundMusic.stop();
+            sounds.gameOverMusic.playLoop();
+        });
+    }, [
+        gameState.player.life,
+        stop,
+        sounds.backgroundMusic.stop,
+        sounds.gameOverMusic.playLoop,
+    ]);
 
     const handleStart = useCallback(() => {
         handleGameStart(gameState.player.life, start, dispatch);
@@ -120,11 +128,25 @@ const Rescue = () => {
                 playerY: (worldHeight - CONSTANT_SIZES.player.height) / 2,
             },
         });
-    }, [gameState.player.life, start, worldHeight]);
+
+        sounds.gameOverMusic.stop();
+        sounds.backgroundMusic.playLoop();
+    }, [
+        gameState.player.life,
+        start,
+        worldHeight,
+        sounds.gameOverMusic.stop,
+        sounds.backgroundMusic.playLoop,
+    ]);
+
+    const handlePause = useCallback(() => {
+        togglePause();
+        sounds.backgroundMusic.togglePause();
+    }, [togglePause, sounds.backgroundMusic.togglePause]);
 
     const pause = useCallback(() => {
-        if (engineState === "RUNNING") togglePause();
-    }, [engineState, togglePause]);
+        if (engineState === "RUNNING") handlePause();
+    }, [engineState, handlePause]);
 
     const deleteObject = useMemo(
         () => createDeleteObjectHandler<GameState, DeletableObject>(dispatch),
@@ -179,11 +201,11 @@ const Rescue = () => {
                 keys: ["KeyQ"],
                 states: ["RUNNING", "PAUSED"],
                 action: (type) => {
-                    if (type === "keydown") togglePause();
+                    if (type === "keydown") handlePause();
                 },
             },
         ],
-        [togglePause, handleStart]
+        [handlePause, handleStart]
     );
 
     const handleInput = useCallback(
