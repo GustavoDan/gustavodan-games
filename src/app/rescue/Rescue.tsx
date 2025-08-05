@@ -45,7 +45,7 @@ const Rescue = () => {
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
     const volatileDataRef = useRef<VolatileData>({});
-    const playSound = useSound(ALL_SOUNDS);
+    const sounds = useSound(ALL_SOUNDS);
 
     const updateEnemyAnimationData = useCallback<VolatileDataFn>(
         (getCurrentFrame) => {
@@ -206,13 +206,13 @@ const Rescue = () => {
 
     useEffect(() => {
         gameState.soundEvents.forEach((event) => {
-            playSound[event]();
+            sounds[event].play();
         });
 
         if (gameState.soundEvents.length > 0) {
             dispatch({ type: "CLEAR_SOUND_EVENTS" });
         }
-    }, [gameState.soundEvents]);
+    }, [gameState.soundEvents, sounds]);
 
     const shouldRenderGameElements = useMemo(
         () => engineState !== "IDLE" || gameState.player.life === 0,

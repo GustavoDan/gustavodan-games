@@ -42,9 +42,9 @@ const DinosaurGame = () => {
     const { worldWidth, worldHeight } = useGameContext();
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
 
-    const playJumpSound = useSound(`${ASSETS_PATH}jump.ogx`);
-    const playHitSound = useSound(`${ASSETS_PATH}hit.ogx`);
-    const playScoreSound = useSound(`${ASSETS_PATH}score.ogx`);
+    const jumpSound = useSound(`${ASSETS_PATH}jump.ogx`);
+    const hitSound = useSound(`${ASSETS_PATH}hit.ogx`);
+    const scoreSound = useSound(`${ASSETS_PATH}score.ogx`);
     const previousScore = usePrevious(gameState.score);
     const previousLife = usePrevious(gameState.dinosaur.life);
 
@@ -128,9 +128,9 @@ const DinosaurGame = () => {
 
     useEffect(() => {
         if (gameState.dinosaur.isJumping === true) {
-            playJumpSound();
+            jumpSound.play();
         }
-    }, [gameState.dinosaur.isJumping, playJumpSound]);
+    }, [gameState.dinosaur.isJumping, jumpSound]);
 
     useEffect(() => {
         if (previousLife == null) {
@@ -138,9 +138,9 @@ const DinosaurGame = () => {
         }
 
         if (previousLife > gameState.dinosaur.life) {
-            playHitSound();
+            hitSound.play();
         }
-    }, [gameState.dinosaur.life, previousLife, playHitSound]);
+    }, [gameState.dinosaur.life, previousLife, hitSound]);
 
     useEffect(() => {
         if (previousScore == null) {
@@ -151,9 +151,9 @@ const DinosaurGame = () => {
         const currentScoreBlock = Math.floor(gameState.score / 30);
 
         if (currentScoreBlock > previousScoreBlock) {
-            playScoreSound();
+            scoreSound.play();
         }
-    }, [gameState.score, previousScore, playScoreSound]);
+    }, [gameState.score, previousScore, scoreSound]);
 
     const bindings = useMemo(
         (): Binding[] => [
