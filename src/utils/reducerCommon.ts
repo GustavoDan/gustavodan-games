@@ -9,13 +9,15 @@ import { Dispatch } from "react";
 export const handleGameOver = (
     life: number,
     stop: () => void,
-    dispatch: Dispatch<GameOverAction>
+    dispatch: Dispatch<GameOverAction>,
+    customCallback?: () => void
 ) => {
     if (life <= 0) {
         stop();
         dispatch({
             type: "GAME_OVER",
         });
+        customCallback?.();
     }
 };
 
