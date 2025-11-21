@@ -46,6 +46,7 @@ import {
 import Ally from "./Ally";
 import Explosion from "./Explosion";
 import Hud from "./Hud";
+import VolumeControls from "./VolumeControls";
 import { loadHighScore, setHighScore } from "@/utils/highScore";
 import { loadVolumeSettings, saveVolumeSettings } from "@/utils/volume";
 import useSound from "@/hooks/useSound";
@@ -141,6 +142,8 @@ const Rescue = () => {
         stop,
         sounds.backgroundMusic.stop,
         sounds.gameOverMusic.playLoop,
+        sounds.backgroundMusic,
+        sounds.gameOverMusic,
     ]);
 
     const handleStart = useCallback(() => {
@@ -159,14 +162,14 @@ const Rescue = () => {
         gameState.player.life,
         start,
         worldHeight,
-        sounds.gameOverMusic.stop,
-        sounds.backgroundMusic.playLoop,
+        sounds.backgroundMusic,
+        sounds.gameOverMusic,
     ]);
 
     const handlePause = useCallback(() => {
         togglePause();
         sounds.backgroundMusic.togglePause();
-    }, [togglePause, sounds.backgroundMusic.togglePause]);
+    }, [togglePause, sounds.backgroundMusic]);
 
     const pause = useCallback(() => {
         if (engineState === "RUNNING") handlePause();
@@ -354,7 +357,15 @@ const Rescue = () => {
                         pause: "Q Key",
                     }}
                     headline="Achieve the highest combat score by protecting our operatives and eliminating hostile threats."
-                />
+                >
+                    <VolumeControls
+                        absolute
+                        isSoundEnabled={isSoundEnabled}
+                        isMusicEnabled={isMusicEnabled}
+                        onSoundToggle={setIsSoundEnabled}
+                        onMusicToggle={setIsMusicEnabled}
+                    />
+                </GameOverlay.StartScreen>
 
                 <GameOverlay.PauseScreen />
 

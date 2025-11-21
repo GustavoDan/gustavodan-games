@@ -1,5 +1,5 @@
-import { VolumeToggleButton } from "@/components/buttons";
 import LifeBar from "./LifeBar";
+import VolumeControls from "./VolumeControls";
 
 interface HudProps {
     playerLife: number;
@@ -24,18 +24,12 @@ const Hud = ({
         <div className="flex flex-col justify-between h-full p-3">
             <div className="flex justify-between">
                 <LifeBar playerLife={playerLife} />
-                <div className="flex items-center justify-center gap-2 text-white">
-                    <VolumeToggleButton
-                        type="sound"
-                        isActive={isSoundEnabled}
-                        onToggle={onSoundToggle}
-                    />
-                    <VolumeToggleButton
-                        type="music"
-                        isActive={isMusicEnabled}
-                        onToggle={onMusicToggle}
-                    />
-                </div>
+                <VolumeControls
+                    isSoundEnabled={isSoundEnabled}
+                    isMusicEnabled={isMusicEnabled}
+                    onSoundToggle={onSoundToggle}
+                    onMusicToggle={onMusicToggle}
+                />
             </div>
             <div className="text-3xl flex gap-10">
                 <span>Score: {score}</span>
