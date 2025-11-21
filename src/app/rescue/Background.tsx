@@ -1,14 +1,19 @@
 import { ReactNode, useMemo } from "react";
-import { ALL_SPRITES, CONSTANT_SIZES } from "./constants";
+import {
+    ALL_SPRITES,
+    CONSTANT_SIZES,
+    DIFFICULTY_SCALING_FACTOR,
+} from "./constants";
 import { MachineState } from "@/hooks/useStateMachine";
 import useControllableAnimation from "@/hooks/useControllableAnimation";
 
 interface BackgroundProps {
     children: ReactNode;
     engineState: MachineState;
+    score: number;
 }
 
-const Background = ({ children, engineState }: BackgroundProps) => {
+const Background = ({ children, engineState, score }: BackgroundProps) => {
     const keyframes = useMemo(
         () => [
             { backgroundPosition: "0 0" },
@@ -19,9 +24,17 @@ const Background = ({ children, engineState }: BackgroundProps) => {
         []
     );
 
+    const playbackRate = useMemo(() => {
+        const progress = Math.min(score * DIFFICULTY_SCALING_FACTOR * 0.5, 1.0);
+        const minRate = 1.0;
+        const maxRate = 2.0;
+
+        return minRate + (maxRate - minRate) * progress;
+    }, [score]);
+
     const options = useMemo(
         () => ({
-            duration: 2000,
+            duration: 4000,
             iterations: Infinity,
         }),
         []
@@ -29,7 +42,7 @@ const Background = ({ children, engineState }: BackgroundProps) => {
 
     const animationControls = {
         isPlaying: engineState === "RUNNING",
-        playbackRate: 1,
+        playbackRate,
     };
 
     const { elementRef } = useControllableAnimation(

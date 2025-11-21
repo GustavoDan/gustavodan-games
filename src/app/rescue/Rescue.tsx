@@ -282,18 +282,19 @@ const Rescue = () => {
     if (isLoading) return <Loading />;
     if (error) return <DisplayError message={error} />;
     return (
-        <Background engineState={engineState}>
-            {Object.values(gameState.enemies).map(
-                (enemy) =>
-                    enemy && (
+        <Background engineState={engineState} score={gameState.score}>
+            {Object.values(gameState.enemies).map((enemy) => {
+                if (enemy) {
+                    return (
                         <Enemy
                             key={enemy.id}
                             enemyState={enemy}
                             engineState={engineState}
                             onFrameUpdate={updateEnemyAnimationData}
                         />
-                    )
-            )}
+                    );
+                }
+            })}
 
             {gameState.explosions.map((explosion) => (
                 <Explosion
@@ -322,12 +323,14 @@ const Rescue = () => {
             {shouldRenderGameElements && (
                 <>
                     <Player
+                        key="player"
                         playerState={gameState.player}
                         engineState={engineState}
                         onFrameUpdate={updatePlayerAnimationData}
                     />
 
                     <Hud
+                        key="hud"
                         playerLife={gameState.player.life}
                         score={gameState.score}
                         highScore={gameState.highScore}
