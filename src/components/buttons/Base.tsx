@@ -43,6 +43,19 @@ const Base = forwardRef(
                 originalHandler?.(event);
             };
 
+        const handleKeyDown = useMemo(
+            () => (event: React.KeyboardEvent<HTMLButtonElement>) => {
+                if (
+                    isFocused &&
+                    (event.key === " " || event.key === "Spacebar")
+                ) {
+                    event.preventDefault();
+                }
+                props.onKeyDown?.(event);
+            },
+            [isFocused, props]
+        );
+
         const commonHandlers = useMemo(
             () => ({
                 onFocus: createHandler(setFocus, onFocus),
@@ -104,6 +117,7 @@ const Base = forwardRef(
                     className
                 )}
                 {...commonHandlers}
+                onKeyDown={handleKeyDown}
                 {...props}
             >
                 {children}

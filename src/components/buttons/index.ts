@@ -3,3 +3,4 @@ export { default as BaseButton } from "./Base";
 export { default as BackButton } from "./Back";
 export { default as MenuButton } from "./Menu";
 export { default as GameActionButton } from "./GameAction";
+export { default as VolumeToggleButton } from "./VolumeToggle";

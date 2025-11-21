@@ -10,6 +10,8 @@ interface SoundPlayer {
     playOnce: PlayFunction;
     togglePause: () => void;
     stop: () => void;
+    setVolume: (volume: number) => void;
+    setMuted: (muted: boolean) => void;
     isPlaying: boolean;
 }
 type PlayersObject<T> = { [K in keyof T]: SoundPlayer };
@@ -107,6 +109,8 @@ const useSound = <T extends string | Record<string, string>>(
                         const soundInstance = masterAudio.cloneNode(
                             true
                         ) as HTMLAudioElement;
+                        soundInstance.muted = masterAudio.muted;
+                        soundInstance.volume = masterAudio.volume;
                         executePlay(soundInstance, options);
                     };
 
@@ -140,7 +144,32 @@ const useSound = <T extends string | Record<string, string>>(
                     audio.loop = false;
                 };
 
-                return [key, { play, playOnce, playLoop, togglePause, stop }];
+                const setVolume: SoundPlayer["setVolume"] = (
+                    volume: number
+                ) => {
+                    const audio = getMasterAudio();
+                    if (!audio) return;
+                    audio.volume = Math.max(0, Math.min(1, volume));
+                };
+
+                const setMuted: SoundPlayer["setMuted"] = (muted: boolean) => {
+                    const audio = getMasterAudio();
+                    if (!audio) return;
+                    audio.muted = muted;
+                };
+
+                return [
+                    key,
+                    {
+                        play,
+                        playOnce,
+                        playLoop,
+                        togglePause,
+                        stop,
+                        setVolume,
+                        setMuted,
+                    },
+                ];
             })
         );
     }, [soundMap]);

@@ -4,14 +4,24 @@ import { useGameContext } from "@/contexts/GameContext";
 import useEventListener from "@/hooks/useEventListener";
 import useStateMachine from "@/hooks/useStateMachine";
 import { Binding } from "@/types";
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useReducer,
+    useRef,
+    useState,
+} from "react";
 import {
     ALL_SOUNDS,
     ALL_SPRITES,
     CONSTANT_SIZES,
+    GAME_NAME,
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
     LOCALSTORAGE_HS_VAR,
+    MUSIC,
+    SOUNDS,
 } from "./constants";
 import { gameReducer } from "./game/reducer";
 import Player from "./Player";
@@ -37,6 +47,7 @@ import Ally from "./Ally";
 import Explosion from "./Explosion";
 import Hud from "./Hud";
 import { loadHighScore, setHighScore } from "@/utils/highScore";
+import { loadVolumeSettings, saveVolumeSettings } from "@/utils/volume";
 import useSound from "@/hooks/useSound";
 
 const Rescue = () => {
@@ -46,6 +57,12 @@ const Rescue = () => {
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
     const volatileDataRef = useRef<VolatileData>({});
     const sounds = useSound(ALL_SOUNDS);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(
+        () => loadVolumeSettings(GAME_NAME).sound
+    );
+    const [isMusicEnabled, setIsMusicEnabled] = useState(
+        () => loadVolumeSettings(GAME_NAME).music
+    );
 
     const updateEnemyAnimationData = useCallback<VolatileDataFn>(
         (getCurrentFrame) => {
@@ -106,6 +123,13 @@ const Rescue = () => {
     useEffect(() => {
         setHighScore(LOCALSTORAGE_HS_VAR, gameState.highScore.toString());
     }, [gameState.highScore]);
+
+    useEffect(() => {
+        saveVolumeSettings(GAME_NAME, {
+            sound: isSoundEnabled,
+            music: isMusicEnabled,
+        });
+    }, [isSoundEnabled, isMusicEnabled]);
 
     useEffect(() => {
         handleGameOver(gameState.player.life, stop, dispatch, () => {
@@ -227,14 +251,28 @@ const Rescue = () => {
     useEventListener("contextmenu", pause);
 
     useEffect(() => {
-        gameState.soundEvents.forEach((event) => {
-            sounds[event].play();
+        Object.keys(SOUNDS).forEach((soundKey) => {
+            sounds[soundKey as keyof typeof SOUNDS].setMuted(!isSoundEnabled);
         });
+    }, [isSoundEnabled, sounds]);
+
+    useEffect(() => {
+        Object.keys(MUSIC).forEach((musicKey) => {
+            sounds[musicKey as keyof typeof MUSIC].setMuted(!isMusicEnabled);
+        });
+    }, [isMusicEnabled, sounds]);
+
+    useEffect(() => {
+        if (isSoundEnabled) {
+            gameState.soundEvents.forEach((event) => {
+                sounds[event].play();
+            });
+        }
 
         if (gameState.soundEvents.length > 0) {
             dispatch({ type: "CLEAR_SOUND_EVENTS" });
         }
-    }, [gameState.soundEvents, sounds]);
+    }, [gameState.soundEvents, sounds, isSoundEnabled]);
 
     const shouldRenderGameElements = useMemo(
         () => engineState !== "IDLE" || gameState.player.life === 0,
@@ -293,6 +331,10 @@ const Rescue = () => {
                         playerLife={gameState.player.life}
                         score={gameState.score}
                         highScore={gameState.highScore}
+                        isSoundEnabled={isSoundEnabled}
+                        isMusicEnabled={isMusicEnabled}
+                        onSoundToggle={setIsSoundEnabled}
+                        onMusicToggle={setIsMusicEnabled}
                     />
                 </>
             )}

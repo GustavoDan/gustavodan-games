@@ -3,6 +3,7 @@ import { GameState } from "./types";
 
 export const ASSETS_PATH = "rescue/";
 export const LOCALSTORAGE_HS_VAR = "rescue_hs";
+export const GAME_NAME = "rescue";
 export const MAX_PLAYER_LIFE = 3;
 export const SHOT_COOLDOWN = 0.5;
 export const FLOOR_HEIGHT = 140;
@@ -130,11 +131,19 @@ export const ALL_SPRITES = {
     life: `${ASSETS_PATH}battery.png`,
 };
 
-export const ALL_SOUNDS = {
+export const MUSIC = {
     backgroundMusic: `${ASSETS_PATH}background-music.mp3`,
     gameOverMusic: `${ASSETS_PATH}game-over-music.mp3`,
+} as const;
+
+export const SOUNDS = {
     allyDeath: `${ASSETS_PATH}ally-death.mp3`,
     allyRescued: `${ASSETS_PATH}ally-rescued.mp3`,
     explosion: `${ASSETS_PATH}explosion.mp3`,
     shoot: `${ASSETS_PATH}shoot-sound.mp3`,
-};
+} as const;
+
+export const ALL_SOUNDS = {
+    ...MUSIC,
+    ...SOUNDS,
+} as const;
