@@ -4,6 +4,10 @@ export const LOCALSTORAGE_HS_VAR = "simon_hs";
 
 export const SIMON_COLORS: SimonColor[] = ["green", "red", "yellow", "blue"];
 
+// Shared CSS classes between SimonBase and SimonLogo
+export const SIMON_CIRCLE_BASE_CLASSES =
+    "absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border-gray-600 shadow-lg";
+
 // Timing settings (in seconds)
 export const TIMING = {
     SHOW_COLOR_DURATION: 0.5, // Duration that the color stays lit
@@ -17,27 +21,31 @@ export const TIMING = {
 
 export const COLOR_CONFIG: Record<
     SimonColor,
-    { base: string; active: string; glow: string }
+    { base: string; active: string; glow: string; text: string }
 > = {
     green: {
         base: "bg-emerald-700",
         active: "bg-emerald-400",
         glow: "shadow-[0_0_40px_10px_rgba(52,211,153,0.8),inset_0_0_30px_rgba(255,255,255,0.4)]",
+        text: "text-emerald-700",
     },
     red: {
         base: "bg-red-700",
         active: "bg-red-400",
         glow: "shadow-[0_0_40px_10px_rgba(248,113,113,0.8),inset_0_0_30px_rgba(255,255,255,0.4)]",
+        text: "text-red-700",
     },
     yellow: {
         base: "bg-yellow-600",
         active: "bg-yellow-300",
         glow: "shadow-[0_0_40px_10px_rgba(253,224,71,0.8),inset_0_0_30px_rgba(255,255,255,0.4)]",
+        text: "text-yellow-600",
     },
     blue: {
         base: "bg-blue-700",
         active: "bg-blue-400",
         glow: "shadow-[0_0_40px_10px_rgba(96,165,250,0.8),inset_0_0_30px_rgba(255,255,255,0.4)]",
+        text: "text-blue-700",
     },
 };
 

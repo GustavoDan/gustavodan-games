@@ -10,6 +10,7 @@ import { gameReducer } from "./game/reducer";
 import { SimonColor } from "./types";
 import SimonButton from "./SimonButton";
 import SimonLogo from "./SimonLogo";
+import SimonBase from "./SimonBase";
 import useStateMachine from "@/hooks/useStateMachine";
 import useEventListener from "@/hooks/useEventListener";
 import GameOverlay from "@/components/GameOverlay";
@@ -189,7 +190,9 @@ const Simon = () => {
                 </span>
             </div>
             <div className="relative w-full max-w-md aspect-square sm-h:w-7/12">
-                <div className="grid grid-cols-2 gap-3 w-full h-full sm-h:gap-2">
+                <SimonBase />
+
+                <div className="relative grid grid-cols-2 gap-3 w-full h-full sm-h:gap-2">
                     {SIMON_COLORS.map((color) => (
                         <SimonButton
                             key={color}

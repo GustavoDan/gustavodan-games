@@ -49,6 +49,7 @@
         linear infinite;
     --animate-heartbeat: heartbeat 1.3s steps(10) infinite;
     --animate-blink: blink 1.4s infinite both;
+    --animate-simon-pulse: simon-pulse 2s ease-in-out infinite;
 }
 
 @utility animation-pause {
@@ -217,5 +218,15 @@
     }
     50% {
         opacity: 1;
+    }
+}
+
+@keyframes simon-pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 3px currentColor;
+    }
+    50% {
+        box-shadow: 0 0 15px currentColor;
     }
 }

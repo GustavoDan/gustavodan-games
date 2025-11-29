@@ -31,12 +31,13 @@ const SimonButton = ({
             onClick={onClick}
             disabled={isDisabled}
             className={cn(
-                "aspect-square w-full transition-all duration-150",
+                "aspect-square w-full transition-all duration-150 animate-simon-pulse",
                 POSITION_CLASSES[position],
+                config.text,
                 isActive ? `${config.active} ${config.glow}` : config.base,
                 isDisabled
                     ? "cursor-not-allowed opacity-60"
-                    : "cursor-pointer hover:brightness-110 active:brightness-130 active:scale-[0.98]"
+                    : "cursor-pointer hover:brightness-110 active:brightness-200 active:scale-[0.98]"
             )}
             aria-label={`${color} button`}
         />
@@ -44,4 +45,3 @@ const SimonButton = ({
 };
 
 export default SimonButton;
-
