@@ -65,19 +65,19 @@ const StartScreen = ({
 
     return !isGameOver && engineState === "IDLE" ? (
         <>
-            <div className="flex flex-col gap-25">
-                {headline && <h1 className="text-5xl">{headline}</h1>}
+            <div className="flex flex-col gap-25 sm-h:gap-5">
+                {headline && <h1 className="text-5xl sm-h:text-2xl">{headline}</h1>}
 
-                <div className="flex flex-col justify-center items-center gap-5">
+                <div className="flex flex-col justify-center items-center gap-5 sm-h:gap-0">
                     <h2
                         className={cn(
-                            "text-4xl font-bold",
-                            !headline && "md:text-5xl"
+                            "text-4xl font-bold sm-h:text-2xl",
+                            !headline && "md:text-5xl sm-h:text-xl"
                         )}
                     >
                         CONTROLS
                     </h2>
-                    <div className="flex md:text-lg">
+                    <div className="flex md:text-lg sm-h:text-base">
                         <div className="text-left flex flex-col">
                             {Object.keys(controls).map((controlType, index) => (
                                 <span key={index}>{`${capitalize(
@@ -100,7 +100,7 @@ const StartScreen = ({
                 <GameActionButton onClick={startFunction}>
                     Start Game
                 </GameActionButton>
-                <span className="text-xs md:text-sm">
+                <span className="text-xs md:text-sm sm-h:text-xs">
                     (or Spacebar to Start)
                 </span>
             </div>
@@ -129,7 +129,7 @@ const GameOverScreen = ({ children, restartFunction }: GameOverScreenProps) => {
 
     return isGameOver ? (
         <>
-            <h1 className="text-4xl md:text-5xl font-bold">GAME OVER</h1>
+            <h1 className="text-4xl md:text-5xl font-bold sm-h:text-3xl">GAME OVER</h1>
             {children}
             <div className="flex flex-col gap-2">
                 <GameActionButton onClick={restartFunction}>

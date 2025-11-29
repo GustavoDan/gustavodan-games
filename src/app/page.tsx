@@ -8,9 +8,7 @@ export default function Home() {
             <Title className="mb-2.5">Select a game</Title>
             <MenuButton id="space-shooter">🚀 Space Shooter</MenuButton>
             <MenuButton id="tic-tac-toe">#️⃣ Tic-Tac-Toe</MenuButton>
-            <MenuButton disabled id="simon">
-                🧠 Simon
-            </MenuButton>
+            <MenuButton id="simon">🧠 Simon</MenuButton>
             <MenuButton id="rescue">🚁 Rescue</MenuButton>
             <MenuButton id="dinosaur">🦖 Dinosaur</MenuButton>
         </BaseContainer>

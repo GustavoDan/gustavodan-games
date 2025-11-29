@@ -38,7 +38,10 @@ const GameContainer = ({
             </div>
             <div
                 ref={gameAreaRef}
-                className={cn("flex flex-col flex-1", childrenClassName)}
+                className={cn(
+                    "relative flex flex-col flex-1",
+                    childrenClassName
+                )}
             >
                 <GameContext.Provider
                     value={{ worldWidth: width, worldHeight: height }}
