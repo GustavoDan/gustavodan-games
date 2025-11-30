@@ -1,5 +1,7 @@
 import { cn } from "@/utils/cn";
 import { useCallback, useState } from "react";
+import Tooltip from "./Tooltip";
+import { FaCircleInfo } from "react-icons/fa6";
 
 interface ToggleSwitchProps {
     className?: string;
@@ -23,11 +25,10 @@ const ToggleSwitch = ({
         onClick?.();
     }, [onClick]);
 
-    return (
+    const labelContent = (
         <label
-            className={cn("flex items-center gap-2", className)}
+            className={cn("flex items-center gap-2 cursor-pointer", className)}
             onClick={handleClick}
-            title={tooltip}
         >
             <div
                 className={cn(
@@ -74,9 +75,18 @@ const ToggleSwitch = ({
                     )}
                 </div>
             </div>
-            <span>{text}</span>
+            <div className="flex items-center gap-1.5">
+                <span>{text}</span>
+                {tooltip ? (
+                    <Tooltip content={tooltip}>
+                        <FaCircleInfo size={16} />
+                    </Tooltip>
+                ) : null}
+            </div>
         </label>
     );
+
+    return labelContent;
 };
 
 export default ToggleSwitch;

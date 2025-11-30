@@ -50,6 +50,8 @@
     --animate-heartbeat: heartbeat 1.3s steps(10) infinite;
     --animate-blink: blink 1.4s infinite both;
     --animate-simon-pulse: simon-pulse 2s ease-in-out infinite;
+    --animate-tooltip-fade-in: tooltipFade 0.2s ease-in-out forwards;
+    --animate-tooltip-fade-out: tooltipFade 0.2s ease-in-out reverse forwards;
 }
 
 @utility animation-pause {
@@ -228,5 +230,16 @@
     }
     50% {
         box-shadow: 0 0 15px currentColor;
+    }
+}
+
+@keyframes tooltipFade {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
 }
