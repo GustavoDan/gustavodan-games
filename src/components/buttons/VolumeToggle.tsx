@@ -41,7 +41,10 @@ const VolumeToggle = ({
     );
 
     return (
-        <BaseButton onClick={handleClick} className={cn("p-2", className)}>
+        <BaseButton
+            onClick={handleClick}
+            className={cn("p-2 z-[9999]", className)}
+        >
             <IconComponent size={36} fill="currentColor" />
         </BaseButton>
     );

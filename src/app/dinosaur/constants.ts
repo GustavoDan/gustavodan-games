@@ -2,6 +2,7 @@ import { BaseInputAction } from "@/types";
 import { GameState, ObstacleType } from "./types";
 
 export const ASSETS_PATH = "dinosaur/";
+export const GAME_NAME = "dinosaur";
 export const GRAVITY = 3000;
 export const FAST_FALL_MULTIPLIER = 5;
 export const INVULNERABILITY_DURATION = 1.5;

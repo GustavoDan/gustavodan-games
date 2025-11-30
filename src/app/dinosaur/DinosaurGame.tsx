@@ -11,6 +11,7 @@ import {
 import {
     ALL_SPRITES,
     ASSETS_PATH,
+    GAME_NAME,
     INITIAL_GAME_STATE,
     INITIAL_INPUT_ACTIONS,
     LOCALSTORAGE_HS_VAR,
@@ -34,6 +35,8 @@ import DisplayError from "@/components/DisplayError";
 import { Binding } from "@/types";
 import { loadHighScore, setHighScore } from "@/utils/highScore";
 import { handleGameOver, handleGameStart } from "@/utils/reducerCommon";
+import { loadVolumeSettings, saveVolumeSettings } from "@/utils/volume";
+import { VolumeToggleButton } from "@/components/buttons";
 
 const DinosaurGame = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
@@ -47,6 +50,9 @@ const DinosaurGame = () => {
     const scoreSound = useSound(`${ASSETS_PATH}score.ogx`);
     const previousScore = usePrevious(gameState.score);
     const previousLife = usePrevious(gameState.dinosaur.life);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(
+        () => loadVolumeSettings(GAME_NAME).sound
+    );
 
     const volatileDataRef = useRef<VolatileData>({
         getDinosaurFrame: null,
@@ -113,6 +119,19 @@ const DinosaurGame = () => {
     useEffect(() => {
         setHighScore(LOCALSTORAGE_HS_VAR, gameState.highScore.toString());
     }, [gameState.highScore]);
+
+    useEffect(() => {
+        saveVolumeSettings(GAME_NAME, {
+            sound: isSoundEnabled,
+            music: true,
+        });
+    }, [isSoundEnabled]);
+
+    useEffect(() => {
+        jumpSound.setMuted(!isSoundEnabled);
+        hitSound.setMuted(!isSoundEnabled);
+        scoreSound.setMuted(!isSoundEnabled);
+    }, [isSoundEnabled, jumpSound, hitSound, scoreSound]);
 
     useEffect(() => {
         handleGameOver(gameState.dinosaur.life, stop, dispatch);
@@ -245,6 +264,14 @@ const DinosaurGame = () => {
                 onFrameUpdate={updateDinosaurFrame}
             />
             <Floor engineState={engineState} gameState={gameState} />
+
+            <div className="absolute top-3 right-3">
+                <VolumeToggleButton
+                    type="sound"
+                    isActive={isSoundEnabled}
+                    onToggle={setIsSoundEnabled}
+                />
+            </div>
 
             <div className="flex justify-around items-center mt-2.5 text-center text-neon-red-500 text-lg md:text-3xl">
                 <span className="min-w-28 min-h-12 text-left text-5xl">
