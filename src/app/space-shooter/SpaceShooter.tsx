@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
     ALL_SPRITES,
     INITIAL_GAME_STATE,
@@ -35,12 +35,14 @@ import {
     handleGameStart,
 } from "@/utils/reducerCommon";
 import pluralize from "pluralize";
+import ShotPositionToggle from "./ShotPositionToggle";
 
 const SpaceShooter = () => {
     const { isLoading, assets, error } = useAssetLoader(ALL_SPRITES);
     const { worldWidth, worldHeight } = useGameContext();
 
     const [gameState, dispatch] = useReducer(gameReducer, INITIAL_GAME_STATE);
+    const [useInstantShot, setUseInstantShot] = useState(false);
     const inputActionsRef = useRef({ ...INITIAL_INPUT_ACTIONS });
     const volatileDataRef = useRef<VolatileData>({
         shot: new Map(),
@@ -71,11 +73,12 @@ const SpaceShooter = () => {
                         inputActions: inputActionsRef.current,
                         volatileData: volatileDataRef.current,
                         assets,
+                        useInstantShot,
                     },
                 });
             }
         },
-        [worldWidth, worldHeight, assets]
+        [worldWidth, worldHeight, assets, useInstantShot]
     );
 
     const resetInputs = useCallback(() => {
@@ -117,6 +120,12 @@ const SpaceShooter = () => {
     const pause = useCallback(() => {
         if (engineState === "RUNNING") togglePause();
     }, [engineState, togglePause]);
+
+    const handleShotPositionToggle = useCallback(() => {
+        setUseInstantShot(
+            (prevUseInstantShot) => !prevUseInstantShot
+        );
+    }, []);
 
     const deleteObject = useMemo(
         () => createDeleteObjectHandler<GameState, DeletableObject>(dispatch),
@@ -271,7 +280,12 @@ const SpaceShooter = () => {
                         pause: "Q Key",
                     }}
                     headline="An alien horde is approaching. Defend your planet at all costs!"
-                />
+                >
+                    <ShotPositionToggle
+                        onClick={handleShotPositionToggle}
+                        defaultCheckedValue={useInstantShot}
+                    />
+                </GameOverlay.StartScreen>
 
                 <GameOverlay.PauseScreen />
 
@@ -286,6 +300,11 @@ const SpaceShooter = () => {
                             {pluralize("ship", gameState.highScore, true)}!
                         </span>
                     </div>
+
+                    <ShotPositionToggle
+                        onClick={handleShotPositionToggle}
+                        defaultCheckedValue={useInstantShot}
+                    />
                 </GameOverlay.GameOverScreen>
             </GameOverlay>
         </div>

@@ -39,6 +39,7 @@ interface TickAction extends BaseTickAction {
         inputActions: ShooterInputAction;
         volatileData: VolatileData;
         assets: Assets;
+        useInstantShot: boolean;
     };
 }
 
@@ -145,7 +146,8 @@ const handleShots = (
     gameState: GameState,
     volatileData: VolatileData,
     screenSize: Vector2D,
-    deltaTime: number
+    deltaTime: number,
+    useInstantShot: boolean
 ) => {
     gameState.shots.forEach((shot) => {
         const isShotAnimFinished = volatileData.shot.get(
@@ -154,7 +156,7 @@ const handleShots = (
         const isShotMarked = gameState.markedForDeletion.shots.has(shot.id);
 
         if (isShotMarked) {
-        } else if (isShotAnimFinished) {
+        } else if (useInstantShot || isShotAnimFinished) {
             shot.pos.x = moveOnAxis(
                 shot.pos.x,
                 "RIGHT",
@@ -336,13 +338,20 @@ export const gameReducer = (
                 inputActions,
                 volatileData,
                 assets,
+                useInstantShot,
             } = action.payload;
 
             const subSteps = 4;
             const stepTime = deltaTime / subSteps;
             Array.from({ length: subSteps }).forEach(() => {
                 handlePlayerPhysics(newState.player, screenSize, stepTime);
-                handleShots(newState, volatileData, screenSize, stepTime);
+                handleShots(
+                    newState,
+                    volatileData,
+                    screenSize,
+                    stepTime,
+                    useInstantShot
+                );
                 handleEnemies(newState, screenSize, stepTime);
                 handleCollisions(newState, volatileData, assets);
             });
